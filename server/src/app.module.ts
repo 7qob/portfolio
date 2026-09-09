@@ -6,6 +6,7 @@ import { DatabaseModule } from './db/database.module';
 import { HealthController } from './health/health.controller';
 import { MediaModule } from './media/media.module';
 import { ProjectsModule } from './projects/projects.module';
+import { SectionsModule } from './sections/sections.module';
 import { UsersModule } from './users/users.module';
 import { VaultModule } from './vault/vault.module';
 
@@ -17,6 +18,7 @@ import { VaultModule } from './vault/vault.module';
     VaultModule,
     AdminModule,
     ProjectsModule,
+    SectionsModule,
     MediaModule,
   ],
   controllers: [HealthController],

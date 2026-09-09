@@ -229,4 +229,30 @@ export const MIGRATIONS: readonly string[] = [
       OR blocks LIKE '%"type": "files"%'    OR blocks LIKE '%"type":"files"%'
       OR blocks LIKE '%"type": "links"%'    OR blocks LIKE '%"type":"links"%';
   `,
+
+  /**
+   * 005 — the sections CMS.
+   *
+   * The second thing that writes index.html. A row holds one region of the
+   * home page: `draft_blocks` is what the in-page editor last saved,
+   * `live_blocks` is what the published file shows.
+   *
+   * `live_blocks IS NULL` is load-bearing and means "never published" — the
+   * renderer then skips that region entirely and the hand-written markup
+   * between the markers stays exactly as it shipped. That is what makes this
+   * table safe to create on a live Pi: until someone presses Publish, the page
+   * is byte-identical to the one already being served.
+   *
+   * The key CHECK mirrors the SECTION_KEYS registry in sections/blocks.ts, the
+   * same belt-and-braces the projects slug and the media filename get.
+   */
+  `
+  CREATE TABLE sections (
+    key          TEXT PRIMARY KEY CHECK (key GLOB '[a-z][a-z0-9-]*'),
+    draft_blocks TEXT NOT NULL DEFAULT '[]',
+    live_blocks  TEXT,
+    updated_at   TEXT NOT NULL DEFAULT (datetime('now')),
+    published_at TEXT
+  );
+  `,
 ];
