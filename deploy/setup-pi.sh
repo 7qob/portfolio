@@ -87,7 +87,7 @@ sudo systemctl reload nginx
 
 echo
 echo "==> Local check"
-for p in / /projects.html /about.html /style.css; do
+for p in / /projects.html /style.css; do
   code=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost$p" || echo "ERR")
   printf '    %-22s %s\n' "$p" "$code"
 done

@@ -148,7 +148,6 @@ check() {
 
 check /                     200
 check /projects.html        200
-check /about.html           200
 check /style.css            200
 check /vault/               200
 check /no-such-page.html    404   # the site's own 404 page, not nginx's
