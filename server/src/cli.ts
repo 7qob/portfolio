@@ -3,6 +3,7 @@ import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 
 import { AppModule } from './app.module';
+import { ProjectsService } from './projects/projects.service';
 import { UsersService } from './users/users.service';
 import type { Role } from './common/types';
 
@@ -12,6 +13,7 @@ import type { Role } from './common/types';
  *   docker compose exec api node dist/cli.js create-admin <username>
  *   docker compose exec api node dist/cli.js reset-password <username>
  *   docker compose exec api node dist/cli.js list
+ *   docker compose exec api node dist/cli.js render
  *
  * create-admin is the answer to the chicken-and-egg problem: accounts are
  * issued from the admin panel, and reaching the admin panel needs an account.
@@ -21,6 +23,14 @@ import type { Role } from './common/types';
  * Passwords are generated, printed once and never stored in plaintext — so
  * they are not in your shell history either, which is where they would end up
  * if this took one as an argument.
+ *
+ * render is the panel's Publish button without the panel: it rewrites every
+ * generated page from the database and the renderer that is in this image.
+ * It publishes nothing new and changes no row, so it is safe to run twice.
+ * The reason it exists is that a renderer change reaches a visitor only when
+ * something re-renders, and the deploy that shipped the change already has a
+ * shell open on the Pi — an ssh session should not have to become a browser
+ * session to finish the update it started.
  */
 async function main(): Promise<void> {
   const [command, ...args] = process.argv.slice(2);
@@ -75,6 +85,17 @@ async function main(): Promise<void> {
         break;
       }
 
+      case 'render': {
+        const projects = app.get(ProjectsService);
+        projects.renderPublished();
+
+        console.log('');
+        console.log('  Rewrote every published page: the project pages, the');
+        console.log('  projects index and the home page.');
+        console.log('');
+        break;
+      }
+
       case 'list': {
         const all = users.listAll();
         if (all.length === 0) {
@@ -99,6 +120,7 @@ async function main(): Promise<void> {
         console.log('          create-user  <username> [note]');
         console.log('          reset-password <username>');
         console.log('          list');
+        console.log('          render');
         process.exitCode = 1;
     }
   } finally {

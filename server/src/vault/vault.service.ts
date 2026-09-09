@@ -4,10 +4,12 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  PayloadTooLargeException,
 } from '@nestjs/common';
 import {
   createReadStream,
   existsSync,
+  readFileSync,
   renameSync,
   statSync,
   unlinkSync,
@@ -18,6 +20,14 @@ import { basename, join, resolve, sep } from 'node:path';
 
 import { config } from '../config';
 import { DatabaseService } from '../db/database.service';
+import { zipStore, type ZipEntry } from './zip';
+
+/**
+ * The archive is built in memory, so its size is a memory limit rather than a
+ * policy. Sixty-four megabytes is far more than a stack of school documents
+ * and small enough that a Pi survives two people clicking at once.
+ */
+const ARCHIVE_MAX_BYTES = 64 * 1024 * 1024;
 
 export interface VaultItemRow {
   id: number;
@@ -214,6 +224,66 @@ export class VaultService {
     if (!stats.isFile()) throw new NotFoundException('Document not found.');
 
     return { stream: createReadStream(path), size: stats.size };
+  }
+
+  /**
+   * Every visible document that is actually on disk, as one ZIP.
+   *
+   * It logs a download per document rather than one for the archive: the log
+   * answers "who has read my references", and an entry that said "downloaded
+   * everything" would make that question unanswerable a year from now, when
+   * what "everything" meant has changed.
+   *
+   * Missing files are skipped rather than raised. A row without a PDF is a
+   * normal state here (the panel creates the row first and uploads after), and
+   * one un-uploaded document should not cost the visitor the other five.
+   */
+  archiveVisible(actor: { userId: number; ip: string; userAgent: string }): {
+    buffer: Buffer;
+    count: number;
+  } {
+    const rows = this.database.db
+      .prepare(
+        `SELECT * FROM vault_items
+          WHERE visible = 1
+          ORDER BY sort_order, title COLLATE NOCASE`,
+      )
+      .all() as VaultItemRow[];
+
+    const entries: ZipEntry[] = [];
+    let total = 0;
+
+    for (const row of rows) {
+      const stats = this.statFile(row.filename);
+      if (!stats) continue;
+
+      total += stats.size;
+      if (total > ARCHIVE_MAX_BYTES) {
+        throw new PayloadTooLargeException('The documents are too large to send as one file.');
+      }
+
+      entries.push({
+        // basename() again rather than the stored name: resolvePath already
+        // refused anything outside the directory, and this keeps a directory
+        // part from ever reaching the archive's own name field.
+        name: basename(row.filename),
+        data: readFileSync(this.resolvePath(row.filename)),
+        modified: stats.mtime,
+      });
+
+      this.logDownload({
+        userId: actor.userId,
+        item: row,
+        ip: actor.ip,
+        userAgent: actor.userAgent,
+      });
+    }
+
+    if (!entries.length) {
+      throw new NotFoundException('No documents have been uploaded yet.');
+    }
+
+    return { buffer: zipStore(entries), count: entries.length };
   }
 
   /**

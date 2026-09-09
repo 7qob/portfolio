@@ -1,21 +1,26 @@
 /* ==== kira1q.dev — one stylesheet, no build step ====
-   Terminal/KISS: 2px borders, a 4px corner, no shadows. Depth comes from the
+   Retro/KISS: 1px borders, border-radius 0, no shadows — depth comes from the
    border and the panel/background contrast. Spacing off --space and --gap;
    reading flow off --stack-*. Type sizes only from the --fs-* tokens. */
 
 /* ---- Design system tokens ---- */
 :root {
+  /* Tells the browser which way round the page is, so the document
+     scrollbar, the form controls and the canvas behind the CSS follow the
+     theme instead of staying light chrome on a dark page. */
+  color-scheme: dark;
+
   --bg:          #0e0e0e;   /* page                              */
   --panel:       #1a1a1a;   /* cards                             */
   --panel-alt:   #141414;   /* nested surfaces / inset wells     */
   --line:        #2a2a2a;   /* card + element borders            */
   --line-soft:   #202020;   /* dividers inside a card            */
-  --fg:          #efefef;   /* body text                         */
+  --fg:          #d2d2d2;   /* body text                         */
   --fg-strong:   #efefef;   /* headings, name                    */
-  --fg-mute:     #8a8a8a;   /* muted text, labels, captions      */
-  --accent:      #ff1e2f;   /* focus rings, hover, the favicon   */
+  --fg-mute:     #8a8a8a;   /* section eyebrows, captions        */
+  --accent:      #ff1e2f;   /* section eyebrows, captions  #DE9100;      #ff1e2f;  */
 
-  --bw:          2px;
+  --bw:          1px;
 
   --bg-raised:    var(--panel);
   --text:         var(--fg-strong);
@@ -23,21 +28,25 @@
   --border:       var(--line);
   --border-hover: #3a3a3a;          /* hover border */
 
-  --fs-name:      1.7rem;    /* hero name, page h1         */
-  --fs-subtitle:  1.15rem;   /* project name in a card     */
-  --fs-heading:   1rem;      /* project / section titles   */
-  --fs-lede:      1rem;      /* the one-sentence opener    */
+  --fs-name:      2rem;      /* hero name, page h1         */
+  --fs-subtitle:  1.5rem;    /* project name in a card     */
+  --fs-heading:   1.25rem;   /* project / section titles   */
+  --fs-lede:      1.125rem;  /* the one-sentence opener    */
   --fs-body:      1rem;      /* base body text             */
   --fs-caption:   0.75rem;   /* uppercase section labels   */
   --fs-meta:      0.7rem;    /* dates / status / meta       */
 
-  --measure:      66ch;
-  --measure-wide: 78ch;
+  --measure:      34rem;
+  --measure-wide: 41rem;
 
   --measure-card: 60ch;
 
+  /* The rail every page sits on. Header, masthead, body and footer share it,
+     which is the only reason the site reads as centred on a wide screen. */
+  --shell:        68rem;
+
   --border-width: var(--bw);
-  --radius:       4px;
+  --radius:       0;
   --space:        8px;
   --gap:          calc(var(--space) * 2);   /* single knob for all inter-box spacing */
 
@@ -47,28 +56,46 @@
 
   --motion:       120ms ease;               /* color / border-color transitions */
 
-  /* No webfont: a Google Fonts link would be the site's only third-party
-     request. Cascadia ships with VS Code and Windows Terminal, so most
-     visitors already have it locally; the rest fall back down the stack. */
-  --font: ui-monospace, "Cascadia Mono", "Cascadia Code", Consolas,
-          "DejaVu Sans Mono", monospace;
+  /* Two faces, both already on the machine — no webfont, no build step, no
+     flash. Serif for everything that is read, mono for everything that is
+     labelled: eyebrows, chips, nav, footer, status. Nobody lands on Times.
+     Mac -> Iowan Old Style, Windows -> Georgia, Android -> Noto Serif. */
+  --font: "Iowan Old Style", Charter, "Source Serif 4", Georgia, "Noto Serif", serif;
+  --font-mono: ui-monospace, "Cascadia Mono", "Segoe UI Mono", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 }
 
 :root.light {
-  --bg:           #efefef;
-  --panel:        #e2e2e2;
-  --panel-alt:    #d8d8d8;
-  --line:         #cfcfcf;
+  color-scheme: light;
+
+  --bg:           #f4f4f4;
+  --panel:        #ffffff;
+  --panel-alt:    #ececec;
+  --line:         #c9c9c9;
   --line-soft:    #dcdcdc;
-  --fg:           #0e0e0e;
-  --fg-strong:    #0e0e0e;
-  --fg-mute:      #6e6e6e;
-  --accent:       #d4111f;
+  --fg:           #3a3a3a;
+  --fg-strong:    #1b1b1b;
+  --fg-mute:      #6a6a6a;
+  /** --accent:       #b8860b;  **/
+  --accent:       #d81e2f;   /* the same red as dark, darkened for a white ground */
 
   --border-hover: #9a9a9a;
 }
 
 /* ---- Reset ---- */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-hover) transparent;
+  /* Reserved whether or not the page scrolls. The home page is locked to one
+     screen and the subpages are not, so without this the rail moves half a
+     scrollbar sideways every time a visitor leaves the home page. */
+  scrollbar-gutter: stable;
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
 *,
 *::before,
 *::after {
@@ -81,8 +108,10 @@
   display: none !important;
 }
 
+/* 17px, not 18: the serifs below carry a taller x-height than Times did, so
+   the same apparent size needs one step less. */
 html {
-  font-size: 100%;   /* 1rem = 16px, the mock's base */
+  font-size: 106.25%;
 }
 
 body {
@@ -98,31 +127,75 @@ body {
   gap: var(--gap);
 }
 
+/* ==== The shell ====
+   One centred rail, shared by every band of every page. Nothing else sets a
+   page-level width: a block that wants to be narrower centres itself inside
+   this, and the rail is what keeps the header, the content and the footer on
+   the same two edges. */
+.site-header,
+.page-head,
+.page-body,
+.bento,
+.site-footer {
+  width: 100%;
+  max-width: var(--shell);
+  margin-inline: auto;
+}
+
 /* ==== Site header — the site's one navigation ==== */
+/* 1fr auto 1fr: the nav is centred on the page, not on the space the controls
+   left over. The two 1fr columns are what make that true at any brand or
+   control width. */
 .site-header {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: calc(var(--space) * 2);
+  padding-bottom: var(--space);
   border-bottom: var(--border-width) solid var(--border);
+}
+
+/* The brand is the home link — that is why there is no Home item in the nav. */
+.site-brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  justify-self: start;
+  color: var(--text);
+  text-decoration: none;
+  transition: color var(--motion);
+}
+
+.site-brand__name {
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.site-controls {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--space) * 0.5);
+  justify-self: end;
+  margin-right: calc(var(--space) * -0.5);   /* the buttons' own padding, back */
 }
 
 .site-nav {
   display: flex;
   align-items: center;
   gap: 0;               /* the padding on each link is the spacing */
-  margin-right: auto;   /* nav anchors left, the toggle sits hard right */
+  justify-content: center;
 }
-
-.site-nav a:first-child { padding-left: 0; }
-.site-nav a:last-child  { padding-right: 0; }
 
 .site-nav a {
   display: inline-flex;
   align-items: center;
   min-height: 30px;
-  padding: 0 calc(var(--space) * 1.25);
+  padding: 0 calc(var(--space) * 1.5);
+  font-family: var(--font-mono);
   font-size: var(--fs-caption);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--fg-mute);
   text-decoration: none;
@@ -130,20 +203,22 @@ body {
   transition: color var(--motion), border-color var(--motion);
 }
 
+/* The rule under the word is the nav's own, and the only thing it adds. */
 .site-nav a:hover,
 .site-nav a:focus-visible {
-  color: var(--text);
-  border-bottom-color: var(--text);
-  outline: none;
+  border-bottom-color: var(--accent);
 }
 
+/* The current page is already marked by the accent rule, so its hover has
+   only the colour left to move. That is deliberate: the rule stays put and
+   nothing appears to change page under the pointer. */
 .site-nav a[aria-current="page"] {
   color: var(--text);
   border-bottom-color: var(--accent);
 }
 
+/* Inside the link, not around it: a sticky bar clips an outer ring. */
 .site-nav a:focus-visible {
-  outline: 1px solid var(--accent);
   outline-offset: -2px;
 }
 
@@ -161,10 +236,96 @@ body {
   transition: border-color var(--motion), color var(--motion);
 }
 
-/* Hover: border lifts to --border-hover and text goes to --fg-strong. */
+/* ==== The two hover signals, and which one a thing gets ====
+   A box lifts: --border-hover on the rim, --fg-strong on the type, plus the
+   corner wash below. It never takes the accent, because a page holds a dozen
+   boxes and a dozen red rims is a warning light, not a design.
+   Anything that is really a word — a link in prose, a nav item, the brand, a
+   footer link, a document row, a chip, an icon button — takes --accent. That
+   is the whole rule. If you are adding a hover and it is neither of these
+   two, one of them is what you actually wanted.
+
+   Both are declared once, as the two lists below, and a component adds its
+   selector to a list rather than writing the declaration again. That is not
+   tidiness: the site had three different hovers precisely because each new
+   component wrote its own, and fifteen copies of one colour drift the moment
+   somebody changes fourteen of them. What stays local to a component is only
+   what is unique to it — an underline, a rotation, an arrow that nudges. */
+
+/* --- Signal one: the word. Hover and focus always move together. --- */
+.site-brand:hover,
+.site-brand:focus-visible,
+.site-nav a:hover,
+.site-nav a:focus-visible,
+.site-footer a:hover,
+.site-footer a:focus-visible,
+.box__text a:hover,
+.box__text a:focus-visible,
+.link-box__note a:hover,
+.link-box__note a:focus-visible,
+.page-head__lede a:hover,
+.page-head__lede a:focus-visible,
+.reading a:hover,
+.reading a:focus-visible,
+.linklist a:hover,
+.linklist a:focus-visible,
+.doc__link:hover,
+.doc__link:focus-visible,
+.doc-all:hover,
+.doc-all:focus-visible,
+.doc-guard__btn:hover,
+.doc-guard__btn:focus-visible,
+.project-filter__toggle:hover,
+.project-filter__toggle:focus-visible,
+.chip--filter:hover,
+.icon-btn:hover,
+.icon-btn:focus-visible,
+.clip-btn:hover,
+.clip-btn:focus-visible,
+.gh__retry:hover,
+.admin-tab:hover,
+.reveal__summary:hover .reveal__mark,
+.reveal__summary:focus-visible .reveal__mark,
+.reveal__summary:hover > .section-label,
+.reveal__summary:focus-visible > .section-label {
+  color: var(--accent);
+}
+
+/* --- Signal two: the rim. Boxes, and the bordered controls that behave like
+   one. The type change that goes with it is on .box and .link-box, which are
+   the only two that carry body copy. --- */
+.box:hover,
+.box--link:focus-visible,
+.link-box:hover,
+.link-box:focus-visible,
+.pager a:hover,
+.pager a:focus-visible,
+.chip--filter:hover,
+.doc-all:hover,
+.doc-all:focus-visible,
+.doc-guard__btn:hover,
+.doc-guard__btn:focus-visible,
+.project-filter__toggle:hover,
+.project-filter__toggle:focus-visible,
+.pe-slot:hover {
+  border-color: var(--border-hover);
+}
+
+/* --- One focus ring, on everything the keyboard can land on. A component
+   writes its own only to change the offset, which three of them do. --- */
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .box:hover {
   color: var(--fg-strong);
-  border-color: var(--border-hover);
 }
 
 .box__body {
@@ -219,14 +380,52 @@ body {
   }
 }
 
+/* Off the screen, still in the accessibility tree. Not display:none and not
+   [hidden]: both remove the text from the tree, which is the opposite of what
+   this is for. The vault covers a document name visually and leaves this
+   copy of it for a screen reader. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Every glyph on the site is an inline SVG inside a span that has already
+   been given a size, and every one of them wants the same five lines. They
+   are declared here once; a component sizes its span and stops there. */
+.icon-btn [data-theme-icon] svg,
+.link-box__icon svg,
+.doc__icon svg,
+.doc__arrow svg,
+.doc-guard__mark svg,
+.doc-all__icon svg,
+.project-filter__mark svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+}
+
 /* ---- Shared type roles -------------------------------------------------- */
 
 .box__label,
 .link-box__caption,
+.page-head__label,
+.project-filter__word,
 .field__label,
 .section-label,
 .datarow dt,
 .mediarow__title {
+  /* The caption role is the mono half of the type system: everything that
+     labels something rather than being read. Prose stays serif. */
+  font-family: var(--font-mono);
   font-size: var(--fs-caption);
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -275,6 +474,7 @@ body {
 .link-box__note,
 .reading {
   line-height: 1.7;
+  text-wrap: pretty;   /* no one-word last line, shallower rag */
 }
 
 .box__text a,
@@ -284,19 +484,9 @@ body {
   color: var(--fg-strong);
   text-decoration: underline;
   text-decoration-color: var(--accent);
+  text-decoration-thickness: 1px;   /* the 1px rule, applied to type */
   text-underline-offset: 2px;
   transition: color var(--motion);
-}
-
-.box__text a:hover,
-.box__text a:focus-visible,
-.link-box__note a:hover,
-.link-box__note a:focus-visible,
-.page-head__lede a:hover,
-.page-head__lede a:focus-visible,
-.reading a:hover,
-.reading a:focus-visible {
-  color: var(--accent);
 }
 
 /* Body copy: descriptions, pitch, prose — muted, capped line length. */
@@ -350,6 +540,7 @@ body {
   display: flex;
   align-items: center;
   gap: calc(var(--space) * 0.5);
+  font-family: var(--font-mono);
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius);
   padding: calc(var(--space) * 0.5) calc(var(--space) * 1);
@@ -371,6 +562,7 @@ body {
 
 /* ---- Status badge (WIP, etc.) — muted meta, not accent ---- */
 .status {
+  font-family: var(--font-mono);
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius);
   padding: 0 calc(var(--space) * 0.5);
@@ -412,8 +604,15 @@ body {
 /* ==== Home page type scale (index.html) ==== */
 /* The home page is the one page locked to a screen, so every pixel of type is a
    pixel a box has to scroll. One step down the scale, tokens only — the reading
-   pages keep the full size. */
-.is-home {
+   pages keep the full size.
+   It sits on .bento and not on <body> on purpose: the header and the footer are
+   the same chrome on every page, and a caption token scoped to the body would
+   resize the brand and the nav the moment a visitor left the home page. */
+/* The admin panel is a tool full of tables, not a page to read, and it is the
+   one page left that widens the rail. Nothing public does. */
+.is-admin { --shell: 90rem; }
+
+.bento {
   --fs-name:      1.5rem;
   --fs-subtitle:  1.3125rem;
   --fs-heading:   1.125rem;
@@ -424,6 +623,7 @@ body {
 
 .is-home .box__text,
 .is-home .link-box__note {
+  hyphens: auto;
   line-height: 1.55;
 }
 
@@ -491,33 +691,44 @@ body {
 .area-smallB    { grid-area: smallB; }
 
 /* ---- GitHub contribution heatmap (data: third-party service) ---- */
-/* One ink, five opacity steps: the heatmap follows the accent in both themes
-   without a per-theme override, and a level is a number rather than a colour. */
+/* Levels are derived from --accent, so the heatmap follows the accent. */
 :root {
-  /* White on blue, and the only saturated surface on the page. The cells are
-     opacity steps of one ink, so a level is a number rather than a colour. */
-  --gh-ink: #ffffff;
-  --gh-field: #1a3cff;
+  --gh-l0: var(--panel-alt);   /* empty cell — inset, darker than the card */
+  --gh-l1: color-mix(in srgb, var(--accent) 28%, var(--gh-l0));
+  --gh-l2: color-mix(in srgb, var(--accent) 52%, var(--gh-l0));
+  --gh-l3: color-mix(in srgb, var(--accent) 76%, var(--gh-l0));
+  --gh-l4: var(--accent);
+}
 
-  --gh-gap: 2px;
-
-  /* The one place --radius: 0 does not apply. At this cell size a square
-     corner reads as a grid of tiles; 1px is enough to break that up and is
-     invisible anywhere else. Do not spend this exception on another box. */
-  --gh-radius: 1px;
+/* The gap is the only fixed dimension left: the cells are sized to the card at
+   runtime, so the grid is flush with the border whatever shape the box is.
+   --gh-radius is the site's one exception to border-radius: 0. It is a grid of
+   several hundred cells a few pixels across, where a hard corner reads as a
+   stray pixel rather than as a square. Keep it slight, and keep it here. */
+:root {
+  --gh-gap: 3px;
+  --gh-radius: 2px;
 }
 
 .gh {
   position: relative;
-  background: var(--gh-field);
-  border-radius: var(--radius);
-  padding: calc(var(--space) * 0.75);
+  flex: 1;
+  min-height: 0;
+  display: flex;
 }
 
-/* Square cells across a fixed 53 columns, so the graph's height falls out of
-   its width. Nothing is measured: the week count is the calendar's, not the
-   box's, and the row always ends on today. */
+.gh__chart {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+}
+
+/* flex:1 + the default stretch is what fills the card in both axes — a
+   percentage height would resolve to nothing wherever the chart is auto. */
 .gh-cells {
+  flex: 1;
+  min-width: 0;
   display: grid;
   grid-auto-flow: column;                        /* a column is a week */
   grid-template-columns: repeat(var(--gh-weeks, 53), 1fr);
@@ -540,16 +751,16 @@ body {
 }
 
 .gh__status {
+  font-family: var(--font-mono);
   font-size: var(--fs-meta);
-  color: var(--gh-ink);
-  opacity: 0.7;
+  color: var(--fg-mute);
 }
 
 /* Inherits the site's button-less look: a bordered box, not a pill. */
 .gh__retry {
-  border: var(--bw) solid var(--gh-ink);
+  border: var(--bw) solid var(--line);
   background: none;
-  color: var(--gh-ink);
+  color: var(--fg);
   font-family: inherit;
   font-size: var(--fs-meta);
   padding: 2px calc(var(--space) * 0.75);
@@ -558,29 +769,22 @@ body {
 }
 
 .gh__retry:hover {
-  background: var(--gh-ink);
-  color: var(--gh-field);
-}
-
-.gh__retry:focus-visible {
-  outline: var(--bw) solid var(--gh-ink);
-  outline-offset: 2px;
+  border-color: var(--accent);
 }
 
 .gh-cell {
-  aspect-ratio: 1;
   min-width: 0;
-  background: var(--gh-ink);
+  min-height: 0;
   border-radius: var(--gh-radius);
-  opacity: 0.14;
+  background: var(--gh-l0);
 }
 
-.gh-cell[data-level="1"] { opacity: 0.34; }
-.gh-cell[data-level="2"] { opacity: 0.55; }
-.gh-cell[data-level="3"] { opacity: 0.78; }
-.gh-cell[data-level="4"] { opacity: 1; }
+.gh-cell[data-level="1"] { background: var(--gh-l1); }
+.gh-cell[data-level="2"] { background: var(--gh-l2); }
+.gh-cell[data-level="3"] { background: var(--gh-l3); }
+.gh-cell[data-level="4"] { background: var(--gh-l4); }
 
-.gh-cell--pad { opacity: 0; }
+.gh-cell--pad { background: transparent; }
 
 /* ==== Project identity — gradient border ("edge") ==== */
 
@@ -672,14 +876,6 @@ body {
 
 .box--link:focus-visible {
   color: var(--fg-strong);
-  border-color: var(--border-hover);
-}
-
-/* Visible focus everywhere */
-a:focus-visible,
-.box--link:focus-visible {
-  outline: 1px solid var(--accent);
-  outline-offset: 2px;
 }
 
 /* ==== Navigation arrow — top-right marker on boxes that link out ==== */
@@ -709,8 +905,8 @@ a:focus-visible,
 .box--link:focus-visible .box-arrow,
 .link-box:hover .box-arrow,
 .link-box:focus-visible .box-arrow,
-.project-row:hover .box-arrow,
-.project-row:has(.stretched-link:focus-visible) .box-arrow {
+.project-card:hover .box-arrow,
+.project-card:has(.stretched-link:focus-visible) .box-arrow {
   color: var(--text);
   opacity: 1;
   transform: translateX(2px);            /* arrow-right -> right */
@@ -728,7 +924,7 @@ a:focus-visible,
   .box--link:focus-visible .box-arrow,
   .link-box:hover .box-arrow,
   .link-box:focus-visible .box-arrow,
-  .project-row:hover .box-arrow,
+  .project-card:hover .box-arrow,
   .box:hover .box-arrow--external,
   .box--link:focus-visible .box-arrow--external,
   .link-box:hover .box-arrow--external,
@@ -801,53 +997,70 @@ a:focus-visible,
   display: none;
 }
 
-.link-box__icon svg {
-  width: 100%;
-  height: 100%;
-  fill: none;
-  stroke: currentColor;
-}
 
-/* Hover/focus lifts the border and text without a brightness filter. */
+/* Lifts the type without a brightness filter. The rim is in the shared list. */
 .link-box:hover,
 .link-box:focus-visible {
   color: var(--fg-strong);
-  border-color: var(--border-hover);
-}
-
-.link-box:focus-visible {
-  outline: 1px solid var(--accent);
-  outline-offset: 2px;
 }
 
 /* ==== Subpages (projects / about / impressum) ==== */
 
 /* Every subpage is the same shell: .page-head, .page-body, .site-footer. */
+/* The masthead is the one place the words themselves are centred. Below it the
+   prose goes back to a left edge — a centred column of body copy costs the eye
+   the start of every line. */
 .page-head {
   display: flex;
   flex-direction: column;
-  gap: calc(var(--space) * 0.25);
-  padding-bottom: calc(var(--space) * 2);
+  align-items: center;
+  text-align: center;
+  gap: var(--stack-sm);
+  padding-block: var(--stack-md) var(--stack-lg);
   border-bottom: var(--border-width) solid var(--border);
+}
+
+/* Eyebrow over the title: what kind of page this is, in the caption role. */
+.page-head__label {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--space) * 0.75);
+}
+
+.page-head__label::before,
+.page-head__label::after {
+  content: "";
+  width: calc(var(--space) * 2.5);
+  height: var(--border-width);
+  background: var(--accent);
 }
 
 /* Page title reads at hero size — the masthead is the page's h1, not a caption. */
 .page-head__title {
   font-size: var(--fs-name);
-  line-height: 1.15;
+  line-height: 1.1;
   font-weight: 700;
   color: var(--fg-strong);
+  text-wrap: balance;
 }
 
 .page-head__lede {
-  font-size: var(--fs-body);
-  line-height: 1.4;
+  font-size: var(--fs-lede);
+  line-height: 1.5;
   max-width: var(--measure);
+  margin-inline: auto;
   color: var(--text-muted);
+  text-wrap: balance;
 }
+
+.page-head .chips { justify-content: center; }
 
 .page-body {
   display: grid;
+  /* minmax(0,1fr), not auto: an auto track is sized by its widest content, so
+     one horizontally scrolling child (the filter rail) would stretch the whole
+     page instead of scrolling inside it. */
+  grid-template-columns: minmax(0, 1fr);
   grid-auto-rows: min-content;   /* rows hug their content — boxes never get squashed */
   align-content: start;
   gap: var(--gap);
@@ -862,8 +1075,14 @@ a:focus-visible,
   opacity: 0;
 }
 
+/* A narrow panel centres itself on the shell rather than sitting against its
+   left edge. Same move as .page-body--project and .about.
+   width:100% is load-bearing: an auto-width box with auto margins is sized to
+   fit its content instead of to its cap, and lands narrower than asked. */
 .box--narrow {
+  width: 100%;
   max-width: var(--measure);
+  margin-inline: auto;
 }
 
 .icon-btn {
@@ -873,7 +1092,6 @@ a:focus-visible,
   justify-content: center;
   min-height: 30px;
   padding: 0 calc(var(--space) * 0.5);
-  margin-right: calc(var(--space) * -0.5);
   border: 0;
   border-radius: var(--radius);
   background: none;
@@ -893,23 +1111,6 @@ a:focus-visible,
   stroke: currentColor;
 }
 
-.icon-btn [data-theme-icon] svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-  fill: none;
-  stroke: currentColor;
-}
-
-.icon-btn:hover,
-.icon-btn:focus-visible {
-  color: var(--text);
-}
-
-.icon-btn:focus-visible {
-  outline: 1px solid var(--accent);
-  outline-offset: 2px;
-}
 
 /* ---- Impressum fields ---- */
 .field-list {
@@ -957,6 +1158,7 @@ a:focus-visible,
 }
 
 .auth-field__label {
+  font-family: var(--font-mono);
   font-size: var(--fs-caption);
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -980,11 +1182,6 @@ a:focus-visible,
   border-color: var(--accent);
 }
 
-.auth-field__input:focus-visible {
-  outline: 1px solid var(--accent);
-  outline-offset: 2px;
-}
-
 .auth-submit {
   align-self: flex-start;
   padding: calc(var(--space) * 1.25) calc(var(--space) * 3);
@@ -1001,11 +1198,6 @@ a:focus-visible,
 .auth-submit:hover:not(:disabled) {
   border-color: var(--accent);
   color: var(--accent);
-}
-
-.auth-submit:focus-visible {
-  outline: 1px solid var(--accent);
-  outline-offset: 2px;
 }
 
 .auth-submit:disabled {
@@ -1026,8 +1218,15 @@ a:focus-visible,
   font-size: var(--fs-meta);
 }
 
-.site-header__signout {
-  margin-right: calc(var(--space) * -2);   /* == .site-header's gap */
+.site-header__signout { order: 1; }   /* always the last control */
+
+/* The language switch is an .icon-btn whose icon is two letters, so it takes
+   the nav's caption type rather than the body's. */
+.lang-btn {
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .site-header__signout svg {
@@ -1058,7 +1257,6 @@ a:focus-visible,
   transition: color var(--motion), border-color var(--motion);
 }
 
-.admin-tab:hover { color: var(--fg-strong); }
 
 .admin-tab[aria-selected="true"] {
   border-color: var(--line);
@@ -1067,8 +1265,8 @@ a:focus-visible,
   margin-bottom: calc(var(--border-width) * -1);
 }
 
+/* Inside the tab: the strip is clipped by the panel border below it. */
 .admin-tab:focus-visible {
-  outline: 1px solid var(--accent);
   outline-offset: -2px;
 }
 
@@ -1159,11 +1357,6 @@ a:focus-visible,
 .admin-btn:hover {
   border-color: var(--accent);
   color: var(--accent);
-}
-
-.admin-btn:focus-visible {
-  outline: 1px solid var(--accent);
-  outline-offset: 2px;
 }
 
 .admin-btn--accent { color: var(--fg-strong); }
@@ -1344,8 +1537,7 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
   transition: border-color var(--motion), color var(--motion);
 }
 
-.pe-slot:hover { border-color: var(--border-hover); color: var(--fg); }
-.pe-slot:focus-visible { outline: 1px solid var(--accent); outline-offset: 2px; }
+.pe-slot:hover { color: var(--fg); }
 
 /* Held by another project — clicking offers a swap rather than an error. */
 .pe-slot[data-taken] { color: var(--fg); border-style: dashed; }
@@ -1453,8 +1645,7 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
 }
 
 /* Inline link styling lives on .reading, which this column is not. */
-.pe-annot a,
-.site-footer a { color: var(--accent); }
+.pe-annot a { color: var(--accent); }
 
 .pe-hidden { display: none; }
 
@@ -1516,7 +1707,6 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
 }
 
 .pe-color__preset:hover { border-color: var(--fg-strong); }
-.pe-color__preset:focus-visible { outline: 1px solid var(--accent); outline-offset: 2px; }
 
 /* The point of the picker: the actual card rim, live. */
 .pe-color__demo { width: 12rem; padding: var(--space) calc(var(--space) * 1.25); }
@@ -1545,10 +1735,17 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
 
 .doc:last-child { border-bottom: 0; }
 
+/* Four tracks and two rows: the description hangs under the name, indented
+   past the icon, so a row grows downwards instead of squeezing the title. */
 .doc__link {
-  display: flex;
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) auto auto;
+  grid-template-areas:
+    "icon name meta arrow"
+    ".    desc desc desc";
   align-items: center;
-  gap: calc(var(--space) * 1.5);
+  column-gap: calc(var(--space) * 1.5);
+  row-gap: calc(var(--space) * 0.5);
   padding: calc(var(--space) * 1.5) 0;
   color: var(--text);
   text-decoration: none;
@@ -1556,7 +1753,7 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
 }
 
 .doc__icon {
-  flex: 0 0 18px;
+  grid-area: icon;
   width: 18px;
   height: 18px;
   display: inline-flex;
@@ -1564,22 +1761,39 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
   transition: color var(--motion);
 }
 
-.doc__icon svg,
-.doc__arrow svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-  fill: none;
-  stroke: currentColor;
-}
 
 .doc__name {
+  grid-area: name;
   font-size: var(--fs-body);
   min-width: 0;
 }
 
+/* The document's own sentence, from the panel. Secondary to the name and
+   covered along with it, so uncovering does not change the row's height. */
+.doc__desc {
+  grid-area: desc;
+  font-size: var(--fs-caption);
+  line-height: 1.5;
+  color: var(--fg-mute);
+  min-width: 0;
+}
+
+/* A redaction bar, not a blur. This is a site of hard 1px edges and a smeared
+   name would be the one soft thing on it. Mono so the blocks are all one
+   width, negative tracking so they butt together into a single bar. */
+.doc__redaction {
+  display: inline-block;
+  vertical-align: middle;
+  font-family: var(--font-mono);
+  font-size: 0.8em;
+  line-height: 1;
+  letter-spacing: -0.06em;
+  color: color-mix(in srgb, var(--fg-mute) 45%, transparent);
+  user-select: none;
+}
+
 .doc__meta {
-  margin-left: auto;
+  grid-area: meta;
   font-size: var(--fs-caption);
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -1588,7 +1802,7 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
 }
 
 .doc__arrow {
-  flex: 0 0 16px;
+  grid-area: arrow;
   width: 16px;
   height: 16px;
   display: inline-flex;
@@ -1597,19 +1811,17 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
   transition: transform var(--motion), opacity var(--motion), color var(--motion);
 }
 
-.doc__link:hover,
-.doc__link:focus-visible {
-  color: var(--fg-strong);
-}
-
+/* The two glyphs are muted at rest and inherit on hover, so the row moves as
+   one word rather than as three parts lighting up on their own schedule. */
 .doc__link:hover .doc__icon,
-.doc__link:focus-visible .doc__icon {
-  color: var(--text);
+.doc__link:focus-visible .doc__icon,
+.doc__link:hover .doc__arrow,
+.doc__link:focus-visible .doc__arrow {
+  color: inherit;
 }
 
 .doc__link:hover .doc__arrow,
 .doc__link:focus-visible .doc__arrow {
-  color: var(--text);
   opacity: 1;
   transform: translateY(2px);
 }
@@ -1621,6 +1833,121 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
 
 .doc--missing .doc__arrow { display: none; }
 
+/* A row with no arrow drops the track as well, or the column gap after the
+   size is left behind as a stray 24px of padding on that row alone. */
+.doc--missing .doc__link {
+  grid-template-columns: 18px minmax(0, 1fr) auto;
+  grid-template-areas:
+    "icon name meta"
+    ".    desc desc";
+}
+
+/* ---- Vault guard bar ----
+   The state of the list in one line: who is signed in, how much is here, that
+   downloads are recorded, and the switch that uncovers the names. It sits
+   inside the box because it describes the list, not the page. */
+.doc-guard {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space);
+  padding: calc(var(--space) * 1.25) calc(var(--space) * 1.5);
+  border: var(--border-width) solid var(--line-soft);
+  background: var(--panel-alt);
+}
+
+.doc-guard__note {
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  line-height: 1.5;
+  color: var(--fg-mute);
+}
+
+.doc-guard__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--space) * 0.75);
+  background: none;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius);
+  padding: calc(var(--space) * 0.5) var(--space);
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  letter-spacing: 0.03em;
+  color: var(--text);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color var(--motion), border-color var(--motion);
+}
+
+.doc-guard__mark {
+  display: inline-flex;
+  width: 14px;
+  height: 14px;
+  color: var(--fg-mute);
+  transition: color var(--motion);
+}
+
+
+.doc-guard__btn:hover .doc-guard__mark,
+.doc-guard__btn:focus-visible .doc-guard__mark {
+  color: inherit;
+}
+
+/* Pressed means the names are showing, which is the state worth marking. */
+.doc-guard__btn[aria-pressed="true"] {
+  border-color: var(--accent);
+}
+
+/* ---- Download all ----
+   The same bordered row a document is, given the full width so it reads as
+   the list's total rather than as one more entry in it. */
+.doc-actions {
+  display: flex;
+}
+
+.doc-all {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--space) * 1.5);
+  width: 100%;
+  padding: calc(var(--space) * 1.5);
+  border: var(--border-width) solid var(--border);
+  color: var(--text);
+  text-decoration: none;
+  transition: color var(--motion), border-color var(--motion);
+}
+
+.doc-all__icon {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  color: var(--fg-mute);
+  transition: color var(--motion);
+}
+
+.doc-all__label {
+  font-size: var(--fs-body);
+}
+
+.doc-all__meta {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--fg-mute);
+  white-space: nowrap;
+}
+
+.doc-all:hover .doc-all__icon,
+.doc-all:focus-visible .doc-all__icon {
+  color: inherit;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .doc__link:hover .doc__arrow,
   .doc__link:focus-visible .doc__arrow {
@@ -1628,53 +1955,317 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
   }
 }
 
-/* ---- Projects index: one band per project ----
-   Same band rule as a project page, so the list and the page it opens read as
-   one document. The seam carries the project's own colour, exactly like the
-   masthead rule on .page-head--project. */
-.project-list {
+/* ---- Projects index: a bento of cards ----
+   The home page's cards with room to breathe and a screenshot each: same box,
+   same rim, same arrow, same chips, so the index and the bento read as one
+   system rather than two lists of the same four things. */
+.project-grid {
   list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: var(--stack-lg);
-  max-width: var(--measure-wide);
-  /* body's gap brings 16px; this makes the first seam a full band away from the
-     masthead rule instead of a second hairline right under it. */
-  padding-top: calc(var(--stack-lg) - var(--gap));
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap);
+  width: 100%;
+  margin-inline: auto;
 }
 
-.project-row {
+/* Built by script.js from the chips already in the cards, so a page without JS
+   shows the whole list rather than a row of buttons that do nothing.
+   Shut by default. The index's job is to show the projects; eleven chips
+   standing between the masthead and the first card are a tool nobody asked
+   for yet. The toggle keeps naming the active filter while the panel is shut,
+   so a closed panel can never be the unexplained reason two thirds of the
+   grid is missing. */
+.project-filter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--stack-sm);
+  padding-block: var(--stack-md);
+}
+
+.project-filter__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space);
+  background: none;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius);
+  padding: calc(var(--space) * 0.75) calc(var(--space) * 1.5);
+  font-family: inherit;
+  color: var(--text);
+  cursor: pointer;
+  transition: color var(--motion), border-color var(--motion);
+}
+
+.project-filter__state {
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  letter-spacing: 0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.project-filter__mark {
+  display: inline-flex;
+  width: 14px;
+  height: 14px;
+  color: var(--fg-mute);
+  transition: transform var(--motion), color var(--motion);
+}
+
+
+.project-filter__toggle[aria-expanded="true"] .project-filter__mark {
+  transform: rotate(180deg);
+}
+
+/* The three parts move together, or the row reads as a label and a value that
+   happen to share a border. */
+.project-filter__toggle:hover .project-filter__word,
+.project-filter__toggle:focus-visible .project-filter__word,
+.project-filter__toggle:hover .project-filter__mark,
+.project-filter__toggle:focus-visible .project-filter__mark {
+  color: inherit;
+}
+
+/* An active filter wears the same accent rim the pressed chip does, so the
+   shut panel and the open one agree about what "on" looks like. */
+.project-filter.is-filtered .project-filter__toggle {
+  border-color: var(--accent);
+}
+
+.project-filter .chips { justify-content: center; }
+
+/* The count is the cost of the filter, shown before it is paid. */
+.chip__count {
+  color: var(--fg-mute);
+  font-variant-numeric: tabular-nums;
+}
+
+.chip--filter:hover .chip__count,
+.chip--filter[aria-pressed="true"] .chip__count {
+  color: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-filter__mark { transition: color var(--motion); }
+}
+
+.chip--filter {
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
+  transition: color var(--motion), border-color var(--motion);
+}
+
+.chip--filter[aria-pressed="true"] {
+  color: var(--fg-strong);
+  border-color: var(--accent);
+}
+
+/* The card carries no padding of its own: the cover bleeds to the rim and the
+   words below it bring their own. */
+.project-card {
+  padding: 0;
+  gap: 0;
+  overflow: hidden;   /* the cover's corners follow the rim, not the picture */
+}
+
+.project-card[hidden] { display: none; }
+
+/* One ratio for every card: four differently shaped screenshots would
+   otherwise give the grid four different rhythms. */
+.project-card__shot {
   position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  background: var(--panel-alt);
+  border-bottom: var(--border-width) solid var(--border);
+  transition: border-color 260ms ease;   /* in step with the rim's --edge-mix */
+}
+
+.project-card__shot img {
+  position: relative;
+  z-index: 1;   /* over the plate underneath it */
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.project-card:hover .project-card__shot,
+.project-card:has(.stretched-link:focus-visible) .project-card__shot {
+  border-bottom-color: var(--edge-2);
+}
+
+/* The stand-in under every cover. It shows through when a project has no
+   screenshot yet, or when the file behind one is missing — the grid keeps its
+   rhythm instead of collapsing a card. */
+.shot-plate {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--space) * 1.5);
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 9px,
+    var(--line-soft) 9px 10px
+  );
+}
+
+.shot-plate__mark {
+  font-family: var(--font-mono);
+  font-size: var(--fs-heading);
+  text-align: center;
+  text-transform: uppercase;
+  line-height: 1;
+  letter-spacing: 0.2em;
+  text-indent: 0.2em;   /* the tracking would otherwise push it off centre */
+  color: var(--fg-mute);
+}
+
+.shot-plate__note {
+  padding: calc(var(--space) * 0.5) var(--space);
+  border: var(--border-width) solid var(--border);
+  background: var(--panel);
+}
+
+.project-card__body {
+  position: relative;   /* the arrow belongs to the words, not to the cover */
   display: flex;
   flex-direction: column;
   gap: var(--stack-sm);
-  padding-top: var(--stack-md);
-  border-top: var(--border-width) solid var(--border);
-  transition: border-color var(--motion);
+  padding: calc(var(--space) * 2);
+  min-width: 0;
 }
 
-.project-row.is-custom {
-  border-top-color: transparent;
-  background-image: linear-gradient(90deg, var(--edge-1), var(--edge-2) 45%, var(--edge-3));
-  background-size: 100% 2px;
-  background-position: top left;
-  background-repeat: no-repeat;
-  background-origin: border-box;
-  background-clip: border-box;
+.project-card .box-arrow {
+  top: calc(var(--space) * 2);
+  right: calc(var(--space) * 2);
 }
 
-.project-row:hover {
-  border-top-color: var(--border-hover);
+.project-card__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space);
+  /* Room for the arrow, so a long name does not run under it. */
+  padding-right: calc(var(--space) * 3.5);
 }
 
-.project-row:hover > .section-label,
-.project-row:has(.stretched-link:focus-visible) > .section-label {
+.project-card__name {
+  font-size: var(--fs-subtitle);
+  text-wrap: balance;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--fg-strong);
+  transition: color var(--motion);
+}
+
+.project-card:hover .project-card__name,
+.project-card:has(.stretched-link:focus-visible) .project-card__name {
   color: var(--accent);
 }
 
-.project-row > .box-arrow {
-  top: var(--stack-md);
-  right: 0;
+.project-card__body p {
+  font-size: var(--fs-body);
+  color: var(--text-muted);
+}
+
+.project-card .chips { padding-top: var(--stack-sm); }
+
+/* A wide card spans the row and turns on its side. Two of them can be showing:
+   the first project always, because a hero is the one asymmetry that keeps the
+   grid from reading as a table of equal things, and the last one whenever an
+   even number of cards is on screen — otherwise it would sit alone in a
+   two-column row and leave a hole beside it. script.js works out which; the
+   :last-child rule is the same answer for a page without it. */
+.project-card--feature,
+.project-card--wide,
+.project-card:last-child:nth-child(even) {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  align-items: stretch;
+}
+
+.project-card--feature .project-card__shot,
+.project-card--wide .project-card__shot,
+.project-card:last-child:nth-child(even) .project-card__shot {
+  aspect-ratio: auto;
+  height: 100%;
+  /* The card is as tall as its words, and a short card would crop the cover to
+     a letterbox. The floor is roughly 16:9 at this column width. */
+  min-height: 20rem;
+  border-bottom: 0;
+  border-right: var(--border-width) solid var(--border);
+}
+
+.project-card--feature:hover .project-card__shot,
+.project-card--feature:has(.stretched-link:focus-visible) .project-card__shot,
+.project-card--wide:hover .project-card__shot,
+.project-card--wide:has(.stretched-link:focus-visible) .project-card__shot,
+.project-card:last-child:nth-child(even):hover .project-card__shot {
+  border-right-color: var(--edge-2);
+  border-bottom-color: var(--border);
+}
+
+.project-card--feature .project-card__body,
+.project-card--wide .project-card__body,
+.project-card:last-child:nth-child(even) .project-card__body {
+  align-self: center;
+  gap: var(--stack-md);
+  padding: calc(var(--space) * 3);
+}
+
+/* Only the hero reads at hero size. A card that went wide to close the grid is
+   still an ordinary project. */
+.project-card--feature .project-card__name { font-size: var(--fs-name); }
+
+/* The second wide card is mirrored, so the two do not read as a repeat. */
+.project-card--wide:not(.project-card--feature),
+.project-card:last-child:nth-child(even):not(.project-card--feature) {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+}
+
+.project-card--wide:not(.project-card--feature) .project-card__shot,
+.project-card:last-child:nth-child(even):not(.project-card--feature) .project-card__shot {
+  grid-area: 1 / 2;
+  border-right: 0;
+  border-left: var(--border-width) solid var(--border);
+}
+
+.project-card--wide:not(.project-card--feature):hover .project-card__shot,
+.project-card--wide:not(.project-card--feature):has(.stretched-link:focus-visible) .project-card__shot,
+.project-card:last-child:nth-child(even):not(.project-card--feature):hover .project-card__shot {
+  border-left-color: var(--edge-2);
+  border-right-color: var(--border);
+}
+
+.project-card--wide:not(.project-card--feature) .project-card__body,
+.project-card:last-child:nth-child(even):not(.project-card--feature) .project-card__body {
+  grid-area: 1 / 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-card__shot { transition: none; }
+}
+
+/* ---- The end of a page: a heading and a row of link boxes ---- */
+.endcap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--stack-md);
+  margin-top: var(--stack-md);
+  padding-top: var(--stack-md);
+  border-top: var(--border-width) solid var(--border);
+}
+
+/* ---- A row of link boxes, used to end a page ---- */
+.linkrow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--gap);
 }
 
 .feature-list {
@@ -1714,14 +2305,16 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
 /* ==== Project detail page (project-*.html) ==== */
 /* THE BAND RULE. Every top-level block is a band: hairline along the top,
    --stack-md of air under it, --stack-lg to the next band. .project__section,
-   .project-row, .reveal, .datarow and .linklist all obey it.
+   .reveal, .datarow and .linklist all obey it.
    THE RAIL. Article capped at --measure-wide, text at --measure. Two right
    edges on a page, and the wide one is only for pictures and tables. */
 .page-body--project {
   display: flex;
   flex-direction: column;
   gap: var(--stack-lg);
+  width: 100%;
   max-width: var(--measure-wide);
+  margin-inline: auto;
 }
 
 .project {
@@ -1772,21 +2365,22 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
   gap: var(--stack-md);
 }
 
+/* A band heading is read, not scanned, so it drops back to the serif and out of
+   the caption role it inherits. */
 .project__section > .section-label,
-.project-row > .section-label,
 .linklist > .section-label,
 .reveal__summary > .section-label {
   display: flex;
   align-items: baseline;
   gap: calc(var(--space) * 1.25);
+  font-family: var(--font);
   font-size: var(--fs-heading);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.01em;
   text-transform: none;
   color: var(--fg-strong);
 }
 
 .project__section > .section-label::before,
-.project-row > .section-label::before,
 .linklist > .section-label::before,
 .reveal__summary > .section-label::before {
   content: "";
@@ -1799,7 +2393,6 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
 
 /* Folding is presentational: a folded band keeps the same reading measure. */
 .project__section p,
-.project-row p,
 .reveal__body > p {
   font-size: var(--fs-body);
   max-width: var(--measure);
@@ -1952,6 +2545,7 @@ code {
 .reveal__summary::-webkit-details-marker { display: none; }
 
 .reveal__hint {
+  font-family: var(--font-mono);
   font-size: var(--fs-meta);
   color: var(--fg-mute);
 }
@@ -1965,14 +2559,8 @@ code {
 
 .reveal[open] .reveal__mark { transform: rotate(180deg); }
 
-.reveal__summary:hover .reveal__mark,
-.reveal__summary:focus-visible .reveal__mark { color: var(--fg-strong); }
-
-.reveal__summary:hover > .section-label,
-.reveal__summary:focus-visible > .section-label { color: var(--fg-strong); }
-
+/* Wider than the standard ring: the summary's own rule sits right on it. */
 .reveal__summary:focus-visible {
-  outline: 1px solid var(--accent);
   outline-offset: 3px;
 }
 
@@ -2043,7 +2631,6 @@ code {
 
 .clip-btn:hover,
 .clip-btn:focus-visible {
-  color: var(--fg-strong);
   border-color: var(--accent);
 }
 
@@ -2113,11 +2700,6 @@ code {
   transition: color var(--motion);
 }
 
-.linklist a:hover,
-.linklist a:focus-visible {
-  color: var(--accent);
-}
-
 .linklist__label {
   font-size: var(--fs-body);
 }
@@ -2162,7 +2744,12 @@ code {
 }
 
 /* Lede on a project page carries the one-line pitch — same line as the card. */
-.page-head--project .page-head__title { display: flex; align-items: baseline; gap: var(--space); }
+.page-head--project .page-head__title {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: var(--space);
+}
 
 .page-head--project {
   gap: calc(var(--space) * 1.25);
@@ -2194,11 +2781,11 @@ code {
 
 .pager a:hover,
 .pager a:focus-visible {
-  border-color: var(--border-hover);
   color: var(--fg-strong);
 }
 
 .pager__dir {
+  font-family: var(--font-mono);
   font-size: var(--fs-caption);
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -2216,7 +2803,9 @@ code {
   display: flex;
   flex-direction: column;
   gap: var(--stack-lg);
+  width: 100%;
   max-width: calc(var(--measure) + 20rem + var(--stack-lg));
+  margin-inline: auto;
 }
 
 /* Same band rule as the project pages: hairline, air, next band. */
@@ -2246,26 +2835,24 @@ code {
   color: var(--fg-strong);
 }
 
-.about-contact {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--gap);
-}
 
 /* ==== Footer (shared) — legal + credit, nothing else ==== */
+/* Centred, like the header it answers: one row of three, not a bar with a
+   left end and a right end. */
 .site-footer {
   margin-top: auto;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space) calc(var(--space) * 2);
+  justify-content: center;
+  gap: var(--space) calc(var(--space) * 3);
   padding-top: calc(var(--space) * 2);
   border-top: var(--border-width) solid var(--border);
+  font-family: var(--font-mono);
   font-size: var(--fs-caption);
+  letter-spacing: 0.04em;
   color: var(--fg-mute);
 }
-
-.site-footer__meta { margin-right: auto; }
 
 .site-footer a {
   display: inline-flex;
@@ -2273,15 +2860,13 @@ code {
   gap: calc(var(--space) * 0.5);
   color: var(--fg-mute);
   text-decoration: none;
-  border-bottom: 2px solid transparent;
+  border-bottom: var(--border-width) solid transparent;
   transition: color var(--motion), border-color var(--motion);
 }
 
 .site-footer a:hover,
 .site-footer a:focus-visible {
-  color: var(--text);
-  border-bottom-color: var(--text);
-  outline: none;
+  border-bottom-color: var(--accent);
 }
 
 .footer-arrow {
@@ -2363,50 +2948,69 @@ code {
     z-index: 1;
   }
 
-  .is-home .box__body:focus-visible,
-  .is-home .link-box__note:focus-visible {
-    outline: 1px solid var(--accent);
-    outline-offset: 2px;
-  }
 }
 
 /* Short screens shrink the cells on their own; only the gap between them has
    to be told, or a 6px cell sits in 3px of air. */
 @media (min-width: 769px) and (max-height: 860px) {
-  :root { --gh-gap: 2px; }
+  :root { --gh-gap: 2px; --gh-radius: 1px; }
 }
 
 @media (min-width: 769px) and (max-height: 700px) {
-  :root { --gh-gap: 1px; }
+  :root { --gh-gap: 1px; --gh-radius: 1px; }
 }
 
 /* ==== Responsive ==== */
 @media (max-width: 768px) {
+/* Two rows, not one squeezed line: brand and switches keep the top row, the
+     nav takes the full width underneath as equal columns. Every item gets the
+     same share, so a fifth one (Admin, once signed in) costs no layout — and
+     nothing has to shrink, scroll or hide behind a hamburger. */
   .site-header {
     position: sticky;
     top: 0;
     z-index: 10;
     background: var(--bg);
+    /* width:auto, or the shell's width:100% fights the negative margins and
+       the sticky bar stops short of the right edge. */
+    width: auto;
     margin: calc(var(--gap) * -1) calc(var(--gap) * -1) 0;
     padding: calc(var(--space) * 0.5) var(--gap) 0;
+    grid-template-columns: auto auto;
+    grid-template-areas:
+      "brand controls"
+      "nav   nav";
+    gap: calc(var(--space) * 0.75) var(--space);
+    justify-content: space-between;
   }
 
-  .site-nav a { min-height: 44px; }
+  .site-brand    { grid-area: brand; }
+  .site-controls { grid-area: controls; margin-right: 0; }
+
+  .site-nav {
+    grid-area: nav;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    border-top: var(--border-width) solid var(--line-soft);
+  }
+
+  .site-nav a {
+    min-height: 44px;
+    justify-content: center;
+    padding: 0 calc(var(--space) * 0.25);
+    letter-spacing: 0.06em;
+  }
 
   .icon-btn {
     min-height: 40px;
     padding: 0 calc(var(--space) * 1.25);
-    margin-right: calc(var(--space) * -1.25);   /* see the desktop rule */
   }
 
   .icon-btn [data-theme-icon],
   .site-header__signout svg {
     width: 18px;
     height: 18px;
-  }
-
-  .site-header__signout {
-    margin-right: calc(var(--space) * -2);
   }
 
   /* A definite height, not a floor: the grid stretches to the chart, so an
@@ -2451,6 +3055,77 @@ code {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  /* Eleven wrapped chips push the first project a screen and a half down. One
+     swipeable rail instead, bled to both edges so it is obviously a rail, with
+     the right edge faded to say there is more of it. */
+  .project-filter .chips {
+    /* stretch, or the centred flex line sizes the rail to its content and it
+       stops being a rail. */
+    align-self: stretch;
+    flex-wrap: nowrap;
+    min-width: 0;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-inline: var(--gap);
+    margin-inline: calc(var(--gap) * -1);
+    scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 2rem), transparent);
+    mask-image: linear-gradient(90deg, #000 calc(100% - 2rem), transparent);
+  }
+
+  .project-filter .chips::-webkit-scrollbar { display: none; }
+
+  .project-filter .chips > li { flex: 0 0 auto; }
+
+  /* One card per row, and a wide card gives up its side-by-side split — the
+     mirrored variant too, which is why its :not() selectors are repeated here:
+     they outrank the plain ones and would otherwise survive the switch. */
+  .project-grid,
+  .project-card--feature,
+  .project-card--wide,
+  .project-card--wide:not(.project-card--feature),
+  .project-card:last-child:nth-child(even),
+  .project-card:last-child:nth-child(even):not(.project-card--feature) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .project-card--feature .project-card__shot,
+  .project-card--wide .project-card__shot,
+  .project-card--wide:not(.project-card--feature) .project-card__shot,
+  .project-card:last-child:nth-child(even) .project-card__shot,
+  .project-card:last-child:nth-child(even):not(.project-card--feature) .project-card__shot {
+    grid-area: auto;
+    aspect-ratio: 16 / 9;
+    height: auto;
+    min-height: 0;
+    border-right: 0;
+    border-left: 0;
+    border-bottom: var(--border-width) solid var(--border);
+  }
+
+  .project-card--wide:not(.project-card--feature) .project-card__body,
+  .project-card:last-child:nth-child(even):not(.project-card--feature) .project-card__body {
+    grid-area: auto;
+  }
+
+  .project-card--feature:hover .project-card__shot,
+  .project-card--feature:has(.stretched-link:focus-visible) .project-card__shot,
+  .project-card--wide:hover .project-card__shot,
+  .project-card--wide:has(.stretched-link:focus-visible) .project-card__shot {
+    border-bottom-color: var(--edge-2);
+  }
+
+  .project-card--feature .project-card__body,
+  .project-card--wide .project-card__body,
+  .project-card:last-child:nth-child(even) .project-card__body {
+    grid-area: auto;
+    padding: calc(var(--space) * 2);
+    gap: var(--stack-sm);
+  }
+
+  /* A hero name at page-title size takes three lines of a phone. */
+  .project-card--feature .project-card__name { font-size: var(--fs-subtitle); }
+
   .reveal__summary {
     min-height: 44px;
     align-content: center;
@@ -2469,21 +3144,21 @@ code {
 }
 
 @media (max-width: 480px) {
-  .site-nav a { padding: 0 calc(var(--space) * 0.5); }
-
-  .site-header.has-signout {
-    flex-wrap: wrap;
-    justify-content: flex-end;
-  }
-
-  .site-header.has-signout .site-nav { flex: 1 0 100%; }
+  /* Below this the label is the only thing that can give: five equal columns
+     on a 320px screen is 60px each. */
+  .site-nav a { font-size: var(--fs-meta); letter-spacing: 0.04em; }
 }
-
 /* ==== Single page ========================================================
    The whole site is one scrolling column: header, hero, graph, then numbered
-   sections. Nothing here is shared with the pages that predate it. */
+   sections. Nothing here is shared with the pages that predate it.
+
+   The type is the one real break with the subpages: they are set in the serif
+   --font, this is set in the mono stack. Scoped here rather than swapped in
+   :root, because projects.html, the project pages, the vault and the panel are
+   all still drawn for the serif and its scale. */
 
 body.is-single {
+  font-family: var(--font-mono);
   display: block;
   padding: 0;
   gap: 0;
@@ -2546,6 +3221,14 @@ body.is-single {
    the button's centre — visibly out of line with the DE label beside it. */
 .tool > span { display: flex; }
 .tool svg { display: block; width: 16px; height: 16px; }
+
+/* The graph fills a height the bento used to give it; a scrolling column gives
+   none, and repeat(7, 1fr) then collapses to zero. One number puts it back —
+   ghWeeks() derives the cell size from this height and fits as many weeks
+   across as the width allows, so the graph stays responsive. Do not express
+   this as an aspect-ratio on .gh-cells: the ratio would depend on --gh-weeks,
+   which that same measurement sets, and the two feed each other. */
+.is-single .gh { height: calc(var(--space) * 10); }
 
 .col {
   max-width: var(--measure);
@@ -2943,12 +3626,6 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
 .is-single .doc:hover, .is-single .doc:hover b { color: var(--fg-strong); }
 .is-single .doc:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: 2px; }
 .is-single .doc svg { width: 16px; height: 16px; }
-
-/* ---- Impressum ---- */
-.legal { margin-bottom: calc(var(--space) * 2.5); }
-.legal > div { display: flex; gap: 0.9em; padding: 0.15em 0; }
-.legal dt { min-width: 14ch; color: var(--fg-mute); }
-.legal dd { color: var(--fg-strong); }
 
 /* ---- On-page editor (edit.js) -----------------------------------------
    Only ever in the DOM for a signed-in admin: edit.js is not in any page's

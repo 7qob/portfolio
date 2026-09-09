@@ -66,8 +66,13 @@ export class BlockError extends Error {}
  * Only these schemes and shapes may become an href. Everything else stays
  * literal text, so a stored payload can never smuggle javascript: into a
  * generated page.
+ *
+ * The `\/(?!\/)` is not a typo. A bare `\/` also admits `//evil.com`, which a
+ * browser reads as a protocol-relative URL to another host, not as a path on
+ * this site: the link would look internal in the panel and leave the site
+ * when clicked. Root-relative means one slash.
  */
-export const SAFE_HREF = /^(https?:\/\/|\/|#|[a-z0-9][a-z0-9._-]*\.html)/i;
+export const SAFE_HREF = /^(https?:\/\/|\/(?!\/)|#|[a-z0-9][a-z0-9._-]*\.html)/i;
 
 /** The repo link is the one href an author gives directly, and it is a repo. */
 export const GITHUB_URL = /^https:\/\/github\.com\/[A-Za-z0-9._\-/#?=&%]{1,180}$/;

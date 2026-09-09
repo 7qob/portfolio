@@ -18,23 +18,20 @@ export const sectionStart = (key: string): string => `<!-- section:${key}:start 
 export const sectionEnd = (key: string): string => `<!-- section:${key}:end -->`;
 
 /**
- * The German twin, and the one rule that is easy to get wrong.
+ * The German twin.
  *
- * initLang() in script.js captures data-en from textContent on load and swaps
- * textContent on toggle. textContent, not innerHTML — so an element carrying
- * data-de has to be plain text, because the first press of DE would throw away
- * any markup inside it and never bring it back.
- *
- * Hence the split: a string with a twin is escaped and nothing more, a string
- * without one may use the `code` / [label](url) mini-markdown. The editor says
- * as much on the field. Do not "fix" this by emitting data-de on a paragraph
- * that went through inline() — it looks right until someone changes language.
+ * applyLang() in script.js swaps innerHTML and remembers the English in an
+ * `el.langEn` property, so the English side may carry the `code` / [label](url)
+ * mini-markdown and still survive a round trip through German and back. The
+ * German side stays plain text, the same convention the projects renderer and
+ * the hand-written pages already follow — it lives in an attribute, and markup
+ * in an attribute is a quoting problem nobody needs.
  */
 function bilingual(value: Bilingual): { html: string; attr: string } {
-  if (value.de) {
-    return { html: esc(value.en), attr: ` data-de="${esc(value.de)}"` };
-  }
-  return { html: inline(value.en), attr: '' };
+  return {
+    html: inline(value.en),
+    attr: value.de ? ` data-de="${esc(value.de)}"` : '',
+  };
 }
 
 function renderBlock(block: SectionBlock, pad: string): string {

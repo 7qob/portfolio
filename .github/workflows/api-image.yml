@@ -43,6 +43,13 @@ jobs:
         working-directory: server
         run: npm run typecheck
 
+      # Node's own runner, so there is nothing to install for it. These cover
+      # the archive writer, the escaping the panel depends on, and the vault's
+      # path-traversal guard: the three places where being wrong is expensive.
+      - name: Test
+        working-directory: server
+        run: npm test
+
       - name: Build
         working-directory: server
         run: npm run build

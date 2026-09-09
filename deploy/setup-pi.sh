@@ -49,58 +49,10 @@ sudo install -d -o 1000 -g 1000 -m 755 "$WEBROOT/pages"
 sudo install -d -o 1000 -g 1000 -m 755 "$WEBROOT/assets/up"
 
 echo "==> Copying site (dev-only files excluded)"
-# --exclude 'vault/files/' is a safety line, not a tidiness one. Your CV and
-# Zeugnisse are uploaded straight to the Pi and are deliberately NOT in the
-# repo, so without this exclusion `--delete` would see them as files that no
-# longer exist in the source and wipe them on every single deploy.
-#
-# server/, docs/ and docker-compose.yml are excluded for the same reason as
-# deploy/: they are how the site is built and run, not part of what it serves.
-# The API is reached through the /api/ proxy, never as files under the root.
-#
-# /pages/ and /assets/up/ are the same class of exclusion as vault/files/ and
-# for the same reason, only worse: they exist on the Pi and nowhere else. They
-# are not in the repo, so `--delete` sees them as files that no longer exist in
-# the source and would wipe every published page and every upload on the next
-# deploy. Both are anchored with a leading slash — they mean these exact
-# directories at the web root, not any directory anywhere called "up".
-#
-# index.html and projects.html are NOT excluded, and that is deliberate. Both
-# now have a generated counterpart under /pages/, and nginx serves that one
-# first for those two URLs — so the copies landing here are the template the
-# renderer splices into and the fallback for a Pi that has never published.
-# Overwriting them is how the template is updated. The generated pages are
-# safe because they are under /pages/, which is excluded above.
-#
-# The four hand-written project-*.html files are copied for the same reason:
-# they are unlinked from every index and pager, but they are still on disk and
-# still answer, so old links keep working. When they are finally deleted from
-# the repo, add --exclude 'project-*.html' BEFORE deleting them, or the first
-# deploy after the deletion takes the generated ones with it.
-sudo rsync -a --delete \
-  --exclude '/pages/' \
-  --exclude '/assets/up/' \
-  --exclude 'project-template.html' \
-  --exclude 'README.md' \
-  --exclude 'CLAUDE.md' --exclude 'claude.md' \
-  --exclude 'classic.html' --exclude 'classic.css' \
-  --exclude 'deploy/' \
-  --exclude 'server/' --exclude 'docs/' \
-  --exclude 'docker-compose.yml' \
-  --exclude '.claude/' --exclude '.git/' --exclude '.github/' \
-  --exclude '*.zip' \
-  --exclude 'vault/files/' \
-  "$UPLOAD"/ "$WEBROOT"/
-
-sudo chown -R www-data:www-data "$WEBROOT"
-sudo find "$WEBROOT" -type d -exec chmod 755 {} \;
-sudo find "$WEBROOT" -type f -exec chmod 644 {} \;
-
-# ...and immediately hand the two writable directories back. The blanket
-# chown above is recursive and does not care that it just took the API's own
-# output away from it; without this, re-running setup-pi.sh silently breaks
-# publishing until the next time someone reads a container log.
-sudo chown -R 1000:1000 "$WEBROOT/pages" "$WEBROOT/assets/up"
+# The exclude list lives in sync-site.sh, which update.sh runs too. Keeping
+# it in one file is what stops a later deploy script from carrying a subtly
+# different --delete and wiping the directories that exist only on this Pi.
+"$(dirname "$0")/sync-site.sh" "$UPLOAD" "$WEBROOT"
 
 # Documents used to live under the web root. They are now served by the API
 # from /var/lib/kira1q/vault-files/, which nginx cannot reach at all.
@@ -135,7 +87,7 @@ sudo systemctl reload nginx
 
 echo
 echo "==> Local check"
-for p in / /projects.html /project-kobui.html /style.css; do
+for p in / /projects.html /about.html /style.css; do
   code=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost$p" || echo "ERR")
   printf '    %-22s %s\n' "$p" "$code"
 done
@@ -145,6 +97,15 @@ echo
 echo "==> Dev-only files must be blocked:"
 code=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost/project-template.html" || echo ERR)
 echo "    /project-template.html  $code   (should be 404)"
+
+# nginx's white default page is what a mistyped URL used to get. Grepping for
+# a class only the site's own page carries tells the two apart.
+miss=$(curl -s "http://localhost/no-such-page.html" || true)
+if echo "$miss" | grep -q "page-head__title"; then
+  echo "    /no-such-page.html      the site 404 page   (ok)"
+else
+  echo "    /no-such-page.html      <-- EXPECTED the site 404 page"
+fi
 
 echo
 echo "==> The API must refuse everything private without a session:"

@@ -230,8 +230,19 @@ export const MIGRATIONS: readonly string[] = [
       OR blocks LIKE '%"type": "links"%'    OR blocks LIKE '%"type":"links"%';
   `,
 
+  // 005 — a project carries a picture on the projects index.
+  //
+  // One upload, shown on the index row and nowhere else: the row's rail is
+  // what tells four projects apart at a glance now that the accent is a
+  // hairline. No REFERENCES: media rows are deleted through MediaService,
+  // which refuses while anything still points at the file and says what — a
+  // foreign key would raise SQLITE_CONSTRAINT instead of naming the project.
+  `
+  ALTER TABLE projects ADD COLUMN cover_media_id INTEGER;
+  `,
+
   /**
-   * 005 — the sections CMS.
+   * 006 — the sections CMS.
    *
    * The second thing that writes index.html. A row holds one region of the
    * home page: `draft_blocks` is what the in-page editor last saved,

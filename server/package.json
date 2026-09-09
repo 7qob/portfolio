@@ -5,10 +5,12 @@
   "description": "Login, vault and admin API for kira1q.dev",
   "license": "UNLICENSED",
   "scripts": {
-    "build": "nest build",
+    "build": "nest build -p tsconfig.build.json",
     "start": "node dist/main.js",
     "start:dev": "nest start --watch",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "tsc -p tsconfig.test.json && node --test \"dist-test/**/*.test.js\"",
+    "test:watch": "tsc -p tsconfig.test.json && node --test --watch \"dist-test/**/*.test.js\""
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

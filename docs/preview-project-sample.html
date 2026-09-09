@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sample Project · 7qob</title>
   <meta name="description" content="">
 
-  <!-- Open Graph (empty — fill before sharing) -->
+  <!-- Open Graph (empty; fill before sharing) -->
   <meta property="og:type" content="article">
   <meta property="og:title" content="">
   <meta property="og:description" content="">
   <meta property="og:image" content="">
   <meta property="og:url" content="">
 
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='.5' y='.5' width='31' height='31' fill='%230e0e0e' stroke='%232a2a2a'/%3E%3Crect x='9' y='9' width='14' height='14' fill='%23ff1e2f'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%23000'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="../style.css">
 
   <!-- Saved theme, applied before first paint so a light visitor sees no flash. -->
@@ -28,19 +28,24 @@
 <body>
 
   <header class="site-header">
-    <nav class="site-nav" aria-label="Main">
-      <a href="../index.html">Home</a>
-      <a href="../projects.html" aria-current="page">Projects</a>
+    <a class="site-brand" href="../index.html" aria-label="7qob, home" data-de-label="7qob, Startseite">
+      <span class="site-brand__name">7qob</span>
+    </a>
+    <nav class="site-nav" aria-label="Main" data-de-label="Hauptnavigation">
+      <a href="../projects.html" aria-current="page" data-de="Projekte">Projects</a>
       <a href="../vault/index.html">Vault</a>
     </nav>
-    <button class="icon-btn" type="button" id="theme-toggle" aria-label="Toggle dark/bright" aria-pressed="false">
-      <span data-theme-icon>
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-      </span>
-    </button>
+    <div class="site-controls">
+      <button class="icon-btn" type="button" id="theme-toggle" aria-label="Toggle dark/bright" data-de-label="Hell/Dunkel umschalten" aria-pressed="false">
+        <span data-theme-icon>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </span>
+      </button>
+    </div>
   </header>
 
-  <div class="page-head page-head--project is-comfy">
+  <div class="page-head page-head--project is-custom" style="--edge-brand:#4f7cff">
+    <p class="page-head__label"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><span data-de="Projekt">Project</span></p>
     <h1 class="page-head__title" id="page-title">Sample Project <span class="status">WIP</span></h1>
     <ul class="chips">
       <li class="chip"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.5" x2="15.4" y2="6.5"/><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"/></svg>ComfyUI</li>
@@ -52,12 +57,12 @@
   <main class="page-body page-body--project" aria-labelledby="page-title">
     <article class="project reading">
 
-      <p class="project__lede">This page was assembled from four bands in the panel — a text band, an image band, a folded clip band and a video band — plus a slug, a title, a description and a repo link. Nothing else was typed.</p>
+      <p class="project__lede">This page was assembled from four bands in the panel (a text band, an image band, a folded clip band and a video band) plus a slug, a title, a description and a repo link. Nothing else was typed.</p>
 
       <!-- ================= BAND: text, open ================= -->
       <section class="project__section" aria-labelledby="lbl-b0">
         <h2 class="section-label" id="lbl-b0">What it does</h2>
-        <p>A plain text band. Paragraphs are split on blank lines in the editor, so the author never types a tag. Inline, only two things survive: <code>`code`</code> and <a href="https://github.com/7qob" target="_blank" rel="noopener">[label](url)</a> — everything is escaped first, and hrefs are checked against an allowlist.</p>
+        <p>A plain text band. Paragraphs are split on blank lines in the editor, so the author never types a tag. Inline, only two things survive: <code>`code`</code> and <a href="https://github.com/7qob" target="_blank" rel="noopener">[label](url)</a>. Everything is escaped first, and hrefs are checked against an allowlist.</p>
         <p>This band has <b>Foldable</b> unticked, so it renders as an ordinary section: hairline along the top, heading, prose. Exactly the shape every hand-written project page already uses.</p>
       </section>
 
@@ -69,7 +74,7 @@
           <div class="mediarow__text reading">
             <h3 class="mediarow__title">One screenshot, text beside it</h3>
             <p>A media row with layout <code>beside</code>: the picture takes a fixed left rail, the words sit to its right and wrap at the reading measure.</p>
-            <p>This is the default for anything that is not an MP4 — PNG, JPEG, WebP and GIF all land here unless the row is switched to <code>below</code>.</p>
+            <p>This is the default for anything that is not an MP4: PNG, JPEG, WebP and GIF all land here unless the row is switched to <code>below</code>.</p>
           </div>
         </div>
       </section>
@@ -77,7 +82,7 @@
       <details class="reveal">
         <summary class="reveal__summary">
           <h2 class="section-label">My setup</h2>
-          <span class="reveal__hint">3 clips &middot; 36 MB</span>
+          <span class="reveal__hint" data-de="3 Clips &middot; 36 MB">3 clips &middot; 36 MB</span>
           <span class="reveal__mark" aria-hidden="true">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </span>
@@ -96,7 +101,7 @@
             <img class="mediarow__media" src="../assets/keyboard.gif" width="640" height="360" loading="lazy" decoding="async" alt="The keyboard, close up">
             <div class="mediarow__text reading">
               <h3 class="mediarow__title">The keyboard</h3>
-              <p>All black — black case, black keycaps, nothing printed on them that catches the light.</p>
+              <p>All black: black case, black keycaps, nothing printed on them that catches the light.</p>
             </div>
           </div>
 
@@ -113,7 +118,7 @@
       <details class="reveal">
         <summary class="reveal__summary">
           <h2 class="section-label">Walkthrough</h2>
-          <span class="reveal__hint">1 clip &middot; 16 MB</span>
+          <span class="reveal__hint" data-de="1 Clip &middot; 16 MB">1 clip &middot; 16 MB</span>
           <span class="reveal__mark" aria-hidden="true">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </span>
@@ -143,7 +148,7 @@
             </div>
             <div class="mediarow__text reading">
               <h3 class="mediarow__title">The graph, moving</h3>
-              <p>Twenty seconds across the same graph as the still above, at a zoom where the nodes can be read — the models column, both samplers, and the Quick Switches group that bypasses the LoRA stack.</p>
+              <p>Twenty seconds across the same graph as the still above, at a zoom where the nodes can be read: the models column, both samplers, and the Quick Switches group that bypasses the LoRA stack.</p>
             </div>
           </div>
         </div>
@@ -158,7 +163,7 @@
         </summary>
 
         <div class="reveal__body reading">
-          <p>Folding is per band, ticked in the editor. It is the right default for anything long or heavy and the wrong one for the two paragraphs that explain what the project is — which is why it is a checkbox and not a rule.</p>
+          <p>Folding is per band, ticked in the editor. It is the right default for anything long or heavy and the wrong one for the two paragraphs that explain what the project is, which is why it is a checkbox and not a rule.</p>
           <p>The measure is capped here exactly as it is in an open band, so a folded band and an open one are the same page, one of them closed.</p>
         </div>
       </details>
@@ -166,25 +171,25 @@
     </article>
 
     <nav class="linklist" aria-labelledby="lbl-repo">
-      <h2 class="section-label" id="lbl-repo">Source</h2>
+      <h2 class="section-label" id="lbl-repo" data-de="Quellcode">Source</h2>
       <ul>
         <li>
           <a href="https://github.com/7qob/sample-project" target="_blank" rel="noopener">
             <span class="linklist__label">github.com/7qob/sample-project</span>
             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-            <span class="linklist__note">The repository this page describes.</span>
+            <span class="linklist__note" data-de="Das Repository, das diese Seite beschreibt.">The repository this page describes.</span>
           </a>
         </li>
       </ul>
     </nav>
 
-    <nav class="pager" aria-label="More projects">
+    <nav class="pager" aria-label="More projects" data-de-label="Weitere Projekte">
       <a class="pager__prev" href="../project-kobui.html">
-        <span class="pager__dir">&larr; Previous</span>
+        <span class="pager__dir" data-de="&larr; Zurück">&larr; Previous</span>
         <span>Kobui</span>
       </a>
       <a class="pager__next" href="../project-stalkr.html">
-        <span class="pager__dir">Next &rarr;</span>
+        <span class="pager__dir" data-de="Weiter &rarr;">Next &rarr;</span>
         <span>Stalkr</span>
       </a>
     </nav>

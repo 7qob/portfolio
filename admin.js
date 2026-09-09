@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
   if (!gate || !body) return;
 
   if (isOffline()) {
-    gate.textContent = "The admin panel needs the live site — it cannot be opened from a local file.";
+    gate.textContent = "The admin panel needs the live site. It cannot be opened from a local file.";
     return;
   }
 
@@ -136,7 +136,7 @@ function renderTable(table, headers, rows, buildRow) {
           wrap.appendChild(value);
           tr.appendChild(wrap);
         } else {
-          tr.appendChild(el("td", null, value === null || value === undefined ? "—" : value));
+          tr.appendChild(el("td", null, value === null || value === undefined ? "·" : value));
         }
       });
       tbody.appendChild(tr);
@@ -154,14 +154,14 @@ function button(label, className, onClick) {
 }
 
 function when(value) {
-  if (!value) return "—";
+  if (!value) return "·";
   var d = new Date(String(value).replace(" ", "T") + "Z");
   if (isNaN(d.getTime())) return String(value);
   return d.toLocaleString("en-GB", { dateStyle: "short", timeStyle: "short" });
 }
 
 function shortAgent(value) {
-  if (!value) return "—";
+  if (!value) return "·";
   var text = String(value);
   var span = el("span", null, text.length > 38 ? text.slice(0, 38) + "…" : text);
   span.title = text;
@@ -313,12 +313,12 @@ function showSecret(host, username, password, title) {
     navigator.clipboard.writeText(password).then(function () {
       alert("Copied.");
     }, function () {
-      alert("Could not copy — select it by hand.");
+      alert("Could not copy. Select it by hand.");
     });
   }));
 
   host.appendChild(el("p", "admin-secret__note",
-    "Shown once. Only the hash is stored, so nobody — including you — can read this back later. If it is lost, reset it."));
+    "Shown once. Only the hash is stored, so nobody, not even you, can read this back later. If it is lost, reset it."));
 
   host.hidden = false;
 }
@@ -444,7 +444,7 @@ function loadMediaTable() {
             m.original_name || m.filename,
             m.mime,
             formatBytes(m.size_bytes),
-            m.width && m.height ? m.width + " × " + m.height : "—",
+            m.width && m.height ? m.width + " × " + m.height : "·",
             button("Delete", "", function () {
               if (!confirm("Delete " + m.filename + "? Pages that still use it will refuse this.")) return;
               api("/admin/media/" + m.id, { method: "DELETE" })
@@ -691,7 +691,7 @@ function buildHomeEditor(host, rows) {
 
   host.appendChild(el("p", "pe-annot",
     "The bento has four project cells. Only published, listed pages appear in them. Everything else on the " +
-    "home page — the hero, the about card, the GitHub graph, the link stack — is hand-written and untouched by this."));
+    "home page (the hero, the about card, the GitHub graph, the link stack) is hand-written and untouched by this."));
 
   var cells = el("section", "pe-card");
   cells.appendChild(el("span", "pe-card__label", "The four cells"));
@@ -738,7 +738,7 @@ function buildHomeEditor(host, rows) {
 
     var select = el("select", "admin-input");
     select.id = "slot-" + slot[0];
-    select.appendChild(new Option("— empty —", ""));
+    select.appendChild(new Option("(empty)", ""));
     rows.forEach(function (r) {
       select.appendChild(new Option(r.title, String(r.id)));
     });
@@ -769,7 +769,7 @@ function buildHomeEditor(host, rows) {
 
   cells.appendChild(grid);
   cells.appendChild(el("p", "pe-field__hint",
-    "Picking a page that already holds another cell swaps the two — a cell can never hold two pages, and a page " +
+    "Picking a page that already holds another cell swaps the two. A cell can never hold two pages, and a page " +
     "can never hold two cells. With fewer than four placed, the cards close up from the top and the grid reflows " +
     "so there is no hole."));
   host.appendChild(cells);
@@ -909,7 +909,7 @@ function mediaPicker(mediaRows, currentId, accept, onPick) {
   var meta = el("span", "pe-row__meta");
 
   var select = el("select", "admin-input");
-  select.appendChild(new Option("— choose an upload —", ""));
+  select.appendChild(new Option("(choose an upload)", ""));
   mediaRows.forEach(function (m) {
     select.appendChild(new Option(mediaLabel(m), String(m.id)));
   });
@@ -1245,7 +1245,7 @@ function buildProjectEditor(host, record, mediaRows, allProjects) {
   state.id = "pe-state";
 
   function describe() {
-    if (!record.publishedAt) return "Draft — not on the site yet.";
+    if (!record.publishedAt) return "Draft. Not on the site yet.";
     var s = "Published " + when(record.publishedAt) + " as project-" + record.slug + ".html.";
     if (record.updatedAt > record.publishedAt) s += " Saved edits are not published yet.";
     return s;
@@ -1370,7 +1370,19 @@ function buildProjectEditor(host, record, mediaRows, allProjects) {
   blurbWrap.appendChild(blurbField);
   grid.appendChild(blurbWrap);
 
-  var statusSelect = peSelect([["", "—"], ["WIP", "WIP"], ["Featured", "Featured"]], record.status);
+  // Index-facing, like the card text above it: the picture is what tells the
+  // rows apart now that a project's colour is one hairline at the seam's end.
+  var coverWrap = el("div", "pe-field pe-field--wide");
+  coverWrap.appendChild(el("span", "pe-field__label", "Cover picture"));
+  var cover = mediaPicker(mediaRows, record.coverMediaId,
+    "image/png,image/jpeg,image/webp,image/gif");
+  coverWrap.appendChild(cover.root);
+  coverWrap.appendChild(el("span", "pe-field__hint",
+    "The picture beside this project on the projects index, cropped to 16:9. " +
+    "Leave it empty and the row is words only."));
+  grid.appendChild(coverWrap);
+
+  var statusSelect = peSelect([["", "·"], ["WIP", "WIP"], ["Featured", "Featured"]], record.status);
   grid.appendChild(peField("Status", statusSelect, null, false));
 
   var inUse = [];
@@ -1439,7 +1451,7 @@ function buildProjectEditor(host, record, mediaRows, allProjects) {
   var placement = el("p", "pe-annot");
   placement.appendChild(document.createTextNode(
     "One card per band, in the order they appear on the page. Foldable wraps that band in the closed <details> " +
-    "the site already uses — nothing inside a folded band is downloaded until a reader opens it. Where this " +
+    "the site already uses, so nothing inside a folded band is downloaded until a reader opens it. Where this " +
     "project sits on the home page is set in "));
   placement.appendChild(button("Home page", "", function () {
     if (!guardUnsaved()) return;
@@ -1507,6 +1519,7 @@ function buildProjectEditor(host, record, mediaRows, allProjects) {
       title: titleInput.value.trim(),
       status: statusSelect.value || null,
       accent: accent.read(),
+      coverMediaId: cover.read() || null,
       repoUrl: repoInput.value.trim() || null,
       lede: ledeArea.value.trim() || null,
       cardBlurb: blurbToggle.input.checked ? (blurbArea.value.trim() || null) : null,
@@ -1624,7 +1637,7 @@ function buildBandCard(block, kind, mediaRows, controls) {
 
     var alt = peInput(row.alt, 300);
     alt.setAttribute("aria-label", "Alt text");
-    alt.placeholder = "Alt text — what the picture shows";
+    alt.placeholder = "Alt text: what the picture shows";
 
     var beside = peRadio(name, "Text beside", layout === "beside", "beside");
     var below = peRadio(name, "Text below", layout === "below", "below");

@@ -25,24 +25,63 @@ finishes, open `http://192.168.0.56/` from your desktop.
 
 ### Updating the site later
 
-Re-upload via WinSCP into `~/Portfolio`, then:
+**One command, and it does both halves:**
 
 ```bash
-cd ~/Portfolio/deploy && ./setup-pi.sh ~/Portfolio
+~/Portfolio/deploy/update.sh
 ```
 
-Or skip the script and sync straight into the webroot — but copy the exclude
-list exactly. `/pages/` and `/assets/up/` are what the admin panel writes into;
-they are not in the repo, so `--delete` without those two lines wipes every
-published project page and every upload:
+Or from the desktop, without logging in first:
 
 ```bash
-sudo rsync -a --delete --exclude '/pages/' --exclude '/assets/up/' --exclude 'vault/files/' --exclude 'project-template.html' --exclude 'README.md' --exclude 'deploy/' ~/Portfolio/ /var/www/kira1q.dev/
+ssh ubuntu@192.168.0.56 '~/Portfolio/deploy/update.sh'
 ```
 
-Prefer the script. It carries the full list, and it also hands `pages/` and
-`assets/up/` back to uid 1000 after the recursive `chown` — which a bare rsync
-does not do, and which publishing needs.
+It pulls the repository, copies the site into the web root, pulls the API
+image if there is a new one, waits for the container to report healthy, and
+then checks nine URLs and tells you if any of them answered wrong. `--static`
+and `--api` do one half only.
+
+#### Make `~/Portfolio` a git checkout first
+
+This replaces WinSCP, and it is the part worth doing once:
+
+```bash
+mv ~/Portfolio ~/Portfolio.winscp
+git clone https://github.com/7qob/Portfolio.git ~/Portfolio
+~/Portfolio/deploy/update.sh
+```
+
+The repository is public, so this needs no key, no token and no secret stored
+on the Pi. Nothing that matters lives in `~/Portfolio` either: the database,
+the vault files, the published pages and the uploads are all outside it, which
+is why swapping the directory is safe. Once you have watched one update work,
+`rm -rf ~/Portfolio.winscp`.
+
+Two things this fixes beyond the typing. A checkout can answer *what is
+actually deployed* (`git -C ~/Portfolio log -1`), which a directory that was
+copied into cannot. And a `git checkout` on Linux writes LF line endings,
+where a WinSCP binary-mode copy of a Windows working tree hands the Pi shell
+scripts full of carriage returns.
+
+#### The rsync, if you ever need it by hand
+
+Don't retype it. `deploy/sync-site.sh` is the exclude list, and it is the only
+copy of it in the repo on purpose:
+
+```bash
+~/Portfolio/deploy/sync-site.sh ~/Portfolio /var/www/kira1q.dev
+```
+
+`/pages/` and `/assets/up/` are what the admin panel writes into and they are
+not in the repo, so a `--delete` missing those two lines wipes every published
+project page and every upload. The script also hands both directories back to
+uid 1000 after the recursive `chown`, which publishing needs and which a bare
+rsync does not do.
+
+`setup-pi.sh` still exists and still works, but it is the *first-run* script:
+it installs nginx and creates directories every time, which an update does not
+need.
 
 `index.html` and `projects.html` are deliberately **not** excluded. They are
 rsynced as before, but they are no longer the pages visitors get once anything
@@ -289,35 +328,45 @@ sudo rm -rf /var/www/kira1q.dev/vault/files
 
 ### 3.8 Updating later
 
-Site (static files):
+Both halves, one command:
 
 ```bash
-cd ~/Portfolio/deploy && ./setup-pi.sh ~/Portfolio
+~/Portfolio/deploy/update.sh
 ```
 
-API (after CI has published a new image):
+One half only, when you know which one changed:
 
 ```bash
-cd ~/Portfolio && docker compose pull && docker compose up -d
+~/Portfolio/deploy/update.sh --static     # site files, and nginx if its conf changed
+~/Portfolio/deploy/update.sh --api        # pull the image and restart the container
 ```
 
 The database and the documents are bind mounts, so pulling a new image never
 touches accounts, logs or PDFs.
 
-**When the home page's markers change, drop the generated copy.** Once a
-Publish has happened, `pages/index.html` becomes its own template — the
-renderer reads it back rather than the rsynced file, so a marker pair added to
-`index.html` in the repo is invisible to it. The symptom is silent: publishing
-that region logs a warning and changes nothing. After a deploy that adds or
-moves a `<!-- … :start -->` / `:end` pair:
+**A renderer change needs a re-render.** Every generated page on disk was
+written by whichever renderer shipped before it, so a markup change in
+`server/src/projects/render.ts` does not reach a visitor until something
+rewrites the pages. From the shell you already have open:
 
 ```bash
-sudo rm -f /var/www/kira1q.dev/pages/index.html
+docker compose exec api node dist/cli.js render
 ```
 
-nginx falls straight back to the rsynced `index.html`, and the next Publish
-regenerates the page from the new template. `setup-pi.sh` reports which markers
-the live template has, and says which file it checked.
+It rewrites every published project page, the projects index and the home
+page from the database, publishes nothing new and changes no row, so running
+it twice costs nothing. The panel's Publish button does the same thing
+through `POST /api/admin/projects/render`; the command exists so that
+finishing a deploy does not require signing into a browser.
+
+`update.sh` notices when the renderer was in the pull and prints the command
+at the end, because this is the way a deploy most often looks finished and is
+not.
+
+If the live index ever shows the projects as a plain bulleted list with no
+cards and no covers, this is what happened: the pages on disk predate the
+rebuild that replaced `.project-row` with `.project-card`, and the classes
+they ask for are no longer in `style.css`. One `render` fixes it.
 
 ### What this protects against, and what it doesn't
 

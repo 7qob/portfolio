@@ -163,19 +163,22 @@ export class MediaService {
   }
 
   /**
-   * Refuses (409) while any project still references the file — deleting it
-   * would break a published page's images. The caller sees which ones.
+   * Refuses (409) while any project still references the file — as a block's
+   * media or as the index row's cover. Deleting it would break a published
+   * page's images. The caller sees which ones.
    */
   remove(id: number): MediaRow {
     const row = this.findById(id);
     if (!row) throw new NotFoundException('No such upload.');
 
     const users = (
-      this.database.db.prepare('SELECT slug, blocks FROM projects').all() as {
+      this.database.db.prepare('SELECT slug, blocks, cover_media_id FROM projects').all() as {
         slug: string;
         blocks: string;
+        cover_media_id: number | null;
       }[]
     ).filter((p) => {
+      if (p.cover_media_id === id) return true;
       try {
         return collectMediaIds(JSON.parse(p.blocks) as Block[]).includes(id);
       } catch {

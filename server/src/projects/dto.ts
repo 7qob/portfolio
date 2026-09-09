@@ -78,6 +78,17 @@ export class UpdateProjectDto {
   accent?: string | null;
 
   /**
+   * The picture on the projects-index row: an upload id, or null for none.
+   * That it still exists is checked at publish, not here — an upload can be
+   * deleted between the two moments.
+   */
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  coverMediaId?: number | null;
+
+  /**
    * Rendered as the one link under the article. Narrowed to GitHub rather
    * than to "a URL": this field has exactly one job, and an allowlist of one
    * host is the cheapest way to keep it that way.

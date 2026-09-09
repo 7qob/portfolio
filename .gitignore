@@ -30,6 +30,7 @@ dist-*.zip
 # image builds with `npm ci`, which needs it and refuses to run without it.
 server/node_modules/
 server/dist/
+server/dist-test/
 server/tsconfig.tsbuildinfo
 
 # Local runtime state. On the Pi these live in /var/lib/kira1q/ and are bind

@@ -32,6 +32,32 @@ export class VaultController {
     return { items: this.vault.listVisible() };
   }
 
+  /**
+   * Every document as one file. It sits above the :id route on purpose: a
+   * literal path and a parameterised one at the same depth are matched in
+   * declaration order, and "archive" would otherwise be handed to ParseIntPipe.
+   */
+  @Get('archive')
+  archive(
+    @CurrentUser() user: AuthenticatedUser,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): void {
+    const { buffer } = this.vault.archiveVisible({
+      userId: user.id,
+      ip: clientIp(req),
+      userAgent: userAgent(req),
+    });
+
+    res.setHeader('Content-Type', 'application/zip');
+    res.setHeader('Content-Length', buffer.length);
+    res.setHeader('Cache-Control', 'no-store, private, max-age=0');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Content-Disposition', 'attachment; filename="vault-documents.zip"');
+
+    res.end(buffer);
+  }
+
   @Get('items/:id/file')
   download(
     @Param('id', ParseIntPipe) id: number,

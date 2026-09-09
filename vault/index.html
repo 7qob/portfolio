@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex, nofollow, noarchive">
   <title>Vault · 7qob</title>
 
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='.5' y='.5' width='31' height='31' fill='%230e0e0e' stroke='%232a2a2a'/%3E%3Crect x='9' y='9' width='14' height='14' fill='%23ff1e2f'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%23000'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="../style.css">
 
   <!-- Saved theme, applied before first paint so a light visitor sees no flash. -->
@@ -21,38 +21,49 @@
 <body>
 
   <header class="site-header">
-    <nav class="site-nav" aria-label="Main">
-      <a href="../index.html">Home</a>
-      <a href="../projects.html">Projects</a>
+    <a class="site-brand" href="../index.html" aria-label="7qob, home" data-de-label="7qob, Startseite">
+      <span class="site-brand__name">7qob</span>
+    </a>
+    <nav class="site-nav" aria-label="Main" data-de-label="Hauptnavigation">
+      <a href="../projects.html" data-de="Projekte">Projects</a>
       <a href="index.html" aria-current="page">Vault</a>
     </nav>
-    <button class="icon-btn" type="button" id="theme-toggle" aria-label="Toggle dark/bright" aria-pressed="false">
-      <span data-theme-icon>
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-      </span>
-    </button>
+    <div class="site-controls">
+      <button class="icon-btn" type="button" id="theme-toggle" aria-label="Toggle dark/bright" data-de-label="Hell/Dunkel umschalten" aria-pressed="false">
+        <span data-theme-icon>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </span>
+      </button>
+    </div>
   </header>
 
   <div class="page-head">
+    <p class="page-head__label" data-de="Privat">Private</p>
     <h1 class="page-head__title" id="page-title">Vault</h1>
-    <p class="page-head__lede">Application documents. Password-protected and not indexed — please keep them to yourself.</p>
+    <p class="page-head__lede" data-de="Bewerbungsunterlagen. Passwortgeschützt, nicht indexiert und zunächst verdeckt. Bitte für dich behalten.">Application documents. Password-protected, not indexed, and covered until you ask for them. Please keep them to yourself.</p>
   </div>
 
   <main class="page-body" aria-labelledby="page-title">
 
     <section class="box box--static box--narrow" aria-labelledby="lbl-docs">
-      <h2 class="box__label" id="lbl-docs"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Documents</h2>
+      <h2 class="box__label" id="lbl-docs"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span data-de="Dokumente">Documents</span></h2>
 
-      <!-- Empty on purpose, and this is the security property. The rows come
-           from /api/vault/items, which answers only to an authenticated
-           session; hardcoding them told any source-viewer what exists. -->
+      <!-- All three are empty on purpose, and that is the security property.
+           Everything here comes from /api/vault/items, which answers only to
+           an authenticated session; hardcoding them told any source-viewer
+           what exists. The names stay covered after they arrive, for the
+           reasons script.js gives above initVault. -->
+      <div class="doc-guard" id="vault-guard" hidden></div>
+
       <ul class="doc-list" id="vault-list" hidden></ul>
 
-      <p class="box__text" id="vault-status">Loading documents…</p>
+      <div class="doc-actions" id="vault-actions" hidden></div>
+
+      <p class="box__text" id="vault-status" data-de="Dokumente werden geladen…">Loading documents…</p>
     </section>
 
     <div class="reading">
-      <p class="note">Not everything is here. If you need a document that isn't listed, <a href="mailto:matti.naef@bwdbern.ch">email me</a> and I'll send it.</p>
+      <p class="note" data-de='Hier ist nicht alles. Wer ein Dokument braucht, das nicht aufgeführt ist: <a href="mailto:matti.naef@bwdbern.ch">schreib mir</a>, ich schicke es.'>Not everything is here. If you need a document that isn't listed, <a href="mailto:matti.naef@bwdbern.ch">email me</a> and I'll send it.</p>
     </div>
 
   </main>

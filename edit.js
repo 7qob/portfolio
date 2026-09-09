@@ -93,10 +93,11 @@
   /* The first edit of a section has no stored draft, so the page itself is the
      source: whatever markup shipped between the markers becomes the blocks.
 
-     data-en, not textContent. initLang() stashes the English on load and swaps
-     textContent in place, so on a page that has been toggled to German
-     textContent *is* the German — reading it would quietly translate the site
-     into German twice and lose the English for good. */
+     applyLang() caches the English innerHTML on the element as `langEn` and
+     then overwrites innerHTML in place, so on a page toggled to German the
+     element's own content *is* the German. Reading langEn rather than the live
+     content is what stops a German visit from translating the site into German
+     twice and losing the English for good. */
   function readRegion(region) {
     var blocks = [];
 
@@ -121,10 +122,17 @@
   }
 
   function pairOf(node) {
-    return {
-      en: node.getAttribute("data-en") || node.textContent,
-      de: node.getAttribute("data-de") || ""
-    };
+    var en = node.langEn !== undefined ? node.langEn : node.innerHTML;
+    return { en: text(en), de: text(node.getAttribute("data-de") || "") };
+  }
+
+  /* Our own rendered markup back to the words that made it. The blocks are
+     plain prose today, so this is exact; a paragraph that grew a link would
+     come back flattened, which is why the editor is prose-only for now. */
+  function text(html) {
+    var box = document.createElement("div");
+    box.innerHTML = html;
+    return (box.textContent || "").trim();
   }
 
   function build(key, section, region, pen, blocks) {
