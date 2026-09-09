@@ -82,7 +82,7 @@
       .then(function (res) { return ok(res, "Could not open that section."); })
       .then(function (data) {
         var blocks = data && data.blocks && data.blocks.length ? data.blocks : readRegion(region);
-        build(key, section, region, pen, blocks);
+        build(key, section, region, pen, blocks, !!(data && data.published));
       })
       .catch(function (err) {
         pen.hidden = false;
@@ -121,6 +121,40 @@
     return blocks;
   }
 
+  function countText(rows) {
+    var n = 0;
+    rows.forEach(function (r) { if (r.kind === "text") n++; });
+    return n;
+  }
+
+  /* Dimensions come from the browser, the same way the panel does it, so the
+     img carries width and height and the page does not jump while it loads. */
+  function measure(file) {
+    return new Promise(function (resolve) {
+      if (file.type.indexOf("image/") !== 0) return resolve({});
+      var url = URL.createObjectURL(file);
+      var img = new Image();
+      img.onload = function () {
+        URL.revokeObjectURL(url);
+        resolve({ width: img.naturalWidth, height: img.naturalHeight });
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); resolve({}); };
+      img.src = url;
+    });
+  }
+
+  /* The server names the file, from its bytes. Uploading the same picture
+     twice gives the same row back rather than a second copy. */
+  function upload(file) {
+    return measure(file).then(function (d) {
+      var fd = new FormData();
+      fd.append("file", file);
+      if (d.width) fd.append("width", d.width);
+      if (d.height) fd.append("height", d.height);
+      return api("/admin/media", { method: "POST", body: fd });
+    }).then(function (res) { return ok(res, "The upload failed."); });
+  }
+
   function pairOf(node) {
     var en = node.langEn !== undefined ? node.langEn : node.innerHTML;
     return { en: text(en), de: text(node.getAttribute("data-de") || "") };
@@ -135,9 +169,20 @@
     return (box.textContent || "").trim();
   }
 
-  function build(key, section, region, pen, blocks) {
+  function build(key, section, region, pen, blocks, published) {
     var form = el("div", "ed");
     var rows = [];
+
+    /* Losing your place was the main complaint: the section's own heading is
+       hidden with the content, so the form says what it is and where it
+       stands before anything else. */
+    var head = el("div", "ed__head");
+    head.appendChild(el("span", "ed__what", "editing " + key));
+    var live = el("span", "ed__live", published
+      ? "published, this replaces what is on the page"
+      : "not published yet, the page still shows the original");
+    head.appendChild(live);
+    form.appendChild(head);
 
     var body = el("div", "ed__body");
     form.appendChild(body);
@@ -148,16 +193,23 @@
     }
 
     function addRow(kind, value, muted) {
-      var entry = fieldRow(kind, value, muted, {
+      var controls = {
         hint: rows.length === 0,
+        label: kind === "heading" ? "heading" : "paragraph " + (countText(rows) + 1),
         up: function () { move(entry, -1); },
         down: function () { move(entry, 1); },
         remove: function () {
           rows.splice(rows.indexOf(entry), 1);
           repaint();
           setDirty(true);
-        }
-      });
+        },
+        changed: function () { setDirty(true); }
+      };
+
+      var entry = kind === "media"
+        ? mediaCard(value, controls)
+        : fieldRow(kind, value, muted, controls);
+
       rows.push(entry);
       return entry;
     }
@@ -178,6 +230,7 @@
     var seenMuted = false;
     blocks.forEach(function (block) {
       if (block.type === "heading") return addRow("heading", block.text, false);
+      if (block.type === "media") return addRow("media", block, false);
       if (block.muted) seenMuted = true;
       (block.paragraphs || []).forEach(function (p) { addRow("text", p, block.muted); });
     });
@@ -195,6 +248,13 @@
         entry.en.focus();
       }));
     }
+    adders.appendChild(btn("+ picture", function () {
+      var entry = addRow("media", { mediaId: 0, alt: "", name: { en: "", de: "" }, paragraphs: [] }, false);
+      repaint();
+      setDirty(true);
+      var f = entry.root.querySelector(".ed-file");
+      if (f) f.focus();
+    }));
     adders.appendChild(btn("+ paragraph", function () {
       var entry = addRow("text", { en: "", de: "" }, seenMuted);
       repaint();
@@ -213,14 +273,14 @@
       close();
     });
 
-    var save = btn("save", function () {
+    var save = btn("save draft", function () {
       var got = collect();
       if (got.error) return void (state.textContent = got.error);
 
       run(save, "saving…", function () {
         return send("PUT", "/admin/sections/" + key, got.blocks).then(function () {
           setDirty(false);
-          state.textContent = "Saved as a draft. Publish to put it on the page.";
+          state.textContent = "Saved. The page still shows the published version.";
         });
       });
     });
@@ -275,6 +335,20 @@
 
       rows.forEach(function (r) {
         var value = r.read();
+
+        if (r.kind === "media") {
+          if (!value.mediaId) {
+            problem = problem || "One picture has no file yet. Choose one, or remove the row.";
+            return;
+          }
+          if (!value.alt) {
+            problem = problem || "A picture needs alt text.";
+            return;
+          }
+          blocks.push(value);
+          text = null;               // a picture ends the run of paragraphs
+          return;
+        }
 
         if (r.kind === "heading") {
           if (!value.en) {
@@ -332,7 +406,7 @@
     var root = el("div", "ed-row");
 
     var head = el("div", "ed-row__head");
-    head.appendChild(el("span", "ed-row__kind", kind === "heading" ? "heading" : "paragraph"));
+    head.appendChild(el("span", "ed-row__kind", controls.label));
     head.appendChild(el("span", "ed__spacer"));
     head.appendChild(tool("▲", "Move up", controls.up));
     head.appendChild(tool("▼", "Move down", controls.down));
@@ -354,6 +428,86 @@
       en: en,
       read: function () { return { en: en.value.trim(), de: de.value.trim() }; }
     };
+  }
+
+  /* A picture and the words under it. The alt text is not bilingual: it
+     describes the picture, which does not change with the language. */
+  function mediaCard(block, controls) {
+    var root = el("div", "ed-row");
+
+    var head = el("div", "ed-row__head");
+    head.appendChild(el("span", "ed-row__kind", controls.label));
+    head.appendChild(el("span", "ed__spacer"));
+    head.appendChild(tool("▲", "Move up", controls.up));
+    head.appendChild(tool("▼", "Move down", controls.down));
+    head.appendChild(tool("✕", "Remove", controls.remove));
+    root.appendChild(head);
+
+    var state = { mediaId: block.mediaId, filename: block.filename || "" };
+
+    var shot = el("img", "ed-shot");
+    shot.alt = "";
+    if (state.filename) shot.src = "/assets/up/" + state.filename;
+    else shot.hidden = true;
+    root.appendChild(shot);
+
+    var file = el("input", "ed-file");
+    file.type = "file";
+    file.accept = "image/*";
+    var note = el("span", "ed-field__hint", "");
+
+    file.addEventListener("change", function () {
+      if (!file.files || !file.files[0]) return;
+      note.textContent = "uploading…";
+      upload(file.files[0]).then(function (row) {
+        state.mediaId = row.id;
+        state.filename = row.filename;
+        shot.src = "/assets/up/" + row.filename;
+        shot.hidden = false;
+        note.textContent = row.filename;
+        if (controls.changed) controls.changed();
+      }).catch(function (err) { note.textContent = err.message; });
+    });
+
+    root.appendChild(labelled("PICTURE", file, "PNG, JPEG, WebP or GIF. The server names the file."));
+    root.appendChild(note);
+
+    var alt = area(block.alt || "", 2);
+    root.appendChild(labelled("ALT TEXT", alt, "What the picture shows, for someone who cannot see it."));
+
+    var nameEn = area(block.name ? block.name.en : "", 1);
+    var nameDe = area(block.name ? block.name.de : "", 1);
+    root.appendChild(labelled("CAPTION EN", nameEn, null));
+    root.appendChild(labelled("CAPTION DE", nameDe, null));
+
+    var joined = function (side) {
+      return (block.paragraphs || []).map(function (q) { return q[side]; }).join("\n\n");
+    };
+    var wordsEn = area(joined("en"), 4);
+    var wordsDe = area(joined("de"), 4);
+    root.appendChild(labelled("WORDS EN", wordsEn, "One blank line starts a new paragraph."));
+    root.appendChild(labelled("WORDS DE", wordsDe, null));
+
+    return {
+      root: root,
+      kind: "media",
+      read: function () {
+        var en = splitParas(wordsEn.value);
+        var de = splitParas(wordsDe.value);
+        return {
+          type: "media",
+          mediaId: state.mediaId,
+          alt: alt.value.trim(),
+          name: { en: nameEn.value.trim(), de: nameDe.value.trim() },
+          paragraphs: en.map(function (t, i) { return { en: t, de: de[i] || "" }; })
+        };
+      }
+    };
+  }
+
+  function splitParas(value) {
+    return String(value || "").split(/\n\s*\n/).map(function (t) { return t.trim(); })
+      .filter(function (t) { return t !== ""; });
   }
 
   function labelled(name, control, hint) {

@@ -32,7 +32,23 @@ export interface SectionTextBlock {
   paragraphs: Bilingual[];
 }
 
-export type SectionBlock = SectionHeadingBlock | SectionTextBlock;
+/**
+ * A picture with its words beside it, the `.rig` figure the readme uses.
+ *
+ * The id points at the same `media` table the panel uploads into, so a section
+ * and a project page share one upload store and one filename discipline: the
+ * client never names a file.
+ */
+export interface SectionMediaBlock {
+  type: 'media';
+  mediaId: number;
+  /** Not bilingual on purpose: alt describes the picture, not the prose. */
+  alt: string;
+  name: Bilingual;
+  paragraphs: Bilingual[];
+}
+
+export type SectionBlock = SectionHeadingBlock | SectionTextBlock | SectionMediaBlock;
 
 /**
  * The regions that exist, and the whole of the key alphabet.
@@ -110,6 +126,24 @@ export function normalizeSectionBlocks(input: unknown): SectionBlock[] {
         // Coerced, never a 400: a payload that omits the flag gets the default
         // rather than an error about a word it never typed.
         return { type: 'text', muted: b.muted === true, paragraphs };
+      }
+
+      case 'media': {
+        const id = Number(b.mediaId);
+        if (!Number.isInteger(id) || id <= 0) fail(`${at}.mediaId`, 'expected an upload id');
+
+        const alt = typeof b.alt === 'string' ? b.alt.trim() : '';
+        if (!alt) fail(`${at}.alt`, 'a picture needs alt text');
+
+        return {
+          type: 'media',
+          mediaId: id,
+          alt: alt.slice(0, LIMITS.paragraph),
+          name: pair(b.name, `${at}.name`, LIMITS.heading, false),
+          paragraphs: arr(b.paragraphs, `${at}.paragraphs`, LIMITS.paragraphs)
+            .map((p, n) => pair(p, `${at}.paragraphs[${n}]`, LIMITS.paragraph, false))
+            .filter((p) => p.en !== ''),
+        };
       }
 
       default:

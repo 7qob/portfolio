@@ -2,10 +2,20 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 
 import { DatabaseService } from '../db/database.service';
 import { BlockError } from '../projects/blocks';
-import { spliceRegion } from '../projects/render';
+import { MediaLookup, MediaRef, spliceRegion } from '../projects/render';
 import { ensurePagesDir, homeTemplate, writePage } from '../site/pages';
 import { normalizeSectionBlocks, SECTION_KEYS, SectionBlock, SectionKey } from './blocks';
 import { renderSection, sectionEnd, sectionStart } from './render';
+
+interface MediaRow {
+  id: number;
+  filename: string;
+  original_name: string | null;
+  mime: string;
+  size_bytes: number;
+  width: number | null;
+  height: number | null;
+}
 
 interface SectionRow {
   key: string;
@@ -105,7 +115,7 @@ export class SectionsService {
     // checks what is about to reach a public page, and there is a database
     // between those two moments.
     try {
-      normalizeSectionBlocks(JSON.parse(row.draft_blocks));
+      this.mediaLookupFor(normalizeSectionBlocks(JSON.parse(row.draft_blocks)));
     } catch (err) {
       if (err instanceof BlockError) throw new BadRequestException(err.message);
       throw err;
@@ -128,6 +138,48 @@ export class SectionsService {
     this.database.db
       .prepare(`UPDATE sections SET draft_blocks = COALESCE(live_blocks, '[]') WHERE key = ?`)
       .run(key);
+  }
+
+  // -------------------------------------------------------------------------
+  // Uploads
+  // -------------------------------------------------------------------------
+
+  private mediaRef(id: number): MediaRef | null {
+    const m = this.database.db.prepare('SELECT * FROM media WHERE id = ?').get(id) as
+      | MediaRow
+      | undefined;
+    if (!m) return null;
+
+    return {
+      filename: m.filename,
+      originalName: m.original_name,
+      mime: m.mime,
+      sizeBytes: m.size_bytes,
+      width: m.width,
+      height: m.height,
+    };
+  }
+
+  /**
+   * A lookup that has already proved every id it will be asked for, so the
+   * renderer cannot be handed a picture that was deleted between the save and
+   * the publish. Refuses by name rather than writing a page with a dead src.
+   */
+  private mediaLookupFor(blocks: SectionBlock[]): MediaLookup {
+    const found = new Map<number, MediaRef>();
+
+    for (const b of blocks) {
+      if (b.type !== 'media') continue;
+      const ref = this.mediaRef(b.mediaId);
+      if (!ref) throw new BadRequestException(`That picture no longer exists (upload ${b.mediaId}).`);
+      found.set(b.mediaId, ref);
+    }
+
+    return (id: number) => {
+      const ref = found.get(id);
+      if (!ref) throw new BadRequestException(`Unknown upload id ${id}.`);
+      return ref;
+    };
   }
 
   // -------------------------------------------------------------------------
@@ -168,7 +220,8 @@ export class SectionsService {
       // edit.js grabs, so a section emptied to nothing would otherwise publish
       // itself out of reach of the pen that emptied it.
       const blocks = JSON.parse(row.live_blocks as string) as SectionBlock[];
-      const body = `\n${renderSection(key, blocks)}\n        `;
+      const media = this.mediaLookupFor(blocks);
+      const body = `\n${renderSection(key, blocks, media)}\n        `;
 
       html = spliceRegion(html, start, end, body, `the ${key} section`);
     }

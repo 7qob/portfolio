@@ -3457,8 +3457,18 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
 .rig--solo { margin-bottom: calc(var(--space) * 3); }
 
 /* The file belongs to the machine above it, so it sits inside the same block
-   rather than after it: one seam for the pair, not one each. */
+   rather than after it: one seam for the pair, not one each. Unfolded, because
+   a summary that hides three lines is a click asking to be paid for nothing. */
 .rig__file { margin-top: calc(var(--space) * 2); }
+
+.rig__file__name {
+  display: block;
+  margin-bottom: calc(var(--space) * 0.75);
+  color: var(--fg-mute);
+  font-size: var(--fs-meta);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
 
 .rig__name {
   display: block;
@@ -3702,6 +3712,7 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
 
 .ed-pen {
   position: absolute;
+  border-radius: var(--radius);
   top: calc(var(--space) * 3);
   right: 0;
   display: flex;
@@ -3732,6 +3743,38 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
 }
 
 .ed { margin-top: calc(var(--space) * 2); }
+
+/* Says what you are editing and whether the page is already showing it. The
+   section's own heading is hidden with the content, so without this the form
+   is a stack of fields with no name on it. */
+.ed__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: calc(var(--space) * 1.5);
+  padding-bottom: var(--space);
+  border-bottom: var(--bw) solid var(--line);
+}
+
+.ed__what {
+  color: var(--fg-strong);
+  font-size: var(--fs-meta);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ed__live { font-size: var(--fs-meta); color: var(--fg-mute); }
+
+.ed-shot {
+  display: block;
+  width: 100%;
+  max-width: 240px;
+  margin-bottom: var(--space);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--radius);
+}
+
+.ed-file { display: block; width: 100%; max-width: var(--measure); font: inherit; font-size: var(--fs-meta); color: var(--fg-mute); }
 
 .ed-row {
   padding: var(--space) 0;
@@ -3776,6 +3819,7 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
 
 .ed-field__input {
   display: block;
+  border-radius: var(--radius);
   width: 100%;
   max-width: var(--measure);
   padding: 6px 8px;
@@ -3815,6 +3859,7 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
 
 .ed__btn {
   padding: 5px 10px;
+  border-radius: var(--radius);
   border: var(--bw) solid var(--line);
   background: none;
   color: var(--fg-mute);
