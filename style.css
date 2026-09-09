@@ -3444,12 +3444,17 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
 .rig__text { color: var(--fg-mute); }
 .rig__text p + p { margin-top: var(--space); }
 
-/* A lone figure stacks. Two paragraphs beside a 260px rail leave about
-   thirty characters a line inside the shell, which is under the floor the
-   row's own comment names. */
-.rig--solo .rig__row { grid-template-columns: minmax(0, 1fr); }
-.rig--solo .rig__media { max-width: 480px; }
-.rig--solo { margin-bottom: calc(var(--space) * 2); }
+/* A lone figure stacks, and stops being a grid while it does: one column is
+   not a layout. Two paragraphs beside the 260px rail would leave about thirty
+   characters a line inside the shell, under the floor the row's own comment
+   names, so the picture goes over the words rather than next to them.
+
+   It fills the column on purpose. Capped at its native 480 it ended short of
+   the measure and its right edge lined up with nothing, which read as a crop
+   rather than a decision. */
+.rig--solo .rig__row { display: block; }
+.rig--solo .rig__text { margin-top: calc(var(--space) * 1.5); }
+.rig--solo { margin-bottom: calc(var(--space) * 3); }
 
 .rig__name {
   display: block;
