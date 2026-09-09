@@ -5,11 +5,10 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { existsSync, mkdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from 'node:fs';
-import { basename, join, resolve, sep } from 'node:path';
+import { existsSync, unlinkSync } from 'node:fs';
 
-import { config } from '../config';
 import { DatabaseService } from '../db/database.service';
+import { ensurePagesDir, homeTemplate, resolvePagePath, writePage } from '../site/pages';
 import {
   Block,
   BlockError,
@@ -60,14 +59,6 @@ interface MediaRow {
 }
 
 /**
- * The only filenames the writer will ever emit. Belt on top of the slug
- * CHECK's braces: even a row that somehow held a bad slug cannot make this
- * regex produce a path. index.html joined the list when the home page's
- * project cards started coming out of the database.
- */
-const PAGE_NAME = /^(project-[a-z0-9-]{1,48}\.html|projects\.html|index\.html)$/;
-
-/**
  * Title -> slug, in the page-name alphabet and nothing else. The author never
  * types this: the panel shows what it derived and lets it be corrected, and
  * the result still has to pass the SLUG regex in the DTO.
@@ -92,14 +83,7 @@ export class ProjectsService {
   private readonly logger = new Logger(ProjectsService.name);
 
   constructor(private readonly database: DatabaseService) {
-    // Dev convenience; in production this is the mounted /site/pages and
-    // already exists. Failing here (read-only fs, missing mount) is fatal on
-    // first publish, not on boot — publishing is the operation that needs it.
-    try {
-      mkdirSync(resolve(config.site.pagesDir), { recursive: true });
-    } catch {
-      this.logger.warn(`Could not create pages directory ${config.site.pagesDir}`);
-    }
+    ensurePagesDir();
   }
 
   // -------------------------------------------------------------------------
@@ -330,7 +314,7 @@ export class ProjectsService {
 
     this.database.db.prepare('UPDATE projects SET published_at = NULL WHERE id = ?').run(id);
 
-    const path = this.resolvePagePath(`project-${row.slug}.html`);
+    const path = resolvePagePath(`project-${row.slug}.html`);
     try {
       if (existsSync(path)) unlinkSync(path);
     } catch {
@@ -383,10 +367,10 @@ export class ProjectsService {
         next,
         this.mediaLookupFor(JSON.parse(row.blocks) as Block[]),
       );
-      this.writePage(`project-${row.slug}.html`, html);
+      writePage(`project-${row.slug}.html`, html);
     }
 
-    this.writePage('projects.html', renderProjectsIndex(chain.map((r) => this.toPage(r))));
+    writePage('projects.html', renderProjectsIndex(chain.map((r) => this.toPage(r))));
 
     // The home page's cards are drawn from the same chain, so a project that
     // is unpublished or hidden leaves the bento by the same act that takes it
@@ -397,7 +381,7 @@ export class ProjectsService {
       .map((r) => this.toPage(r));
 
     try {
-      this.writePage('index.html', renderHome(this.homeTemplate(), slotted));
+      writePage('index.html', renderHome(homeTemplate(), slotted));
     } catch (err) {
       // The project pages are already on disk and correct; only the home page
       // failed. Say which, rather than letting a 500 imply nothing published.
@@ -412,17 +396,6 @@ export class ProjectsService {
   private slotOrder(slot: string | null): number {
     const i = HOME_SLOTS.indexOf(slot as (typeof HOME_SLOTS)[number]);
     return i === -1 ? HOME_SLOTS.length : i;
-  }
-
-  /**
-   * The base the home page is spliced into: the generated one if it exists,
-   * so a hand edit made on the Pi survives, otherwise the hand-written
-   * index.html that shipped with the site.
-   */
-  private homeTemplate(): string {
-    const generated = this.resolvePagePath('index.html');
-    const source = existsSync(generated) ? generated : resolve(config.site.homeTemplate);
-    return readFileSync(source, 'utf8');
   }
 
   private toPage(row: ProjectRow): PageProject {
@@ -499,33 +472,4 @@ export class ProjectsService {
     };
   }
 
-  // -------------------------------------------------------------------------
-  // Disk
-  // -------------------------------------------------------------------------
-
-  /** Same last-line-of-defence shape as VaultService.resolvePath. */
-  private resolvePagePath(name: string): string {
-    const safeName = basename(name);
-    if (!PAGE_NAME.test(safeName)) {
-      throw new BadRequestException('Refusing to write that filename.');
-    }
-
-    const root = resolve(config.site.pagesDir);
-    const path = resolve(join(root, safeName));
-
-    if (!path.startsWith(root + sep)) {
-      this.logger.warn(`Refused a path outside the pages directory: ${name}`);
-      throw new BadRequestException('Refusing to write that filename.');
-    }
-
-    return path;
-  }
-
-  /** Write-then-rename, so a reader never sees a half-written page. */
-  private writePage(name: string, html: string): void {
-    const path = this.resolvePagePath(name);
-    const tmp = path + '.tmp';
-    writeFileSync(tmp, html, 'utf8');
-    renameSync(tmp, path);
-  }
 }

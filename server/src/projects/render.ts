@@ -12,7 +12,7 @@
  * the DTO checked what arrived over HTTP, this checks what is about to reach a
  * public page, and there is a database between those two moments.
  */
-import { ACCENT_HEX, Block, Chip, HOME_SLOTS, MediaBlock, SAFE_HREF, TextBlock } from './blocks';
+import { ACCENT_HEX, Block, Chip, MediaBlock, SAFE_HREF, TextBlock } from './blocks';
 
 export interface MediaRef {
   filename: string;
@@ -134,9 +134,10 @@ const ICON_CHEVRON =
 const ICON_BOX_ARROW =
   '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
 
-const ICON_STAR = svg('<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>', 14);
-
-const ICON_FOLDER = svg('<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>', 14);
+/* No size: .card__links svg sets 13px, the way the hand-written cards do. */
+const ICON_GITHUB = svg(
+  '<path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>',
+);
 
 const CLIP_CONTROLS = `<button class="clip-btn clip-btn--play" type="button" data-clip-toggle aria-label="Pause clip">
   <span data-clip-icon="pause">
@@ -165,7 +166,7 @@ function head(title: string, ogType: string, p: string): string {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${esc(title)} · kiraa1q</title>
+  <title>${esc(title)} · 7qob</title>
   <meta name="description" content="">
 
   <!-- Open Graph (empty — fill before sharing) -->
@@ -196,7 +197,6 @@ function header(p: string): string {
     <nav class="site-nav" aria-label="Main">
       <a href="${p}index.html">Home</a>
       <a href="${p}projects.html" aria-current="page">Projects</a>
-      <a href="${p}about.html">About</a>
       <a href="${p}vault/index.html">Vault</a>
     </nav>
     <button class="icon-btn" type="button" id="theme-toggle" aria-label="Toggle dark/bright" aria-pressed="false">
@@ -210,9 +210,9 @@ function header(p: string): string {
 
 function footer(p: string): string {
   return `  <footer class="site-footer">
-    <span class="site-footer__meta">&copy; <span id="year"></span> kiraa1q &middot; v1.0.0</span>
+    <span class="site-footer__meta">&copy; <span id="year"></span> 7qob &middot; v1.0.0</span>
     <a href="${p}impressum.html">Impressum</a>
-    <a href="https://github.com/kiraa1q" target="_blank" rel="noopener">GitHub<svg class="footer-arrow" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
+    <a href="https://github.com/7qob" target="_blank" rel="noopener">GitHub<svg class="footer-arrow" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
   </footer>
 
   <script src="${p}script.js"></script>
@@ -414,29 +414,39 @@ ${prevLink}${nextLink}    </nav>
   return html;
 }
 
-/** A bento cell: the project as a card, on the home page only. */
-function projectCard(proj: PageProject, opts: { area: string; large: boolean; p: string }): string {
-  const id = `p-${esc(proj.slug)}`;
-  const accent = accentAttrs(proj.accent);
-  const label = proj.status === 'Featured' ? `${ICON_STAR}Featured` : `${ICON_FOLDER}Project`;
-  const wip = proj.status === 'WIP' ? `\n          <span class="status">WIP</span>` : '';
+/**
+ * A row in the home page's project list.
+ *
+ * This is the single-page `.card`, not the old bento cell: an article with a
+ * .shot rail on the left and head / desc / links on the right, matching the
+ * hand-written cards in index.html tag for tag. The card carries no accent —
+ * .card has no --edge-brand hook — so a project's colour shows on its own page
+ * and on the projects index, not here.
+ */
+function projectCard(proj: PageProject, opts: { p: string }): string {
   const blurb = proj.cardBlurb ?? proj.lede ?? '';
-  const nameClass = `project-box__name${opts.large ? ' project-box__name--lg' : ''}`;
-  const body = `${chipList(proj.chips, '          ')}          <p class="box__text">${inline(blurb)}</p>`;
+  const tag = proj.status === 'WIP' ? `\n              <span class="tag">WIP</span>` : '';
 
-  return `      <section class="box box--link box--edge${accent.cls} area-${opts.area}"${accent.style} aria-labelledby="${id}">
-        <a class="stretched-link" href="${opts.p}project-${esc(proj.slug)}.html" aria-label="${esc(proj.title)} — project page"></a>
-        <span class="box-arrow" aria-hidden="true">
-          ${ICON_BOX_ARROW}
-        </span>
-        <h2 class="box__label" id="${id}">${label}</h2>
-        <div class="project-box__head">
-          <span class="${nameClass}">${esc(proj.title)}</span>${wip}
-        </div>
-        <div class="box__body">
-${body}
-        </div>
-      </section>`;
+  const desc = blurb ? `\n            <p class="card__desc">${inline(blurb)}</p>` : '';
+
+  // Only a repo link, and only when there is one. The abstract PDFs on the
+  // hand-written cards are not something the panel can produce.
+  const repo =
+    proj.repoUrl && SAFE_HREF.test(proj.repoUrl)
+      ? `
+            <div class="card__links">
+              <a href="${esc(proj.repoUrl)}" target="_blank" rel="noopener">${ICON_GITHUB}source</a>
+            </div>`
+      : '';
+
+  return `        <article class="card">
+          <span class="shot shot--empty" data-label="${esc(proj.slug)}"></span>
+          <div>
+            <a class="card__head" href="${opts.p}project-${esc(proj.slug)}.html">
+              <span class="card__name">${esc(proj.title)}</span>${tag}
+            </a>${desc}${repo}
+          </div>
+        </article>`;
 }
 
 /**
@@ -493,28 +503,45 @@ ${rows}
 export function renderHome(template: string, projects: PageProject[], opts: RenderOptions = {}): string {
   const p = opts.assetPrefix ?? '';
 
-  const start = template.indexOf(HOME_START);
-  const end = template.indexOf(HOME_END);
+  // A linear list, so the order the caller sorted them into is the whole of the
+  // layout. home_slot still decides which projects are placed here and in what
+  // order; it no longer names a grid cell, because there is no grid any more.
+  const cards = projects.map((proj) => projectCard(proj, { p })).join('\n\n');
+
+  return spliceRegion(
+    template,
+    HOME_START,
+    HOME_END,
+    cards ? `\n${cards}\n        ` : '\n        ',
+    'the project cards',
+  );
+}
+
+/**
+ * Replace what lies between two markers, keeping the markers themselves.
+ *
+ * Both markers surviving is the whole trick: the output is a valid template for
+ * the next splice, which is what lets index.html have more than one writer —
+ * projects and sections each rewrite their own region and leave the other's
+ * alone. Nothing here parses HTML. It is indexOf and two slices, so every byte
+ * outside the region comes back unchanged.
+ */
+export function spliceRegion(
+  template: string,
+  startMarker: string,
+  endMarker: string,
+  body: string,
+  what: string,
+): string {
+  const start = template.indexOf(startMarker);
+  const end = template.indexOf(endMarker);
+
   if (start === -1 || end === -1 || end < start) {
     throw new Error(
-      `The home template has no ${HOME_START} / ${HOME_END} pair, so there is ` +
-        'nowhere to write the project cards.',
+      `The template has no ${startMarker} / ${endMarker} pair, so there is ` +
+        `nowhere to write ${what}.`,
     );
   }
 
-  // Cells are filled in canonical order: the count-keyed area maps in style.css
-  // can only fill the grid if the N cells in use are the first N, so a project
-  // holding smallB with smallA empty closes up rather than leaving a hole.
-  const cards = projects
-    .map((proj, i) => projectCard(proj, { area: HOME_SLOTS[i] ?? 'feature', large: i === 0, p }))
-    .join('\n\n');
-
-  const before = template.slice(0, start + HOME_START.length);
-  const after = template.slice(end);
-  const html = cards ? `${before}\n\n${cards}\n\n    ${after}` : `${before}\n    ${after}`;
-
-  return html.replace(
-    /(<main class="bento"[^>]*\bdata-projects=")\d+(")/,
-    (_match, head: string, tail: string) => `${head}${projects.length}${tail}`,
-  );
+  return template.slice(0, start + startMarker.length) + body + template.slice(end);
 }
