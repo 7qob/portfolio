@@ -3158,7 +3158,31 @@ code {
    all still drawn for the serif and its scale. */
 
 body.is-single {
-  font-family: var(--font-mono);
+  /* The single page's own token set. The subpages keep the :root values: they
+     are drawn for the serif and its scale, and this is the one page that is
+     not. Scoped here rather than swapped in :root, because both designs share
+     one stylesheet. */
+  --font: var(--font-mono);
+  --fg: #efefef;
+  --bw: 2px;
+  --radius: 4px;
+
+  --fs-name: 1.7rem;
+  --fs-subtitle: 1.15rem;
+  --fs-heading: 1rem;
+  --fs-lede: 1rem;
+
+  --measure: 66ch;
+  --measure-wide: 78ch;
+
+  /* White stepped by opacity on one solid block of blue, which is the only
+     large colour on the page and deliberately not the accent. */
+  --gh-ink: #ffffff;
+  --gh-field: #1a3cff;
+  --gh-gap: 2px;
+  --gh-radius: 1px;
+
+  font-family: var(--font);
   display: block;
   padding: 0;
   gap: 0;
@@ -3228,7 +3252,30 @@ body.is-single {
    across as the width allows, so the graph stays responsive. Do not express
    this as an aspect-ratio on .gh-cells: the ratio would depend on --gh-weeks,
    which that same measurement sets, and the two feed each other. */
-.is-single .gh { height: calc(var(--space) * 10); }
+.is-single .gh {
+  height: calc(var(--space) * 10);
+  background: var(--gh-field);
+  border-radius: var(--radius);
+  padding: calc(var(--space) * 0.75);
+}
+
+/* Load-bearing. A stretched flex item will not shrink under its own content,
+   so without a definite height the grid sizes its rows to the cell width and
+   spills a row out of the field below. 100% of the padded box is what ghWeeks
+   then measures, so the cells come out square. */
+.is-single .gh__chart { height: 100%; }
+
+/* Opacity, not five background tokens: the subpages ramp the accent, this page
+   fades one ink over one field. The tie on specificity with the level rules
+   above is broken by source order, which is why these sit here and not there. */
+.is-single .gh-cell { background: var(--gh-ink); opacity: 0.14; }
+.is-single .gh-cell[data-level="1"] { opacity: 0.34; }
+.is-single .gh-cell[data-level="2"] { opacity: 0.55; }
+.is-single .gh-cell[data-level="3"] { opacity: 0.78; }
+.is-single .gh-cell[data-level="4"] { opacity: 1; }
+.is-single .gh-cell--pad { opacity: 0; }
+
+.is-single .gh__status { color: var(--gh-ink); opacity: 0.7; }
 
 .col {
   max-width: var(--measure);
