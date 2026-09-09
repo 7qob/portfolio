@@ -108,13 +108,6 @@ function reload(name) {
   loadPanel(name);
 }
 
-function el(tag, className, text) {
-  var node = document.createElement(tag);
-  if (className) node.className = className;
-  if (text !== undefined && text !== null) node.textContent = String(text);
-  return node;
-}
-
 function renderTable(table, headers, rows, buildRow) {
   table.textContent = "";
 
@@ -179,14 +172,6 @@ function fail(table, error) {
   renderTable(table, ["Error"], [{}], function () {
     return ["Could not load this section. " + (error && error.message ? error.message : "")];
   });
-}
-
-function ok(res, fallback) {
-  if (res.ok) return res.status === 204 ? null : res.json().catch(function () { return null; });
-  return res.json().then(
-    function (b) { throw new Error(b.message || fallback); },
-    function () { throw new Error(fallback); }
-  );
 }
 
 function loadAccess() {

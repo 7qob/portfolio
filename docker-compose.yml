@@ -3,7 +3,7 @@
 
 services:
   api:
-    image: ghcr.io/kiraa1q/portfolio-api:latest
+    image: ghcr.io/7qob/portfolio-api:latest
     container_name: portfolio-api
     restart: unless-stopped
 

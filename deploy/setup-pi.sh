@@ -160,6 +160,7 @@ check_code() {
 check_code /api/vault/items        401
 check_code /api/vault/items/1/file 401
 check_code /api/admin/overview     401
+check_code /api/admin/sections     401
 check_code /vault/files/cv.pdf     404
 
 echo
@@ -171,6 +172,33 @@ echo "==> The vault page must not name a single document:"
 hits=$(curl -s "http://localhost/vault/index.html" | grep -ci 'curriculum\|zeugnis\|\.pdf' || true)
 printf '    %-28s %s   %s\n' "leaked document names" "$hits" \
   "$([ "$hits" = "0" ] && echo '(ok)' || echo '<-- EXPECTED 0')"
+
+echo
+echo "==> The home page must still carry its splice markers:"
+# The rsynced index.html is the template every generated home page is built
+# from, and a splice can only write where a marker pair already is. Delete one
+# by hand and Publish for that region silently stops working: the renderer logs
+# a warning and skips it rather than failing the whole write, so the only
+# symptom is a section that will not update.
+# Which file is checked matters: once a Publish has happened the generated
+# page becomes its own template, so a stale /pages/index.html from before the
+# markers existed is exactly the case this is here to catch.
+TEMPLATE="$WEBROOT/index.html"
+[ -f "$WEBROOT/pages/index.html" ] && TEMPLATE="$WEBROOT/pages/index.html"
+echo "    template: $TEMPLATE"
+
+for key in projects section:top section:about section:setup section:readme; do
+  case "$key" in
+    projects) start='<!-- projects:start -->'; end='<!-- projects:end -->' ;;
+    *)        start="<!-- $key:start -->";     end="<!-- $key:end -->" ;;
+  esac
+
+  if grep -qF "$start" "$TEMPLATE" && grep -qF "$end" "$TEMPLATE"; then
+    printf '    %-28s %s\n' "$key" "(ok)"
+  else
+    printf '    %-28s %s\n' "$key" "MISSING   <-- Publish will skip this region"
+  fi
+done
 
 echo
 echo "==> API container:"

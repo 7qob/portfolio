@@ -41,7 +41,7 @@ it is cheaper to fix a sentence here than a module later.
 > **Constraints.** The repo is public — no secret may ever be committed. The
 > static pages must keep working without the backend (the vault and admin pages
 > degrade to a clear message rather than breaking). Commits are authored by
-> kiraa1q and pushed regularly.
+> 7qob and pushed regularly.
 
 ### What this costs you
 
@@ -74,7 +74,7 @@ Internet
             └─ /vault/files/   → deny                       files no longer here
 
 Docker (Pi)
-  └─ ghcr.io/kiraa1q/portfolio-api:latest   (linux/arm64, non-root)
+  └─ ghcr.io/7qob/portfolio-api:latest   (linux/arm64, non-root)
        ├─ /data/app.db          ← bind mount /var/lib/kira1q/data
        └─ /vault-files/         ← bind mount /var/lib/kira1q/vault-files (ro)
 ```

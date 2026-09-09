@@ -1,17 +1,15 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>kiraa1q · Portfolio</title>
-  <meta name="description" content="">
+  <title>7qob · kira1q.dev</title>
+  <meta name="description" content="Matti, 17, computer science student in Bern. Small self-hosted tools in Rust, TypeScript and Python.">
 
-  <!-- Open Graph (empty — fill before sharing) -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="">
-  <meta property="og:description" content="">
-  <meta property="og:image" content="">
-  <meta property="og:url" content="">
+  <meta property="og:title" content="7qob · kira1q.dev">
+  <meta property="og:description" content="Matti, 17, computer science student in Bern. Small self-hosted tools in Rust, TypeScript and Python.">
+  <meta property="og:url" content="https://kira1q.dev/">
 
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='.5' y='.5' width='31' height='31' fill='%230e0e0e' stroke='%232a2a2a'/%3E%3Crect x='9' y='9' width='14' height='14' fill='%23ff1e2f'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css">
@@ -25,118 +23,344 @@
     } catch (e) {}
   </script>
 </head>
-<!-- .is-home locks the page to one screen on desktop; subpages scroll. -->
-<body class="is-home">
+<body class="is-single">
 
-  <header class="site-header">
-    <nav class="site-nav" aria-label="Main">
-      <a href="index.html" aria-current="page">Home</a>
-      <a href="projects.html">Projects</a>
-      <a href="about.html">About</a>
-      <a href="vault/index.html">Vault</a>
-    </nav>
-    <button class="icon-btn" type="button" id="theme-toggle" aria-label="Toggle dark/bright" aria-pressed="false">
-      <span data-theme-icon>
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+  <header class="topbar">
+    <div class="topbar__inner">
+      <a class="brand" href="#top">7qob</a>
+      <span class="tools">
+        <button class="tool" type="button" id="lang-toggle" aria-label="Auf Deutsch umschalten">DE</button>
+        <button class="tool" type="button" id="theme-toggle" aria-label="Toggle dark/bright" aria-pressed="false">
+          <span data-theme-icon>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </span>
+        </button>
+        <button class="tool" type="button" id="session-toggle" aria-label="Sign in" title="Sign in">
+          <span data-session-icon>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </span>
+        </button>
       </span>
-    </button>
+    </div>
   </header>
 
-  <!-- data-projects = how many cards sit between the markers below. It picks
-       the grid area map in style.css; Publish rewrites both. Everything
-       outside the markers is hand-written and never read by the renderer. -->
-  <main class="bento" data-projects="0">
+  <main>
 
-    <section class="box area-name" aria-labelledby="lbl-name">
-      <h1 class="hero__title" id="lbl-name">Hello I'm <span class="accent">kiraa1q</span></h1>
-      <div class="box__body">
-        <p class="box__text">I'm Matti — a 17 year old computer science student in my third year at the IMS, currently working on <span class="accent">my portfolio</span>.</p>
-        <p class="hero__loc">
-          <span class="hero__loc-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
-          Bern, Switzerland
-        </p>
-      </div>
-    </section>
+    <div class="col">
+      <section class="section section--top" id="top" data-edit="top">
+        <!-- section:top:start -->
+        <div class="region" data-region="top">
+          <h1 class="hero__title" data-de="Hallo, ich bin Matti.">Hi, I&#39;m Matti.</h1>
+          <div class="prose">
+            <p data-de="17, im dritten Jahr Informatik an der IMS in Bern. Ich baue kleine, saubere Sachen und hoste sie selbst.">17, in my third year of computer science at the IMS in Bern, Switzerland. I build small, clean things and host them myself.</p>
+          </div>
+        </div>
+        <!-- section:top:end -->
+      </section>
+    </div>
 
-    <!-- projects:start -->
-    <!-- projects:end -->
-
-    <a class="box box--link area-about" href="about.html" aria-labelledby="lbl-about">
-      <h2 class="box__label" id="lbl-about"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>About me</h2>
-      <div class="box__body">
-        <p class="box__text">Most of what I build starts as something I wanted for myself — a tool, a server, a small game. Away from the keyboard it's sport, games, anime and music, plus the occasional weekend of skiing or hiking.</p>
-
-        <p class="box__text">I'm based in Bern, Switzerland and currently looking for a Praktikum in machine learning, security tooling and design. I speak German (native), English, and French, and I'm learning Mandarin.</p>
-      </div>
-
-      <span class="box-arrow" aria-hidden="true">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </span>
-    </a>
-
-    <section class="box area-github" aria-labelledby="lbl-github">
-      <h2 class="box__label" id="lbl-github"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>GitHub</h2>
-      <div class="gh" id="gh" data-gh-user="kiraa1q">
+    <div class="col">
+      <div class="gh" id="gh" data-gh-user="7qob">
         <div class="gh__chart" data-gh-chart>
           <p class="gh__status" data-gh-status>Loading activity…</p>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- Links column: 3 standalone boxes, each its own clickable element. -->
-    <section class="box-stack area-buttons" aria-label="Links">
+    <div class="col">
 
-      <a class="link-box" href="https://github.com/kiraa1q" target="_blank" rel="noopener">
-        <span class="link-box__caption">Profile</span>
-        <span class="link-box__label">
-          <span class="link-box__icon" aria-hidden="true">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-          </span>
-          GitHub
-        </span>
-        <span class="link-box__note">this is where my stuff lies.</span>
-        <span class="box-arrow box-arrow--external" aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-        </span>
-      </a>
+      <section class="section" id="about" data-edit="about">
+        <div class="split">
+          <span class="split__n">01</span>
+          <span class="split__l" data-de="über mich">about</span>
+          <span class="split__bar"></span>
+        </div>
+        <!-- section:about:start -->
+        <div class="region" data-region="about">
+          <div class="prose">
+            <p data-de="Meine liebsten Fächer sind Informatik, Englisch, Deutsch, Sport und Chemie. Ausserhalb der Schule bin ich entweder mit meinen Freunden unterwegs oder ich arbeite an eigenen Sachen und stelle sie online.">The subjects I like most are computer science, English, German, sports and chemistry. Outside school I&#39;m either with my friends or working on my own things and putting them online.</p>
+            <p data-de="Beruflich möchte ich in Richtung Machine Learning, Security-Tooling und Design. Genau dafür suche ich gerade ein Praktikum.">What I would really like to do professionally is machine learning, security tooling and design. Right now I&#39;m looking for a Praktikum in that direction.</p>
+          </div>
+        </div>
+        <!-- section:about:end -->
+        <ul class="facts">
+          <li><b data-de="täglich">daily</b>Windows 11 + Ubuntu, GlazeWM, VSCodium</li>
+          <li><b data-de="Infra">infra</b>nginx, Docker, Cloudflare Tunnel, GitHub Actions</li>
+          <li><b>api</b>NestJS, SQLite, argon2id</li>
+        </ul>
 
-      <a class="link-box" href="mailto:matti.naef@bwdbern.ch">
-        <span class="link-box__caption">Reach me</span>
-        <span class="link-box__label">
-          <span class="link-box__icon" aria-hidden="true">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-          </span>
-          Email
-        </span>
-        <span class="link-box__note">the fastest way to reach me directly.</span>
-        <span class="box-arrow box-arrow--external" aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-        </span>
-      </a>
+        <!-- The long-form half of the old About page. Folded so the section
+             stays two paragraphs at rest and the writing is still on the site. -->
+        <details class="fold">
+          <summary class="disclose">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+            <span data-de="mehr über mich">more about me</span>
+          </summary>
 
-      <a class="link-box" href="vault/index.html">
-        <span class="link-box__caption">Private</span>
-        <span class="link-box__label">
-          <span class="link-box__icon" aria-hidden="true">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          </span>
-          Vault
-        </span>
-        <span class="link-box__note">CV and school reports. Password required.</span>
-        <span class="box-arrow" aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-        </span>
-      </a>
+          <div class="fold__body">
 
-    </section>
+            <p data-de="Das meiste, was ich gebaut habe, wollte ich zuerst für mich selbst.">Most of what I have built, I wanted for myself first.</p>
 
+            <ul class="facts facts--wide facts--seam">
+              <li>
+                <b data-de="bauen">building</b>
+                <span data-de="Als Kind Lego, heute ein Homelab — aus einem Haufen identischer Teile ein Ganzes machen.">Lego as a kid, a homelab now — making a whole thing out of a pile of identical parts.</span>
+              </li>
+              <li>
+                <b data-de="sport">sports</b>
+                <span data-de="Frei und leicht, vor allem beim Rennen, so schnell ich kann. Dort ist meine kompetitive Seite gewachsen.">Free and light, especially running as fast as I can. My competitive side grew up there.</span>
+              </li>
+              <li>
+                <b data-de="fokus">focus</b>
+                <span data-de="Wenn mich etwas wirklich interessiert, bekommt es den ganzen Tag. Musik bringt mich am schnellsten dorthin.">When something really has my interest, it gets the whole day. Music is what gets me there.</span>
+              </li>
+              <li>
+                <b data-de="games">games</b>
+                <span data-de="Manche kompetitiv, manche technisch, manche einfach Spass — mit Freunden oder allein. Wo ein Ziel ist, entscheidet das Aim.">Some competitive, some technical, some pure fun — with friends or alone. Where there is a target, aim decides it.</span>
+              </li>
+              <li>
+                <b data-de="anime">anime</b>
+                <span data-de="Bildet nicht das echte Leben ab. Paralleluniversen, in denen ich mir mich vorstellen könnte.">They don't mirror real life. Alternate universes I could picture living in.</span>
+              </li>
+            </ul>
+
+            <div>
+              <b class="fold__h" data-de="Sprachen">Languages</b>
+              <p data-de="Eher passiv gelernt, aber sehr gerne. Im Moment Mandarin — die Sprache, die mich wirklich fasziniert.">Learned passively, but I enjoy it a lot. Mandarin at the moment — the one that really fascinates me.</p>
+              <ul class="facts facts--wide">
+                <li><b data-de="Deutsch">German</b><span data-de="Muttersprache">Native</span></li>
+                <li><b data-de="Englisch">English</b><span data-de="Gesprochen">Spoken</span></li>
+                <li><b data-de="Französisch">French</b><span data-de="Gesprochen">Spoken</span></li>
+                <li><b data-de="Italienisch">Italian</b><span data-de="Zwei Jahre, grösstenteils weg">Two years, mostly gone</span></li>
+                <li><b>Mandarin</b><span data-de="Am Lernen">Learning</span></li>
+              </ul>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <section class="section" id="setup" data-edit="setup">
+        <div class="split">
+          <span class="split__n">02</span>
+          <span class="split__l">setup</span>
+          <span class="split__bar"></span>
+        </div>
+        <!-- section:setup:start -->
+        <div class="region" data-region="setup">
+          <div class="prose">
+            <p class="muted" data-de="Der Schreibtisch und das Homelab dahinter.">The desk and the homelab behind it.</p>
+          </div>
+        </div>
+        <!-- section:setup:end -->
+
+        <!-- Closed on purpose: inside a closed <details> a loading=lazy image has
+             no layout box, so none of these 48 MB is fetched until it is opened. -->
+        <details class="rig">
+          <summary class="disclose">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+            <span data-de="Mein Setup">My setup</span>
+            <span class="rig__hint">4 clips &middot; 48 MB</span>
+          </summary>
+
+          <div class="rig__body">
+
+            <figure class="rig__row">
+              <img class="rig__media" src="assets/setup.gif" width="480" height="270" loading="lazy" decoding="async" alt="A pan across the desk: a monitor on an arm, headphones, a keyboard, a microphone on a boom arm, an audio interface and a drawing tablet, with the wall behind lit red.">
+              <figcaption class="rig__text">
+                <b class="rig__name" data-de="Der Schreibtisch">The desk</b>
+                <p data-de="Der Monitor hängt an einem Arm, also steht auf dem Tisch nur, was ich auch anfasse: Tastatur, Kopfhörer, das Mikrofon an seinem eigenen Arm, das Interface dahinter und das Grafiktablett. Der Tower steht darunter auf dem Boden. Beleuchtet ist die Wand, nicht der Tisch.">The monitor is on an arm, so the only things standing on the desk are the ones I touch: keyboard, headphones, the microphone on its own boom, the interface behind it and the drawing tablet. The tower is on the floor underneath. What is lit is the wall, not the desk.</p>
+              </figcaption>
+            </figure>
+
+            <figure class="rig__row">
+              <img class="rig__media" src="assets/keyboard.gif" width="480" height="270" loading="lazy" decoding="async" alt="A close pass along a black mechanical keyboard with dark keycaps, on a wooden desk.">
+              <figcaption class="rig__text">
+                <b class="rig__name" data-de="Die Tastatur">The keyboard</b>
+                <p data-de="Komplett schwarz — schwarzes Gehäuse, schwarze Keycaps, nichts darauf gedruckt, was das Licht fängt. Sie steht mittig vor dem Monitor, das Kabel läuft hinten über die Tischkante.">All black — black case, black keycaps, nothing printed on them that catches the light. It sits square in front of the monitor with the cable running back over the edge of the desk.</p>
+              </figcaption>
+            </figure>
+
+            <figure class="rig__row">
+              <img class="rig__media" src="assets/mouse.gif" width="480" height="270" loading="lazy" decoding="async" alt="A black wireless mouse turning slowly on a cloth mousepad.">
+              <figcaption class="rig__text">
+                <b class="rig__name" data-de="Die Maus">The mouse</b>
+                <p data-de="Kabellos, symmetrisch und matt schwarz, auf dem Stoffpad, das die rechte Hälfte des Tisches einnimmt. In keinem Frame des Clips ist ein Kabel zu sehen, weil es keines gibt.">Wireless, symmetric and matte black, on the cloth pad that takes up the right half of the desk. There is no cable in any frame of the clip because there is no cable.</p>
+              </figcaption>
+            </figure>
+
+            <figure class="rig__row">
+              <img class="rig__media" src="assets/rpi5.gif" width="480" height="270" loading="lazy" decoding="async" alt="A Raspberry Pi 5 with an NVMe HAT stacked on its GPIO header, a Samsung 970 EVO Plus SSD on the HAT and its status LEDs lit, sitting on top of a black perforated case.">
+              <figcaption class="rig__text">
+                <b class="rig__name" data-de="Der Pi">The Pi</b>
+                <p data-de="Das Homelab-Ende von alldem: ein Raspberry Pi 5 mit einem NVMe-HAT auf dem GPIO-Header und einer Samsung 970 EVO Plus im Slot, damit er ab SSD statt ab SD-Karte läuft. Der Minecraft-Server hinter Stalkr läuft auf einem Pi 5 wie diesem.">The homelab end of all this: a Raspberry Pi 5 with an NVMe HAT on the GPIO header and a Samsung 970 EVO Plus in the slot, so it runs off an SSD rather than an SD card. The Minecraft server behind Stalkr runs on a Pi 5 like this one.</p>
+              </figcaption>
+            </figure>
+
+          </div>
+        </details>
+      </section>
+
+      <section class="section" id="projects">
+        <div class="split">
+          <span class="split__n">03</span>
+          <span class="split__l" data-de="Projekte">projects</span>
+          <span class="split__bar"></span>
+        </div>
+
+        <!-- projects:start -->
+        <article class="card">
+          <span class="shot shot--empty" data-label="comfyui-krea2"></span>
+          <div>
+            <a class="card__head" href="https://github.com/7qob" target="_blank" rel="noopener">
+              <span class="card__name">ComfyUI × Krea 2</span>
+            </a>
+            <p class="card__desc" data-de="Eigener Node-Graph-Workflow rund um Krea 2.">Custom node-graph workflow built around Krea 2.</p>
+            <div class="card__links">
+              <a href="https://github.com/7qob" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>source</a>
+              <!-- Size stays empty until the PDF is in place; .card__sz:empty hides it. -->
+              <a href="assets/abstract-comfyui-krea2.pdf" download><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>abstract.pdf<span class="card__sz"></span></a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <span class="shot shot--empty" data-label="ignite"></span>
+          <div>
+            <a class="card__head" href="https://github.com/7qob" target="_blank" rel="noopener">
+              <span class="card__name">Ignite</span>
+              <span class="tag">WIP</span>
+            </a>
+            <p class="card__desc" data-de="Reverse Proxy in Rust, der einen lokalen LLM-Server sicher verfügbar macht.">Reverse proxy in Rust that exposes a local LLM server safely.</p>
+            <div class="card__links">
+              <a href="https://github.com/7qob" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>source</a>
+              <!-- Size stays empty until the PDF is in place; .card__sz:empty hides it. -->
+              <a href="assets/abstract-ignite.pdf" download><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>abstract.pdf<span class="card__sz"></span></a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <span class="shot shot--empty" data-label="kobui"></span>
+          <div>
+            <a class="card__head" href="https://github.com/7qob" target="_blank" rel="noopener">
+              <span class="card__name">Kobui</span>
+            </a>
+            <p class="card__desc" data-de="Rein lokales Chat-Frontend für KoboldCpp, geschrieben in React.">Local-only chat frontend for KoboldCpp, written in React.</p>
+            <div class="card__links">
+              <a href="https://github.com/7qob" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>source</a>
+              <!-- Size stays empty until the PDF is in place; .card__sz:empty hides it. -->
+              <a href="assets/abstract-kobui.pdf" download><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>abstract.pdf<span class="card__sz"></span></a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <span class="shot shot--empty" data-label="stalkr"></span>
+          <div>
+            <a class="card__head" href="https://github.com/7qob" target="_blank" rel="noopener">
+              <span class="card__name">Stalkr</span>
+            </a>
+            <p class="card__desc" data-de="Echtzeit-Minecraft-Dashboard mit RCON und NBT-Parsing.">Real-time Minecraft dashboard with RCON and NBT parsing.</p>
+            <div class="card__links">
+              <a href="https://github.com/7qob" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>source</a>
+              <!-- Size stays empty until the PDF is in place; .card__sz:empty hides it. -->
+              <a href="assets/abstract-stalkr.pdf" download><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>abstract.pdf<span class="card__sz"></span></a>
+            </div>
+          </div>
+        </article>
+        <!-- projects:end -->
+      </section>
+
+      <section class="section" id="readme" data-edit="readme">
+        <div class="split">
+          <span class="split__n">04</span>
+          <span class="split__l">readme</span>
+          <span class="split__bar"></span>
+        </div>
+        <!-- section:readme:start -->
+        <div class="region" data-region="readme">
+          <div class="prose">
+            <p class="muted" data-de="Diese Seite ist selbst ein Projekt. Was hier steht, beschreibt, wie sie gebaut ist.">This site is its own project. What follows describes how it is built.</p>
+          </div>
+        </div>
+        <!-- section:readme:end -->
+        <details>
+          <summary class="disclose">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+            README.md
+          </summary>
+          <div class="readme"><b>kira1q.dev</b>
+Static front end. No framework, no build step,
+no dependencies, about 50 KB in total. Only the
+sign-in and the vault ever talk to the API.
+
+<b>stack</b>
+NestJS and SQLite behind nginx, argon2id and
+opaque session cookies. There is no secret in
+the service, which is why the image can be public.
+
+<b>deploy</b>
+A Raspberry Pi 5 behind a Cloudflare Tunnel.
+GitHub Actions builds the arm64 image and the Pi
+only pulls it. The API listens on 127.0.0.1,
+never on the LAN.</div>
+        </details>
+      </section>
+
+      <section class="section" id="vault">
+        <div class="split">
+          <span class="split__n">05</span>
+          <span class="split__l">vault</span>
+          <span class="split__bar"></span>
+        </div>
+
+        <div class="stack" id="vault-locked">
+          <p class="muted" id="vault-status" data-de="Privater Bereich f&uuml;r Bewerbungsunterlagen. Zug&auml;nge werden einzeln vergeben.">Private area for job application documents. Access is granted individually.</p>
+          <form class="vform" id="vault-form" hidden>
+            <input class="in" id="vault-user" name="username" placeholder="user" required
+                   autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false">
+            <input class="in" id="vault-pass" name="password" type="password" placeholder="password"
+                   required autocomplete="current-password">
+            <button class="btn" type="submit"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span data-de="anmelden">sign in</span></button>
+            <span class="vform__err" id="vault-error" role="status"></span>
+          </form>
+          <button class="btn" type="button" id="vault-open"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span data-de="anmelden">sign in</span></button>
+        </div>
+
+        <!-- Empty on purpose. The list is drawn from the API after the session
+             check, so an unauthenticated visitor is never told what exists. -->
+        <div class="stack" id="vault-open-list" hidden>
+          <div id="vault-docs" style="width:100%"></div>
+          <button class="btn muted" type="button" id="vault-signout"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 5 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg><span data-de="abmelden">sign out</span></button>
+        </div>
+      </section>
+
+      <section class="section" id="contact">
+        <div class="split">
+          <span class="split__n">06</span>
+          <span class="split__l" data-de="Kontakt">contact</span>
+          <span class="split__bar"></span>
+        </div>
+        <a class="soc" href="https://github.com/7qob" target="_blank" rel="noopener">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg><b>github</b><span class="soc__at">7qob</span>
+        </a>
+        <a class="soc" href="mailto:matti.naef@bwdbern.ch">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><b data-de="E-Mail">email</b><span class="soc__at">matti.naef@bwdbern.ch</span>
+        </a>
+        <!-- A handle, not a link: Discord has no public per-user URL. -->
+        <span class="soc">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><path d="M15.5 17c0 1 1.5 3 2 3 1.5 0 2.83-1.67 3.5-3 .67-1.67.5-5.83-1.5-11.5-1.46-1.02-3-1.34-4.5-1.5l-.97 1.92a11.9 11.9 0 0 0-4.06 0L9 4c-1.5.16-3.04.48-4.5 1.5-2 5.67-2.17 9.83-1.5 11.5.67 1.33 2 3 3.5 3 .5 0 2-2 2-3"/><path d="M7 16.5c3.5 1 6.5 1 10 0"/></svg><b>discord</b><span class="soc__at">7qob</span>
+        </span>
+      </section>
+
+    </div>
   </main>
 
-  <!-- Legal + credit only. Navigation is in the header. -->
-  <footer class="site-footer">
-    <span class="site-footer__meta">&copy; <span id="year"></span> kiraa1q &middot; v1.0.0</span>
-    <a href="impressum.html">Impressum</a>
-    <a href="https://github.com/kiraa1q" target="_blank" rel="noopener">GitHub<svg class="footer-arrow" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
+  <footer class="pagefoot">
+    <div class="pagefoot__inner">
+      <span>7qob &middot; v2.0.0<span id="uptime" hidden></span></span>
+      <a href="impressum.html" data-de="Impressum und Datenschutz">Impressum and privacy</a>
+    </div>
   </footer>
 
   <script src="script.js"></script>

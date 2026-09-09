@@ -8,7 +8,7 @@ with no server at all, and a small API that only three pages ever talk to.
 ## Front end — static HTML, CSS and JS
 
 No framework, no build step, no bundler, no dependencies. `index.html`,
-`projects.html`, `about.html`, `impressum.html` and the project pages open
+`projects.html`, `impressum.html` and the project pages open
 straight off disk over `file://` and would run unchanged on GitHub Pages.
 The whole static site is about 50 KB.
 
@@ -72,7 +72,6 @@ practice they are built in CI inside the Docker image and never on the Pi.
 index.html          bento home page
 projects.html       project index
 project-*.html      one page per project
-about.html          about
 impressum.html      legal + Datenschutz
 login.html          sign-in for the vault
 admin.html          admin panel

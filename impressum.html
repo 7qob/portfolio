@@ -1,17 +1,15 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Impressum · kiraa1q</title>
-  <meta name="description" content="">
+  <title>Impressum · 7qob</title>
+  <meta name="description" content="Impressum and privacy notice for kira1q.dev.">
 
-  <!-- Open Graph (empty — fill before sharing) -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="">
-  <meta property="og:description" content="">
-  <meta property="og:image" content="">
-  <meta property="og:url" content="">
+  <meta property="og:title" content="Impressum · 7qob">
+  <meta property="og:description" content="Impressum and privacy notice for kira1q.dev.">
+  <meta property="og:url" content="https://kira1q.dev/impressum.html">
 
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='.5' y='.5' width='31' height='31' fill='%230e0e0e' stroke='%232a2a2a'/%3E%3Crect x='9' y='9' width='14' height='14' fill='%23ff1e2f'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css">
@@ -25,75 +23,76 @@
     } catch (e) {}
   </script>
 </head>
-<body>
+<body class="is-single">
 
-  <header class="site-header">
-    <nav class="site-nav" aria-label="Main">
-      <a href="index.html">Home</a>
-      <a href="projects.html">Projects</a>
-      <a href="about.html">About</a>
-      <a href="vault/index.html">Vault</a>
-    </nav>
-    <button class="icon-btn" type="button" id="theme-toggle" aria-label="Toggle dark/bright" aria-pressed="false">
-      <span data-theme-icon>
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+  <header class="topbar">
+    <div class="topbar__inner">
+      <a class="brand" href="index.html">7qob</a>
+      <span class="tools">
+        <button class="tool" type="button" id="lang-toggle" aria-label="Auf Deutsch umschalten">DE</button>
+        <button class="tool" type="button" id="theme-toggle" aria-label="Toggle dark/bright" aria-pressed="false">
+          <span data-theme-icon>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </span>
+        </button>
       </span>
-    </button>
+    </div>
   </header>
 
-  <div class="page-head">
-    <h1 class="page-head__title" id="page-title">Impressum</h1>
-    <p class="page-head__lede">Rechtliche Angaben zu dieser Website.</p>
-  </div>
+  <main>
 
-  <main class="page-body" aria-labelledby="page-title">
+    <div class="col">
 
-    <section class="box box--static box--narrow" aria-labelledby="lbl-angaben">
-      <h2 class="box__label" id="lbl-angaben"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>Angaben</h2>
+      <section class="section section--top" id="top">
+        <h1 class="hero__title" data-de="Impressum und Datenschutz">Impressum and privacy</h1>
+      </section>
 
-      <!-- A contact address and a place, and deliberately nothing more: no
-           street, no postcode, no phone number. -->
-      <dl class="field-list">
-
-        <div class="field">
-          <dt class="field__label">Name</dt>
-          <dd class="field__value">Matti Näf</dd>
+      <section class="section" id="impressum">
+        <div class="split">
+          <span class="split__n">01</span>
+          <span class="split__l" data-de="Impressum">legal</span>
+          <span class="split__bar"></span>
         </div>
 
-        <div class="field">
-          <dt class="field__label">Kontakt / Email</dt>
-          <dd class="field__value">matti.naef@bwdbern.ch</dd>
+        <!-- A contact address and a place, and deliberately nothing more: no
+             street, no postcode, no phone number. -->
+        <dl class="legal">
+          <div><dt>Name</dt><dd>Matti N&auml;f</dd></div>
+          <div><dt data-de="Kontakt">Contact</dt><dd>matti.naef@bwdbern.ch</dd></div>
+          <div><dt data-de="Ort">Place</dt><dd data-de="Bern, Schweiz">Bern, Switzerland</dd></div>
+        </dl>
+      </section>
+
+      <section class="section" id="datenschutz">
+        <div class="split">
+          <span class="split__n">02</span>
+          <!-- Sibling, not a child of .split__l: the language toggle rewrites
+               that element's textContent and would drop the icon with it. -->
+          <span class="split__i" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </span>
+          <span class="split__l" data-de="Datenschutz">privacy</span>
+          <span class="split__bar"></span>
         </div>
 
-        <div class="field">
-          <dt class="field__label">Ort / Datum</dt>
-          <dd class="field__value">Bern, Schweiz</dd>
+        <div class="prose muted">
+          <p data-de="Die &ouml;ffentlichen Seiten dieser Website setzen keine Cookies, binden keine Analyse- oder Tracking-Dienste ein und speichern nichts &uuml;ber Besucherinnen und Besucher.">The public pages of this site set no cookies, embed no analytics or tracking services, and store nothing about visitors.</p>
+          <p data-de="Der gesch&uuml;tzte Bereich (Vault) ist nur mit einem pers&ouml;nlichen Zugang nutzbar. Wer sich anmeldet, f&uuml;r den werden gespeichert: Benutzername, Zeitpunkt der Anmeldung, IP-Adresse, Browserkennung (User-Agent) sowie welche Dokumente wann heruntergeladen wurden. Auch fehlgeschlagene Anmeldeversuche werden protokolliert, weil das n&ouml;tig ist, um Missbrauch zu erkennen und automatisierte Angriffe zu bremsen.">The protected area (Vault) can only be used with a personal account. For anyone who signs in, the following is stored: username, time of sign-in, IP address, browser identification (user agent), and which documents were downloaded when. Failed sign-in attempts are logged too, because that is what makes abuse visible and slows automated attacks down.</p>
+          <p data-de="Diese Eintr&auml;ge werden nach 90 Tagen automatisch gel&ouml;scht. Passw&ouml;rter werden ausschliesslich als argon2id-Hash gespeichert und sind auch f&uuml;r mich nicht lesbar. Die Daten liegen auf einem privat betriebenen Server in der Schweiz und werden nicht an Dritte weitergegeben.">These entries are deleted automatically after 90 days. Passwords are stored only as an argon2id hash and cannot be read back, including by me. The data sits on a privately operated server in Switzerland and is not passed on to third parties.</p>
+          <p data-de="Die Beitragsgrafik auf der Startseite wird von einem Drittanbieter geladen (github-contributions-api.jogruber.de); dabei wird die IP-Adresse an diesen Dienst &uuml;bermittelt.">The contribution graph on the home page is loaded from a third party (github-contributions-api.jogruber.de), which means your IP address is sent to that service.</p>
+          <p data-de="Auskunft &uuml;ber gespeicherte Daten sowie deren L&ouml;schung k&ouml;nnen jederzeit &uuml;ber die oben genannte Kontaktadresse verlangt werden.">Information about stored data, and its deletion, can be requested at any time using the contact address above.</p>
         </div>
+      </section>
 
-      </dl>
-    </section>
-
-    <section class="box box--static box--narrow reading" aria-labelledby="lbl-daten">
-      <h2 class="box__label" id="lbl-daten"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Datenschutz</h2>
-
-      <p class="box__text">Die öffentlichen Seiten dieser Website setzen keine Cookies, binden keine Analyse- oder Tracking-Dienste ein und speichern nichts über Besucherinnen und Besucher.</p>
-
-      <p class="box__text">Der geschützte Bereich <span lang="en">(Vault)</span> ist nur mit einem persönlichen Zugang nutzbar. Wer sich anmeldet, für den werden gespeichert: Benutzername, Zeitpunkt der Anmeldung, IP-Adresse, Browserkennung <span lang="en">(User-Agent)</span> sowie welche Dokumente wann heruntergeladen wurden. Auch fehlgeschlagene Anmeldeversuche werden protokolliert — das ist nötig, um Missbrauch zu erkennen und automatisierte Angriffe zu bremsen.</p>
-
-      <p class="box__text">Diese Einträge werden nach 90 Tagen automatisch gelöscht. Passwörter werden ausschliesslich als <span lang="en">argon2id</span>-Hash gespeichert und sind auch für mich nicht lesbar. Die Daten liegen auf einem privat betriebenen Server in der Schweiz und werden nicht an Dritte weitergegeben.</p>
-
-      <p class="box__text">Die Beitragsgrafik auf der Startseite wird von einem Drittanbieter geladen <span lang="en">(github-contributions-api.jogruber.de)</span>; dabei wird die IP-Adresse an diesen Dienst übermittelt.</p>
-
-      <p class="box__text">Auskunft über gespeicherte Daten sowie deren Löschung können jederzeit über die oben genannte Kontaktadresse verlangt werden.</p>
-    </section>
-
+    </div>
   </main>
 
-  <!-- Legal + credit only. Navigation is in the header. -->
-  <footer class="site-footer">
-    <span class="site-footer__meta">&copy; <span id="year"></span> kiraa1q &middot; v1.0.0</span>
-    <a href="impressum.html">Impressum</a>
-    <a href="https://github.com/kiraa1q" target="_blank" rel="noopener">GitHub<svg class="footer-arrow" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
+  <!-- Same bar as the home page, minus the uptime: this page needs no API call. -->
+  <footer class="pagefoot">
+    <div class="pagefoot__inner">
+      <span>7qob &middot; v2.0.0</span>
+      <a href="impressum.html" data-de="Impressum und Datenschutz">Impressum and privacy</a>
+    </div>
   </footer>
 
   <script src="script.js"></script>

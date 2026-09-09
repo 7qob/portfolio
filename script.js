@@ -9,13 +9,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
   renderContributions();
   initThemeToggle();
+  initLang();
+  initSplitters();
   initFigures();
   initClipToggles();
   initBoxScroll();
 
+  initVaultPanel();
+  loadEditor();
   initAuth();
   initVault();
   initLogin();
+  initUptime();
 });
 
 /* Overflow is measured, never assumed: .has-overflow drives the fade mask and
@@ -54,12 +59,13 @@ function initBoxScroll() {
 }
 
 function initFigures() {
-  var imgs = document.querySelectorAll(".figure img, .mediarow img, .mediarow video");
+  var imgs = document.querySelectorAll(
+    ".figure img, .mediarow img, .mediarow video, .rig__row img");
   for (var i = 0; i < imgs.length; i++) {
     var img = imgs[i];
     var hide = (function (image) {
       return function () {
-        var fig = image.closest(".figure, .mediarow");
+        var fig = image.closest(".figure, .mediarow, .rig__row");
         if (fig) fig.hidden = true;
 
         var band = image.closest(".reveal");
@@ -162,6 +168,16 @@ function api(path, options) {
   });
 }
 
+/* Response -> value, or an Error carrying what the server said. 204 and an
+   unreadable body both become null rather than a throw. */
+function ok(res, fallback) {
+  if (res.ok) return res.status === 204 ? null : res.json().catch(function () { return null; });
+  return res.json().then(
+    function (b) { throw new Error(b.message || fallback); },
+    function () { throw new Error(fallback); }
+  );
+}
+
 /* No API here: over file:// or on GitHub Pages the backend does not exist, and
    a failed call would replace a working static page with an error. */
 function isOffline() {
@@ -169,61 +185,248 @@ function isOffline() {
          /(^|\.)github\.io$/.test(location.hostname);
 }
 
-function initAuth() {
-  if (isOffline()) return;
+var ICON_SIGN_IN =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>';
+var ICON_SIGN_OUT =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 5 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>';
+var ICON_FILE =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
+var ICON_DOWNLOAD =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
 
-  api("/auth/me")
-    .then(function (res) {
-      return res.ok ? res.json() : null;
-    })
-    .then(function (data) {
-      if (data && data.user) showSignedIn(data.user);
-    })
-    .catch(function () {
+/* The vault, inline on the one page.
+
+   The gate is the API, not this file: /vault/items answers 401 without a
+   session and the files live outside the web root, so nothing here decides who
+   sees what. The list starts empty in the markup and is only ever drawn from
+   what the server already agreed to send, so an unauthenticated visitor is
+   never told which documents exist.
+
+   The session check on load runs only for a browser that has signed in here
+   before, so a first-time visitor causes no /vault/items call at all. */
+function initVaultPanel() {
+  var locked = document.getElementById("vault-locked");
+  if (!locked) return;
+
+  var form = document.getElementById("vault-form");
+  var open = document.getElementById("vault-open");
+  var list = document.getElementById("vault-open-list");
+  var status = document.getElementById("vault-status");
+  var error = document.getElementById("vault-error");
+  var toggle = document.getElementById("session-toggle");
+
+  if (isOffline()) {
+    status.textContent = "The vault needs the live site. It cannot be opened from a local file.";
+    open.hidden = true;
+    return;
+  }
+
+  function showForm(on) {
+    form.hidden = !on;
+    open.hidden = on;
+    if (on) document.getElementById("vault-user").focus();
+  }
+
+  function signedIn(on) {
+    list.hidden = !on;
+    locked.hidden = on;
+
+    if (!toggle) return;
+    toggle.setAttribute("aria-label", on ? "Sign out" : "Sign in");
+    toggle.title = on ? "Sign out" : "Sign in";
+
+    var icon = toggle.querySelector("[data-session-icon]");
+    if (icon) icon.innerHTML = on ? ICON_SIGN_OUT : ICON_SIGN_IN;
+  }
+
+  function openVault() {
+    return api("/vault/items")
+      .then(function (res) {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.json();
+      })
+      .then(function (data) {
+        vaultDocs((data && data.items) || []);
+        remember("vault:seen", "1");
+        signedIn(true);
+        return true;
+      })
+      .catch(function () {
+        return false;
+      });
+  }
+
+  function signOut() {
+    api("/auth/logout", { method: "POST" })
+      .catch(function () {})
+      .then(function () {
+        forgetMe();
+        try {
+          localStorage.removeItem("vault:seen");
+          localStorage.removeItem("admin");
+        } catch (e) {}
+        document.getElementById("vault-docs").textContent = "";
+        signedIn(false);
+        showForm(false);
+      });
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    var username = document.getElementById("vault-user").value.trim();
+    var password = document.getElementById("vault-pass").value;
+    if (!username || !password) return;
+
+    error.textContent = "Signing in…";
+
+    api("/auth/login", { method: "POST", body: { username: username, password: password } })
+      .then(function (res) {
+        if (!res.ok) throw new Error(String(res.status));
+        // The response says which role signed in. Remembering it is what
+        // decides whether edit.js is ever fetched, so a visitor never pays for
+        // an editor they cannot open.
+        return res.json()
+          .catch(function () { return null; })
+          .then(function (data) {
+            forgetMe();
+            if (data && data.user && data.user.role === "admin") {
+              remember("admin", "1");
+              loadEditor();
+            }
+            return openVault();
+          });
+      })
+      .then(function () {
+        error.textContent = "";
+        document.getElementById("vault-pass").value = "";
+      })
+      .catch(function (err) {
+        error.textContent = err.message === "401"
+          ? "Those details did not work."
+          : err.message === "429"
+            ? "Too many attempts. Please wait and try again."
+            : "The service is not reachable right now.";
+        document.getElementById("vault-pass").value = "";
+      });
+  });
+
+  open.addEventListener("click", function () { showForm(true); });
+  document.getElementById("vault-signout").addEventListener("click", signOut);
+
+  if (toggle) {
+    toggle.addEventListener("click", function () {
+      if (!list.hidden) return signOut();
+      showForm(true);
+      document.getElementById("vault").scrollIntoView({ block: "center" });
     });
+  }
+
+  if (recall("vault:seen")) openVault();   // a returning cookie, not a stored login
 }
 
-function showSignedIn(user) {
-  var nav = document.querySelector(".site-nav");
-  if (!nav) return;
+function vaultDocs(items) {
+  var box = document.getElementById("vault-docs");
+  box.textContent = "";
 
+  if (!items.length) {
+    box.appendChild(el("p", "muted", "Nothing has been shared with this account yet."));
+    return;
+  }
+
+  items.forEach(function (item) {
+    var row = el(item.available ? "a" : "span", "doc");
+    if (item.available) row.href = API_BASE + "/vault/items/" + item.id + "/file";
+
+    row.appendChild(iconSpan(ICON_FILE));
+    row.appendChild(el("b", null, item.title));
+
+    var size = item.available ? formatBytes(item.sizeBytes) : "";
+    row.appendChild(el("span", "doc__size",
+      item.available ? (size ? "PDF · " + size : "PDF") : "not uploaded"));
+
+    box.appendChild(row);
+  });
+}
+
+/* The subpages, which the single-page rewrite left behind.
+
+   index.html carries the vault inline; login.html, vault/index.html and
+   admin.html still wear the old .site-header chrome and still talk to the same
+   API, so their bindings live here too. Each returns immediately on a page that
+   does not have its elements, so index.html runs none of them. */
+/* One /auth/me per page load: initAuth and initLogin both want the answer and
+   both run on login.html. null means signed out, which is the normal case. */
+var mePromise = null;
+
+/** Signing in or out makes the memoized answer wrong; drop it. */
+function forgetMe() {
+  mePromise = null;
+}
+
+function me() {
+  if (!mePromise) {
+    mePromise = api("/auth/me")
+      .then(function (res) { return res.ok ? res.json() : null; })
+      .then(function (data) { return (data && data.user) || null; })
+      .catch(function () { return null; });
+  }
+  return mePromise;
+}
+
+function initAuth() {
+  var nav = document.querySelector(".site-nav");
+  if (!nav || isOffline()) return;
+
+  me().then(function (user) { if (user) showSignedIn(nav, user); });
+}
+
+function showSignedIn(nav, user) {
   if (user.role === "admin" && !nav.querySelector("[data-admin-link]")) {
-    var admin = document.createElement("a");
+    var admin = el("a", null, "Admin");
     admin.href = "/admin.html";
-    admin.textContent = "Admin";
     admin.setAttribute("data-admin-link", "");
     if (location.pathname === "/admin.html") admin.setAttribute("aria-current", "page");
     nav.appendChild(admin);
   }
 
   var header = nav.parentNode;
-  if (header && !header.querySelector("[data-signout]")) {
-    var out = document.createElement("button");
-    out.type = "button";
-    out.className = "icon-btn site-header__signout";
-    out.title = "Sign out";
-    out.setAttribute("aria-label", "Sign out");
-    out.setAttribute("data-signout", "");
-    out.innerHTML = ICON_DOOR;
-    out.addEventListener("click", function () {
-      api("/auth/logout", { method: "POST" })
-        .then(function () { location.href = "/index.html"; })
-        .catch(function () { location.href = "/index.html"; });
-    });
-    var toggle = document.getElementById("theme-toggle");
-    if (toggle && toggle.parentNode === header) header.insertBefore(out, toggle);
-    else header.appendChild(out);
-    header.classList.add("has-signout");
-  }
+  if (!header || header.querySelector("[data-signout]")) return;
+
+  var out = el("button", "icon-btn site-header__signout");
+  out.type = "button";
+  out.title = "Sign out";
+  out.setAttribute("aria-label", "Sign out");
+  out.setAttribute("data-signout", "");
+  out.appendChild(iconSpan(ICON_DOOR));
+  out.addEventListener("click", function () {
+    api("/auth/logout", { method: "POST" })
+      .catch(function () {})
+      .then(function () { location.href = "/index.html"; });
+  });
+
+  // Left of the theme toggle when there is one, so the header's right edge
+  // does not move between a signed-out and a signed-in page.
+  var toggle = document.getElementById("theme-toggle");
+  if (toggle && toggle.parentNode === header) header.insertBefore(out, toggle);
+  else header.appendChild(out);
+
+  header.classList.add("has-signout");
 }
 
+/* The standalone /vault/ list. Same rule as the panel on the home page: the
+   markup ships empty and every row here comes from a response the server
+   already agreed to send. */
 function initVault() {
   var list = document.getElementById("vault-list");
-  var status = document.getElementById("vault-status");
   if (!list) return;
 
+  var status = document.getElementById("vault-status");
+
   if (isOffline()) {
-    if (status) status.textContent = "The Vault needs the live site — it cannot be opened from a local file.";
+    if (status) {
+      status.textContent = "The Vault needs the live site — it cannot be opened from a local file.";
+    }
     return;
   }
 
@@ -244,9 +447,7 @@ function initVault() {
         return;
       }
 
-      items.forEach(function (item) {
-        list.appendChild(vaultRow(item));
-      });
+      items.forEach(function (item) { list.appendChild(vaultRow(item)); });
 
       list.hidden = false;
       if (status) status.remove();
@@ -258,41 +459,23 @@ function initVault() {
 }
 
 function vaultRow(item) {
-  var li = document.createElement("li");
-  li.className = "doc";
-
-  var row = document.createElement(item.available ? "a" : "span");
-  row.className = "doc__link";
+  var li = el("li", item.available ? "doc" : "doc doc--missing");
+  var row = el(item.available ? "a" : "span", "doc__link");
   if (item.available) row.href = API_BASE + "/vault/items/" + item.id + "/file";
-  else li.classList.add("doc--missing");
 
-  var icon = document.createElement("span");
+  var icon = iconSpan(ICON_FILE);
   icon.className = "doc__icon";
-  icon.setAttribute("aria-hidden", "true");
-  icon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>';
 
-  var name = document.createElement("span");
-  name.className = "doc__name";
-  name.textContent = item.title;
-
-  var meta = document.createElement("span");
-  meta.className = "doc__meta";
-  if (!item.available) {
-    meta.textContent = "Not uploaded";
-  } else {
-    var size = formatBytes(item.sizeBytes);
-    meta.textContent = size ? "PDF · " + size : "PDF";
-  }
+  var size = item.available ? formatBytes(item.sizeBytes) : "";
 
   row.appendChild(icon);
-  row.appendChild(name);
-  row.appendChild(meta);
+  row.appendChild(el("span", "doc__name", item.title));
+  row.appendChild(el("span", "doc__meta",
+    item.available ? (size ? "PDF · " + size : "PDF") : "Not uploaded"));
 
   if (item.available) {
-    var arrow = document.createElement("span");
+    var arrow = iconSpan(ICON_DOWNLOAD);
     arrow.className = "doc__arrow";
-    arrow.setAttribute("aria-hidden", "true");
-    arrow.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
     row.appendChild(arrow);
   }
 
@@ -300,6 +483,9 @@ function vaultRow(item) {
   return li;
 }
 
+/* login.html. The form has a real method/action so it is not useless without
+   JS, but the API answers 200 with JSON rather than a redirect, so leaving the
+   native POST alone would land the visitor on a page of raw JSON. */
 function initLogin() {
   var form = document.getElementById("login-form");
   if (!form) return;
@@ -309,14 +495,12 @@ function initLogin() {
   var next = safeNext(new URLSearchParams(location.search).get("next"));
 
   if (isOffline()) {
-    showLoginError(error, "Signing in needs the live site — it cannot be done from a local file.");
+    loginError(error, "Signing in needs the live site — it cannot be done from a local file.");
     if (submit) submit.disabled = true;
     return;
   }
 
-  api("/auth/me").then(function (res) {
-    if (res.ok) location.replace(next);
-  }).catch(function () {});
+  me().then(function (user) { if (user) location.replace(next); });
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -325,7 +509,7 @@ function initLogin() {
     var password = form.password.value;
 
     if (!username || !password) {
-      showLoginError(error, "Enter both a username and a password.");
+      loginError(error, "Enter both a username and a password.");
       return;
     }
 
@@ -341,12 +525,12 @@ function initLogin() {
           location.replace(next);
           return null;
         }
-        return res.json().catch(function () { return {}; }).then(function (body) {
-          throw new Error(loginMessage(res.status, body));
-        });
+        return res.json()
+          .catch(function () { return {}; })
+          .then(function (body) { throw new Error(loginMessage(res.status, body)); });
       })
       .catch(function (err) {
-        showLoginError(error, err.message || "Something went wrong. Please try again.");
+        loginError(error, err.message || "Something went wrong. Please try again.");
         form.password.value = "";
         form.password.focus();
       })
@@ -360,27 +544,82 @@ function initLogin() {
 }
 
 function loginMessage(status, body) {
-  if (status === 429) {
-    return (body && body.message) || "Too many attempts. Please wait and try again.";
-  }
-  if (status === 401) {
-    return "Invalid username or password.";
-  }
+  if (status === 429) return (body && body.message) || "Too many attempts. Please wait and try again.";
+  if (status === 401) return "Invalid username or password.";
   if (status === 400) return "Please check the form and try again.";
   return "Sign-in is unavailable right now. Please try again shortly.";
 }
 
-function showLoginError(el, message) {
-  if (!el) return;
-  el.textContent = message;
-  el.hidden = false;
+function loginError(node, message) {
+  if (!node) return;
+  node.textContent = message;
+  node.hidden = false;
 }
 
+/* ?next= is attacker-supplied: only a same-origin path is ever followed, so a
+   protocol-relative //evil.example cannot become the destination. */
 function safeNext(raw) {
   var fallback = "/vault/";
   if (!raw || raw.charAt(0) !== "/") return fallback;
   if (raw.charAt(1) === "/" || raw.charAt(1) === "\\") return fallback;
   return raw;
+}
+
+/* The on-page editor is not in any page's markup: it is fetched only for
+   someone who has already signed in here as an admin, or who asked for it with
+   ?edit / #edit. A visitor therefore downloads nothing extra and makes no extra
+   request, which is what keeps "a published page calls no API" true.
+
+   edit.js checks the session itself before it draws anything — the flag below
+   is a hint about who is looking, never the thing that grants access. */
+function loadEditor() {
+  if (isOffline()) return;
+  if (!document.querySelector("[data-edit]")) return;
+  if (recall("admin") !== "1" && !/[?#]edit\b/.test(location.href)) return;
+
+  // Already there: a stale flag loaded it before the session existed, and it
+  // gave up. Signing in is the second chance, not a reason to fetch it twice.
+  if (window.startEditor) return window.startEditor();
+  if (document.getElementById("edit-js")) return;
+
+  var tag = document.createElement("script");
+  tag.id = "edit-js";
+  tag.src = "edit.js";
+  document.body.appendChild(tag);
+}
+
+/* Real seconds from /api/health, never a number invented in the browser. The
+   call is unauthenticated and the footer simply stays without it on failure. */
+function initUptime() {
+  var out = document.getElementById("uptime");
+  if (!out || isOffline()) return;
+
+  api("/health")
+    .then(function (res) { return res.ok ? res.json() : null; })
+    .then(function (data) {
+      if (!data || typeof data.uptimeSeconds !== "number") return;
+
+      var started = Date.now() - data.uptimeSeconds * 1000;
+      out.hidden = false;
+
+      function tick() {
+        out.textContent = " · uptime " + elapsed(started);
+      }
+
+      tick();
+      setInterval(tick, 1000);
+    })
+    .catch(function () {});
+}
+
+function elapsed(since) {
+  var s = Math.max(0, Math.floor((Date.now() - since) / 1000));
+  var d = Math.floor(s / 86400); s %= 86400;
+  var h = Math.floor(s / 3600);  s %= 3600;
+  var m = Math.floor(s / 60);    s %= 60;
+
+  function pad(n) { return n < 10 ? "0" + n : String(n); }
+  return d + "d " + pad(h) + "h " + pad(m) + "m " + pad(s) + "s";
 }
 
 function formatBytes(value) {
@@ -403,6 +642,80 @@ var ICON_SUN =
 var ICON_DOOR =
   '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>';
 
+function el(tag, className, text) {
+  var node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined && text !== null) node.textContent = String(text);
+  return node;
+}
+
+function recall(key) {
+  try { return localStorage.getItem(key); } catch (e) { return null; }
+}
+
+function remember(key, value) {
+  try { localStorage.setItem(key, value); } catch (e) {}
+}
+
+/* Icons are literals in this file, never fetched. The markup is ours, so
+   innerHTML here is a constant, not anything a user or the server supplied. */
+function iconSpan(svg) {
+  var span = document.createElement("span");
+  span.className = "icon";
+  span.setAttribute("aria-hidden", "true");
+  span.innerHTML = svg;
+  return span;
+}
+
+/* English is what the markup says; data-de carries the twin. The English text
+   is captured on load so the swap works in both directions. */
+function initLang() {
+  var btn = document.getElementById("lang-toggle");
+  if (!btn) return;
+
+  var nodes = document.querySelectorAll("[data-de]");
+  for (var i = 0; i < nodes.length; i++) {
+    nodes[i].setAttribute("data-en", nodes[i].textContent);
+  }
+
+  function apply(de) {
+    document.documentElement.lang = de ? "de" : "en";
+    for (var n = 0; n < nodes.length; n++) {
+      nodes[n].textContent = nodes[n].getAttribute(de ? "data-de" : "data-en");
+    }
+    btn.textContent = de ? "EN" : "DE";          // the language it switches to
+    btn.setAttribute("aria-label", de ? "Switch to English" : "Auf Deutsch umschalten");
+  }
+
+  apply(recall("lang") === "de");
+
+  btn.addEventListener("click", function () {
+    var de = document.documentElement.lang !== "de";
+    apply(de);
+    remember("lang", de ? "de" : "en");
+  });
+}
+
+function initSplitters() {
+  var splits = document.querySelectorAll(".split");
+  if (!splits.length) return;
+
+  if (!window.IntersectionObserver) {
+    for (var i = 0; i < splits.length; i++) splits[i].classList.add("is-in");
+    return;
+  }
+
+  var io = new IntersectionObserver(function (entries) {
+    for (var i = 0; i < entries.length; i++) {
+      if (!entries[i].isIntersecting) continue;
+      entries[i].target.classList.add("is-in");
+      io.unobserve(entries[i].target);
+    }
+  }, { threshold: 0.6 });
+
+  for (var j = 0; j < splits.length; j++) io.observe(splits[j]);
+}
+
 function initThemeToggle() {
   var root = document.documentElement;
   var toggle = document.getElementById("theme-toggle");
@@ -414,16 +727,14 @@ function initThemeToggle() {
     if (toggle) toggle.setAttribute("aria-pressed", String(light));
   }
 
-  var saved = null;
-  try { saved = localStorage.getItem("theme"); } catch (e) {}
-  apply(saved === "light");
+  apply(recall("theme") === "light");
 
   if (!toggle) return;
 
   toggle.addEventListener("click", function () {
     var light = !root.classList.contains("light");
     apply(light);
-    try { localStorage.setItem("theme", light ? "light" : "dark"); } catch (e) {}
+    remember("theme", light ? "light" : "dark");
   });
 }
 
@@ -432,12 +743,13 @@ var GH_CACHE_TTL = 6 * 60 * 60 * 1000;   // 6h — the source updates daily at b
 var GH_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 var GH_ROWS = 7;                         // days in a column
+var GH_WEEKS = 53;                       // a year, ending on today's column
 
 function renderContributions() {
   var root = document.getElementById("gh");
   if (!root) return;
 
-  var user = root.getAttribute("data-gh-user") || "kiraa1q";
+  var user = root.getAttribute("data-gh-user") || "7qob";
   var cached = ghReadCache(user);
 
   if (cached) ghDraw(root, cached.days);
@@ -516,21 +828,6 @@ function ghSlots(days) {
   return slots;
 }
 
-/* How many weeks the card can hold, measured rather than assumed: square cells
-   that fill the height decide it. Fewer than the year — the oldest weeks are
-   dropped rather than squeezed into slivers. More room than weeks — the count
-   stands and the 1fr columns stretch, which is what keeps the grid flush. */
-function ghWeeks(chart, total) {
-  var box = chart.getBoundingClientRect();
-  if (!box.width || !box.height) return total;
-
-  var gap = parseFloat(getComputedStyle(chart).getPropertyValue("--gh-gap")) || 0;
-  var cell = (box.height - (GH_ROWS - 1) * gap) / GH_ROWS;
-  if (cell <= 0) return total;
-
-  return Math.max(1, Math.min(total, Math.floor((box.width + gap) / (cell + gap))));
-}
-
 function ghLabel(slots) {
   var total = 0, first = null, last = null;
 
@@ -552,10 +849,10 @@ function ghDraw(root, days) {
   if (!chart) return;
 
   var slots = ghSlots(days);
-  var weeks = ghWeeks(chart, slots.length / GH_ROWS);
-  if (weeks < slots.length / GH_ROWS) {
-    slots = slots.slice(slots.length - weeks * GH_ROWS);
+  if (slots.length > GH_WEEKS * GH_ROWS) {
+    slots = slots.slice(slots.length - GH_WEEKS * GH_ROWS);
   }
+  var weeks = slots.length / GH_ROWS;
 
   var cells = document.createElement("div");
   cells.className = "gh-cells";
@@ -580,28 +877,6 @@ function ghDraw(root, days) {
   chart.appendChild(cells);
 
   ghTooltip(root, cells);
-  ghWatch(root, days);
-}
-
-/* The week count is a function of the card's size, so it is recomputed when the
-   card resizes — once per element, and only when the count actually moves. */
-function ghWatch(root, days) {
-  root.ghDays = days;
-  if (root.ghObserver || !window.ResizeObserver) return;
-
-  var chart = root.querySelector("[data-gh-chart]");
-  if (!chart) return;
-
-  root.ghObserver = new ResizeObserver(function () {
-    var cells = chart.querySelector(".gh-cells");
-    if (!cells) return;
-
-    var total = ghSlots(root.ghDays).length / GH_ROWS;
-    if (ghWeeks(chart, total) !== Number(cells.style.getPropertyValue("--gh-weeks"))) {
-      ghDraw(root, root.ghDays);
-    }
-  });
-  root.ghObserver.observe(chart);
 }
 
 function ghTooltip(root, cells) {

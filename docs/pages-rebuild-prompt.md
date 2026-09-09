@@ -112,7 +112,7 @@ guard on Back and on section switch.
   style attribute is a regex-validated hex.
 - **In the panel, `textContent`, never `innerHTML`** — it renders attacker-chosen strings.
 - **Nothing secret is committed.** The repo is public.
-- **Commits: author `kiraa1q`, no `Co-Authored-By`, no mention of Claude.**
+- **Commits: author `7qob`, no `Co-Authored-By`, no mention of Claude.**
 
 ## Verify before reporting done
 

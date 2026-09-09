@@ -122,7 +122,7 @@ copy the existing records for `kira1q.dev` and `www`.** That is your only way
 back. Reverting means re-entering those records by hand.
 
 The Devportal repo itself is untouched — it stays at
-`kiraa1q.github.io/Devportal` and you can always re-point DNS to it.
+`7qob.github.io/Devportal` and you can always re-point DNS to it.
 
 ### 2.6 Run it as a service
 
@@ -303,6 +303,21 @@ cd ~/Portfolio && docker compose pull && docker compose up -d
 
 The database and the documents are bind mounts, so pulling a new image never
 touches accounts, logs or PDFs.
+
+**When the home page's markers change, drop the generated copy.** Once a
+Publish has happened, `pages/index.html` becomes its own template — the
+renderer reads it back rather than the rsynced file, so a marker pair added to
+`index.html` in the repo is invisible to it. The symptom is silent: publishing
+that region logs a warning and changes nothing. After a deploy that adds or
+moves a `<!-- … :start -->` / `:end` pair:
+
+```bash
+sudo rm -f /var/www/kira1q.dev/pages/index.html
+```
+
+nginx falls straight back to the rsynced `index.html`, and the next Publish
+regenerates the page from the new template. `setup-pi.sh` reports which markers
+the live template has, and says which file it checked.
 
 ### What this protects against, and what it doesn't
 

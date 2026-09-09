@@ -1,5 +1,5 @@
 /* ==== kira1q.dev — one stylesheet, no build step ====
-   Retro/KISS: 1px borders, border-radius 0, no shadows — depth comes from the
+   Terminal/KISS: 2px borders, a 4px corner, no shadows. Depth comes from the
    border and the panel/background contrast. Spacing off --space and --gap;
    reading flow off --stack-*. Type sizes only from the --fs-* tokens. */
 
@@ -10,12 +10,12 @@
   --panel-alt:   #141414;   /* nested surfaces / inset wells     */
   --line:        #2a2a2a;   /* card + element borders            */
   --line-soft:   #202020;   /* dividers inside a card            */
-  --fg:          #d2d2d2;   /* body text                         */
+  --fg:          #efefef;   /* body text                         */
   --fg-strong:   #efefef;   /* headings, name                    */
-  --fg-mute:     #8a8a8a;   /* section eyebrows, captions        */
-  --accent:      #ff1e2f;   /* section eyebrows, captions  #DE9100;      #ff1e2f;  */
+  --fg-mute:     #8a8a8a;   /* muted text, labels, captions      */
+  --accent:      #ff1e2f;   /* focus rings, hover, the favicon   */
 
-  --bw:          1px;
+  --bw:          2px;
 
   --bg-raised:    var(--panel);
   --text:         var(--fg-strong);
@@ -23,21 +23,21 @@
   --border:       var(--line);
   --border-hover: #3a3a3a;          /* hover border */
 
-  --fs-name:      1.75rem;   /* hero name, page h1         */
-  --fs-subtitle:  1.5rem;    /* project name in a card     */
-  --fs-heading:   1.25rem;   /* project / section titles   */
-  --fs-lede:      1.125rem;  /* the one-sentence opener    */
+  --fs-name:      1.7rem;    /* hero name, page h1         */
+  --fs-subtitle:  1.15rem;   /* project name in a card     */
+  --fs-heading:   1rem;      /* project / section titles   */
+  --fs-lede:      1rem;      /* the one-sentence opener    */
   --fs-body:      1rem;      /* base body text             */
   --fs-caption:   0.75rem;   /* uppercase section labels   */
   --fs-meta:      0.7rem;    /* dates / status / meta       */
 
-  --measure:      34rem;
-  --measure-wide: 41rem;
+  --measure:      66ch;
+  --measure-wide: 78ch;
 
   --measure-card: 60ch;
 
   --border-width: var(--bw);
-  --radius:       0;
+  --radius:       4px;
   --space:        8px;
   --gap:          calc(var(--space) * 2);   /* single knob for all inter-box spacing */
 
@@ -47,23 +47,25 @@
 
   --motion:       120ms ease;               /* color / border-color transitions */
 
-  --font: "Times New Roman", Times, serif;
+  /* No webfont: a Google Fonts link would be the site's only third-party
+     request. Cascadia ships with VS Code and Windows Terminal, so most
+     visitors already have it locally; the rest fall back down the stack. */
+  --font: ui-monospace, "Cascadia Mono", "Cascadia Code", Consolas,
+          "DejaVu Sans Mono", monospace;
 }
 
 :root.light {
-  --bg:           #f4f4f4;
-  --panel:        #ffffff;
-  --panel-alt:    #ececec;
-  --line:         #c9c9c9;
+  --bg:           #efefef;
+  --panel:        #e2e2e2;
+  --panel-alt:    #d8d8d8;
+  --line:         #cfcfcf;
   --line-soft:    #dcdcdc;
-  --fg:           #3a3a3a;
-  --fg-strong:    #1b1b1b;
-  --fg-mute:      #6a6a6a;
-  /** --accent:       #b8860b;  **/
-  --accent:       #ff505e;
+  --fg:           #0e0e0e;
+  --fg-strong:    #0e0e0e;
+  --fg-mute:      #6e6e6e;
+  --accent:       #d4111f;
 
   --border-hover: #9a9a9a;
-  --gh-l0:        #ebedf0;
 }
 
 /* ---- Reset ---- */
@@ -80,7 +82,7 @@
 }
 
 html {
-  font-size: 112.5%;
+  font-size: 100%;   /* 1rem = 16px, the mock's base */
 }
 
 body {
@@ -489,40 +491,33 @@ body {
 .area-smallB    { grid-area: smallB; }
 
 /* ---- GitHub contribution heatmap (data: third-party service) ---- */
-/* Levels are derived from --accent, so the heatmap follows the accent. */
+/* One ink, five opacity steps: the heatmap follows the accent in both themes
+   without a per-theme override, and a level is a number rather than a colour. */
 :root {
-  --gh-l0: var(--panel-alt);   /* empty cell — inset, darker than the card */
-  --gh-l1: color-mix(in srgb, var(--accent) 28%, var(--gh-l0));
-  --gh-l2: color-mix(in srgb, var(--accent) 52%, var(--gh-l0));
-  --gh-l3: color-mix(in srgb, var(--accent) 76%, var(--gh-l0));
-  --gh-l4: var(--accent);
-}
+  /* White on blue, and the only saturated surface on the page. The cells are
+     opacity steps of one ink, so a level is a number rather than a colour. */
+  --gh-ink: #ffffff;
+  --gh-field: #1a3cff;
 
-/* The gap is the only fixed dimension left: the cells are sized to the card at
-   runtime, so the grid is flush with the border whatever shape the box is. */
-:root {
-  --gh-gap: 3px;
+  --gh-gap: 2px;
+
+  /* The one place --radius: 0 does not apply. At this cell size a square
+     corner reads as a grid of tiles; 1px is enough to break that up and is
+     invisible anywhere else. Do not spend this exception on another box. */
+  --gh-radius: 1px;
 }
 
 .gh {
   position: relative;
-  flex: 1;
-  min-height: 0;
-  display: flex;
+  background: var(--gh-field);
+  border-radius: var(--radius);
+  padding: calc(var(--space) * 0.75);
 }
 
-.gh__chart {
-  flex: 1;
-  min-width: 0;
-  min-height: 0;
-  display: flex;
-}
-
-/* flex:1 + the default stretch is what fills the card in both axes — a
-   percentage height would resolve to nothing wherever the chart is auto. */
+/* Square cells across a fixed 53 columns, so the graph's height falls out of
+   its width. Nothing is measured: the week count is the calendar's, not the
+   box's, and the row always ends on today. */
 .gh-cells {
-  flex: 1;
-  min-width: 0;
   display: grid;
   grid-auto-flow: column;                        /* a column is a week */
   grid-template-columns: repeat(var(--gh-weeks, 53), 1fr);
@@ -546,14 +541,15 @@ body {
 
 .gh__status {
   font-size: var(--fs-meta);
-  color: var(--fg-mute);
+  color: var(--gh-ink);
+  opacity: 0.7;
 }
 
 /* Inherits the site's button-less look: a bordered box, not a pill. */
 .gh__retry {
-  border: var(--bw) solid var(--line);
+  border: var(--bw) solid var(--gh-ink);
   background: none;
-  color: var(--fg);
+  color: var(--gh-ink);
   font-family: inherit;
   font-size: var(--fs-meta);
   padding: 2px calc(var(--space) * 0.75);
@@ -562,27 +558,29 @@ body {
 }
 
 .gh__retry:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+  background: var(--gh-ink);
+  color: var(--gh-field);
 }
 
 .gh__retry:focus-visible {
-  outline: 1px solid var(--accent);
+  outline: var(--bw) solid var(--gh-ink);
   outline-offset: 2px;
 }
 
 .gh-cell {
+  aspect-ratio: 1;
   min-width: 0;
-  min-height: 0;
-  background: var(--gh-l0);
+  background: var(--gh-ink);
+  border-radius: var(--gh-radius);
+  opacity: 0.14;
 }
 
-.gh-cell[data-level="1"] { background: var(--gh-l1); }
-.gh-cell[data-level="2"] { background: var(--gh-l2); }
-.gh-cell[data-level="3"] { background: var(--gh-l3); }
-.gh-cell[data-level="4"] { background: var(--gh-l4); }
+.gh-cell[data-level="1"] { opacity: 0.34; }
+.gh-cell[data-level="2"] { opacity: 0.55; }
+.gh-cell[data-level="3"] { opacity: 0.78; }
+.gh-cell[data-level="4"] { opacity: 1; }
 
-.gh-cell--pad { background: transparent; }
+.gh-cell--pad { opacity: 0; }
 
 /* ==== Project identity — gradient border ("edge") ==== */
 
@@ -2479,4 +2477,618 @@ code {
   }
 
   .site-header.has-signout .site-nav { flex: 1 0 100%; }
+}
+
+/* ==== Single page ========================================================
+   The whole site is one scrolling column: header, hero, graph, then numbered
+   sections. Nothing here is shared with the pages that predate it. */
+
+body.is-single {
+  display: block;
+  padding: 0;
+  gap: 0;
+  line-height: 1.75;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 9;
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-bottom: var(--bw) solid var(--line);
+}
+
+.topbar__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space);
+  padding: calc(var(--space) * 0.75) calc(var(--space) * 2);
+}
+
+.brand {
+  margin-right: auto;
+  font-size: var(--fs-caption);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--fg-strong);
+  text-decoration: none;
+}
+
+/* Pulled right by the .tool's own 6px of padding, so the last icon's edge ends
+   up on the same 2*--space rail as the brand rather than 6px inside it. */
+.tools { display: flex; align-items: center; gap: 2px; margin-right: -6px; }
+
+.tool {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--fg-mute);
+  font: inherit;
+  font-size: var(--fs-meta);
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: color var(--motion), background var(--motion);
+}
+
+.tool:hover { color: var(--fg-strong); background: var(--line); }
+.tool:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: -2px; }
+
+/* script.js swaps the icon inside this span, so the span is what has to be a
+   flex box: left inline, the svg sits on the text baseline and rides 3px above
+   the button's centre — visibly out of line with the DE label beside it. */
+.tool > span { display: flex; }
+.tool svg { display: block; width: 16px; height: 16px; }
+
+.col {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: 0 calc(var(--space) * 2);
+}
+
+main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
+.section { padding: calc(var(--space) * 3) 0; }
+.section--top { padding-top: 0; }
+
+/* Splitter: number, label, and a rule that draws itself in on first sight. */
+.split {
+  display: flex;
+  align-items: center;
+  gap: 0.9em;
+  margin-bottom: calc(var(--space) * 2.5);
+}
+
+.split__n { font-size: var(--fs-caption); color: var(--fg-mute); }
+
+.split__i { display: flex; color: var(--fg-mute); }
+.split__i svg { display: block; width: 14px; height: 14px; }
+
+.split__l {
+  font-size: var(--fs-caption);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--fg-strong);
+}
+
+.split__bar {
+  flex: 1;
+  height: var(--bw);
+  background: var(--line);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 550ms ease;
+}
+
+.split.is-in .split__bar { transform: scaleX(1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .split__bar { transform: none; transition: none; }
+}
+
+.hero__title {
+  font-size: var(--fs-name);
+  line-height: 1.35;
+  color: var(--fg-strong);
+  margin-bottom: var(--space);
+}
+
+.prose p { margin-bottom: var(--space); }
+.prose p:last-child { margin-bottom: 0; }
+.muted { color: var(--fg-mute); }
+
+/* label / value rows, e.g. the setup list */
+.facts { list-style: none; margin-top: calc(var(--space) * 2); }
+.facts li { display: flex; gap: 0.9em; color: var(--fg-mute); }
+.facts b { min-width: 7ch; color: var(--fg-strong); font-weight: 400; }
+
+/* Longer labels (the language names) need a wider first column or the values
+   stop lining up. The knob is the min-width, not a fixed track. */
+.facts--wide b { min-width: 11ch; }
+
+/* The interests list under 01. Same label / value rows, but each sits on its
+   own divider so a run of one-line entries reads as a list rather than as a
+   block of prose. The value needs `flex: 1; min-width: 0` or a long line
+   pushes the row past the column instead of wrapping inside it. */
+.facts--seam li {
+  align-items: baseline;
+  border-top: var(--bw) solid var(--line-soft);
+  padding-top: calc(var(--space) * 0.75);
+}
+
+.facts--seam li + li { margin-top: calc(var(--space) * 0.75); }
+.facts--seam span { flex: 1; min-width: 0; }
+
+@media (max-width: 560px) {
+  .facts--seam li { flex-direction: column; gap: 0.15em; }
+}
+
+/* No bare `a` rule exists in this stylesheet, so every body-copy container that
+   can hold a link needs to be listed here or it falls back to the browser's
+   blue underline. .card__desc is on the list because a card blurb written in
+   the panel goes through inline(), which turns [text](url) into a real link. */
+.prose a,
+.fold__body a,
+.card__desc a,
+.rig__text a {
+  color: var(--fg-strong);
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 2px;
+  transition: color var(--motion);
+}
+
+.prose a:hover,
+.prose a:focus-visible,
+.fold__body a:hover,
+.fold__body a:focus-visible,
+.card__desc a:hover,
+.card__desc a:focus-visible,
+.rig__text a:hover,
+.rig__text a:focus-visible { color: var(--accent); }
+
+/* ---- The long read, folded under 01 ---- */
+.fold { margin-top: calc(var(--space) * 3); }
+
+.fold__body {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space) * 2.5);
+  padding-top: calc(var(--space) * 2.5);
+  color: var(--fg-mute);
+}
+
+.fold__body p + p { margin-top: var(--space); }
+
+.fold__h {
+  display: block;
+  margin-bottom: 0.35em;
+  color: var(--fg-strong);
+  font-weight: 400;
+}
+
+/* ---- Setup ---- */
+.rig { margin-top: calc(var(--space) * 2); }
+
+.rig__hint { font-size: var(--fs-meta); color: var(--fg-mute); }
+
+.rig__body {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space) * 3);
+  padding-top: calc(var(--space) * 3);
+}
+
+/* A 260px picture rail with the words beside it. The clips are 480px native,
+   so this is still a downscale. Push the rail much wider and the text column
+   inside the 66ch .col drops under ~30 characters and stops reading. */
+.rig__row {
+  display: grid;
+  grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+  gap: calc(var(--space) * 2.2);
+  align-items: start;
+}
+
+/* Stacked before the text gets squeezed, not at a phone breakpoint: below this
+   the clip goes full width, which is the biggest it is anywhere on the page. */
+@media (max-width: 720px) {
+  .rig__row { grid-template-columns: 1fr; }
+  .rig__media { max-width: 480px; }
+}
+
+.rig__media {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--panel);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--radius);
+}
+
+.rig__text { color: var(--fg-mute); }
+
+.rig__name {
+  display: block;
+  margin-bottom: 0.35em;
+  color: var(--fg-strong);
+  font-weight: 400;
+}
+
+/* ---- Projects ---- */
+.card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 136px 1fr;
+  gap: calc(var(--space) * 2.2);
+  padding: calc(var(--space) * 2.2) 0;
+  align-items: start;
+}
+
+.card + .card { border-top: var(--bw) solid var(--line); }
+
+@media (max-width: 560px) {
+  .card { grid-template-columns: 1fr; }
+}
+
+.shot {
+  display: block;
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--panel);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--radius);
+  transition: border-color var(--motion);
+}
+
+.card:hover .shot { border-color: var(--border-hover); }
+.shot img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+/* No cover yet: hatching and the slug, so the row still has a left edge. */
+.shot--empty::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.5;
+  background: repeating-linear-gradient(45deg, var(--line) 0 1px, transparent 1px 7px);
+}
+
+.shot--empty::after {
+  content: attr(data-label);
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-meta);
+  letter-spacing: 0.2em;
+  color: var(--fg-mute);
+}
+
+.card__head {
+  display: flex;
+  align-items: center;
+  gap: 0.8em;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* The underline is always drawn and only its colour changes, so hovering the
+   title does not reflow the line the way switching text-decoration on would. */
+.card__name {
+  font-size: var(--fs-subtitle);
+  font-weight: 700;
+  color: var(--fg-strong);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
+  transition: text-decoration-color var(--motion);
+}
+
+.card__head:hover .card__name { text-decoration-color: currentColor; }
+.card__head:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: 4px; }
+
+.tag {
+  font-size: var(--fs-meta);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fg-mute);
+}
+
+.card__desc { color: var(--fg-mute); margin-top: 0.15em; }
+
+.card__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.1em;
+  margin-top: 0.7em;
+  font-size: var(--fs-caption);
+}
+
+.card__links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  color: var(--fg-mute);
+  text-decoration: none;
+}
+
+.card__links a:hover { color: var(--fg-strong); }
+.card__links svg { width: 13px; height: 13px; }
+
+/* The file size sits a shade under the filename. It is typed in only once the
+   PDF is actually there, so an empty slot collapses instead of leaving a gap. */
+.card__sz { opacity: 0.65; }
+.card__sz:empty { display: none; }
+
+/* ---- Readme ---- */
+/* <details> rather than a button: the open/closed state is the element's own,
+   so every fold on the page costs no JavaScript at all. Shared by the readme,
+   the long read under 01 and the setup fold under 02. */
+.disclose {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  width: max-content;
+  color: var(--fg-strong);
+  cursor: pointer;
+  list-style: none;
+}
+
+.disclose::-webkit-details-marker { display: none; }
+.disclose:hover { color: var(--fg-mute); }
+.disclose:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: 4px; }
+.disclose svg { width: 16px; height: 16px; transition: transform var(--motion); }
+[open] > .disclose svg { transform: rotate(90deg); }
+
+.readme {
+  margin-top: var(--space);
+  padding: calc(var(--space) * 2) calc(var(--space) * 2.5);
+  background: var(--panel);
+  border-radius: var(--radius);
+  color: var(--fg-mute);
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+}
+
+.readme b { color: var(--fg-strong); font-weight: 400; }
+
+/* ---- Socials ---- */
+.soc {
+  display: flex;
+  align-items: center;
+  gap: 0.8em;
+  padding: 0.35em 0;
+  color: var(--fg-mute);
+  text-decoration: none;
+}
+
+.soc b { color: var(--fg-strong); font-weight: 400; }
+.soc__at { margin-left: auto; }
+.soc:hover, .soc:hover b { color: var(--fg-strong); }
+.soc:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: 2px; }
+.soc svg { width: 16px; height: 16px; }
+
+/* ---- Footer ---- */
+.pagefoot { border-top: var(--bw) solid var(--line); }
+
+.pagefoot__inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space);
+  padding: calc(var(--space) * 1.25) calc(var(--space) * 2);
+  font-size: var(--fs-caption);
+  color: var(--fg-mute);
+}
+
+.pagefoot a { color: inherit; text-decoration: none; }
+.pagefoot a:hover { color: var(--fg-strong); }
+
+/* ---- Vault, inline ---- */
+.stack { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space); }
+
+.vform { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5em; }
+.vform__err { flex: 1 1 100%; font-size: var(--fs-caption); color: var(--fg-mute); }
+
+.in {
+  max-width: 18ch;
+  padding: 0.35em 0.5em;
+  border: var(--bw) solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--fg-strong);
+  font: inherit;
+  font-size: var(--fs-caption);
+}
+
+.in:focus { outline: 0; border-color: var(--fg-mute); }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--fg-strong);
+  font: inherit;
+  cursor: pointer;
+}
+
+.btn:hover { color: var(--fg-mute); }
+.btn:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: 4px; }
+.btn svg { width: 16px; height: 16px; }
+
+/* Scoped: .doc is also the row on the subpage vault list further up, and an
+   unscoped rule here wins on specificity ties and flattens it. */
+.is-single .doc {
+  display: flex;
+  align-items: center;
+  gap: 0.8em;
+  width: 100%;
+  padding: 0.3em 0;
+  color: var(--fg-mute);
+  text-decoration: none;
+}
+
+.is-single .doc b { color: var(--fg-strong); font-weight: 400; }
+.doc__size { margin-left: auto; }
+.is-single .doc:hover, .is-single .doc:hover b { color: var(--fg-strong); }
+.is-single .doc:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: 2px; }
+.is-single .doc svg { width: 16px; height: 16px; }
+
+/* ---- Impressum ---- */
+.legal { margin-bottom: calc(var(--space) * 2.5); }
+.legal > div { display: flex; gap: 0.9em; padding: 0.15em 0; }
+.legal dt { min-width: 14ch; color: var(--fg-mute); }
+.legal dd { color: var(--fg-strong); }
+
+/* ---- On-page editor (edit.js) -----------------------------------------
+   Only ever in the DOM for a signed-in admin: edit.js is not in any page's
+   markup, so none of this matches for a visitor. It borrows the page's own
+   type and tokens on purpose — the point of editing in place is that the
+   form sits at the same measure as the words it replaces. */
+
+/* The pen hangs off the section box, so the section has to be the origin. */
+.section { position: relative; }
+
+.ed-pen {
+  position: absolute;
+  top: calc(var(--space) * 3);
+  right: 0;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border: var(--bw) solid transparent;
+  background: none;
+  color: var(--fg-mute);
+  cursor: pointer;
+  transition: color var(--motion), border-color var(--motion);
+}
+
+.section--top .ed-pen { top: 0; }
+
+.ed-pen:hover { color: var(--fg-strong); border-color: var(--line); }
+.ed-pen:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: 2px; }
+.ed-pen:disabled { opacity: 0.4; cursor: default; }
+.ed-pen svg { display: block; width: 15px; height: 15px; }
+
+/* A saved draft the live page is not showing yet. */
+.ed-pen__dot {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  width: 5px;
+  height: 5px;
+  background: var(--accent);
+}
+
+.ed { margin-top: calc(var(--space) * 2); }
+
+.ed-row {
+  padding: var(--space) 0;
+  border-top: var(--bw) solid var(--line);
+}
+
+.ed-row__head {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: var(--space);
+}
+
+.ed-row__kind {
+  font-size: var(--fs-meta);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--fg-mute);
+}
+
+.ed-row__tool {
+  padding: 2px 6px;
+  border: var(--bw) solid transparent;
+  background: none;
+  color: var(--fg-mute);
+  font: inherit;
+  font-size: var(--fs-meta);
+  cursor: pointer;
+}
+
+.ed-row__tool:hover { color: var(--fg-strong); border-color: var(--line); }
+.ed-row__tool:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: 1px; }
+
+.ed-field { display: block; margin-bottom: var(--space); }
+
+.ed-field__label {
+  display: block;
+  margin-bottom: 3px;
+  font-size: var(--fs-meta);
+  color: var(--fg-mute);
+}
+
+.ed-field__input {
+  display: block;
+  width: 100%;
+  max-width: var(--measure);
+  padding: 6px 8px;
+  border: var(--bw) solid var(--line);
+  background: var(--panel-alt);
+  color: var(--fg-strong);
+  font: inherit;
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.ed-field__input:focus { outline: none; border-color: var(--border-hover); }
+.ed-field__input:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: -2px; }
+
+.ed-field__hint {
+  display: block;
+  margin-top: 3px;
+  max-width: var(--measure);
+  font-size: var(--fs-meta);
+  color: var(--fg-mute);
+}
+
+.ed__adders { display: flex; gap: var(--space); margin: var(--space) 0; }
+
+.ed__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space);
+  padding-top: var(--space);
+  border-top: var(--bw) solid var(--line);
+}
+
+.ed__spacer { flex: 1; }
+
+.ed__state { font-size: var(--fs-meta); color: var(--fg-mute); }
+
+.ed__btn {
+  padding: 5px 10px;
+  border: var(--bw) solid var(--line);
+  background: none;
+  color: var(--fg-mute);
+  font: inherit;
+  font-size: var(--fs-meta);
+  cursor: pointer;
+  transition: color var(--motion), border-color var(--motion);
+}
+
+.ed__btn:hover:not(:disabled) { color: var(--fg-strong); border-color: var(--border-hover); }
+.ed__btn:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: 2px; }
+.ed__btn:disabled { opacity: 0.5; cursor: default; }
+.ed__btn--go { color: var(--fg-strong); border-color: var(--fg-mute); }
+
+@media (max-width: 640px) {
+  .ed__bar { flex-wrap: wrap; }
+  .ed__state { width: 100%; }
 }
