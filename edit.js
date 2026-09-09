@@ -59,7 +59,7 @@
     pen.type = "button";
     pen.title = "Edit this section";
     pen.setAttribute("aria-label", "Edit the " + row.key + " section");
-    pen.appendChild(iconSpan(ICON_PEN));
+    pen.appendChild(iconSpan("icon", ICON_PEN));
 
     // A dot means there is a saved draft the live page is not showing yet.
     if (row.hasDraft) pen.appendChild(el("span", "ed-pen__dot"));
@@ -214,20 +214,23 @@
     });
 
     var save = btn("save", function () {
+      var got = collect();
+      if (got.error) return void (state.textContent = got.error);
+
       run(save, "saving…", function () {
-        return api("/admin/sections/" + key, { method: "PUT", body: { blocks: collect() } })
-          .then(function (res) { return ok(res, "Could not save."); })
-          .then(function () {
-            setDirty(false);
-            state.textContent = "Saved as a draft — publish to put it on the page.";
-          });
+        return send("PUT", "/admin/sections/" + key, got.blocks).then(function () {
+          setDirty(false);
+          state.textContent = "Saved as a draft. Publish to put it on the page.";
+        });
       });
     });
 
     var publish = btn("publish", function () {
+      var got = collect();
+      if (got.error) return void (state.textContent = got.error);
+
       run(publish, "publishing…", function () {
-        return api("/admin/sections/" + key, { method: "PUT", body: { blocks: collect() } })
-          .then(function (res) { return ok(res, "Could not save."); })
+        return send("PUT", "/admin/sections/" + key, got.blocks)
           .then(function () {
             return api("/admin/sections/" + key + "/publish", { method: "POST" });
           })
@@ -259,16 +262,30 @@
         });
     }
 
+    /* Returns blocks, or a reason not to.
+       An empty heading used to be dropped here without a word, and an empty
+       section published as an empty region. Both are one-way: publishing
+       replaces live_blocks, and the hand-written markup it came from is only
+       in the file until the first publish. So this refuses rather than
+       guesses, and the bar says why. */
     function collect() {
       var blocks = [];
       var text = null;
+      var problem = null;
 
       rows.forEach(function (r) {
         var value = r.read();
+
         if (r.kind === "heading") {
-          if (value.en) blocks.push({ type: "heading", text: value });
+          if (!value.en) {
+            problem = problem || "The heading has no text. Write one, or remove the row.";
+            return;
+          }
+          blocks.push({ type: "heading", text: value });
           return;
         }
+
+        if (!value.en) return;          // an emptied paragraph is a removed one
         if (!text) {
           text = { type: "text", muted: r.muted, paragraphs: [] };
           blocks.push(text);
@@ -276,7 +293,15 @@
         text.paragraphs.push(value);
       });
 
-      return blocks;
+      if (problem) return { error: problem };
+      if (!blocks.length) return { error: "That would leave the section empty, and there is no undo." };
+      return { blocks: blocks };
+    }
+
+    /* One place where a refusal stops the chain before anything is written. */
+    function send(method, path, blocks) {
+      return api(path, { method: method, body: { blocks: blocks } })
+        .then(function (res) { return ok(res, "Could not save."); });
     }
 
     function setDirty(on) {
