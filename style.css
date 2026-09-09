@@ -3456,6 +3456,10 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
 .rig--solo .rig__text { margin-top: calc(var(--space) * 1.5); }
 .rig--solo { margin-bottom: calc(var(--space) * 3); }
 
+/* The file belongs to the machine above it, so it sits inside the same block
+   rather than after it: one seam for the pair, not one each. */
+.rig__file { margin-top: calc(var(--space) * 2); }
+
 .rig__name {
   display: block;
   margin-bottom: 0.35em;
