@@ -16,15 +16,15 @@ projects.html       project index
 project-*.html      one page per project (hand-written; the admin panel can
                     also publish generated ones — see "Project pages from
                     the admin panel" below)
-about.html          about
 impressum.html      legal + Datenschutz (school requirement)
 login.html          sign-in for the vault
 admin.html          admin panel (admins only)
 vault/index.html    private document list — an empty shell, filled by the API
-vault-locked.html   retired, redirects to login.html
 style.css           all styling, one file
 script.js           shared behaviour, loaded by every page
 admin.js            admin panel only
+edit.js             the on-page editor — in no page's markup; script.js
+                    injects it for an admin only (see "Sections" below)
 server/             NestJS + TypeScript API (see below)
 deploy/             nginx config and Pi deployment notes
 docs/               planning notes
@@ -41,7 +41,7 @@ moved from one shared Basic Auth password to per-person accounts. It is the
 only part with a build step and dependencies.
 
 The two halves are deliberately separable. `index.html`, `projects.html`,
-`about.html`, `impressum.html` and the project pages are pure static and work
+`impressum.html` and the project pages are pure static and work
 over `file://` or on GitHub Pages with no backend at all. Only the vault,
 login and admin pages need the API, and each degrades to a plain message
 rather than a broken screen when it is absent. **Keep it that way** — do not
@@ -86,9 +86,8 @@ measure column it was before.
   literal `rem` value in a rule is a bug.
 - Order on a project page is fixed: title and chips in the head (identity),
   lede, the bands that explain it, then the repository link (reference), then
-  the pager. `project-template.html` carries the full CSS catalogue; a
-  generated page uses the part of it that survived the rebuild —
-  `.project__section`, `.reveal`, `.mediarow` and `.linklist`.
+  the pager. A generated page uses the part of the catalogue that survived
+  the rebuild — `.project__section`, `.reveal`, `.mediarow` and `.linklist`.
 - `.reading` on a prose container is what supplies body line-height and inline
   link styling. Link lists and pagers are **siblings** of it, never children.
 
@@ -132,16 +131,21 @@ render.ts`): `project-<slug>.html` per published project, a regenerated
 `projects.html`, and `index.html` — the home page. Pagers are derived from
 `sort_order`, so neighbouring pages re-render on every publish and the chain
 never goes stale. `projectRow()` renders the index, `projectCard()` renders the
-bento cells, and they are separate on purpose — the index is bands, the home
-page is cards.
+home page's cards, and they are separate on purpose — the index is bands, the
+home page is `.card` rows.
 
 The home page is a **splice, not a render**. `renderHome()` reads the template,
-replaces the region between `<!-- projects:start -->` and
-`<!-- projects:end -->` with one card per placed project, and rewrites the
-`data-projects="N"` count on `<main class="bento">` — which is what picks the
-grid's area map, so the bento stays full at four projects and at one.
+replaces the region between `<!-- projects:start -->` and `<!-- projects:end -->`
+with one `<article class="card">` per placed project, and touches nothing else.
 Everything else in `index.html` is hand-written and never parsed. Its base is
 `PAGES_DIR/index.html` if one exists, else `HOME_TEMPLATE`.
+
+`projectCard()` emits the single-page card — `.shot--empty` rail, `.card__head`,
+`.card__desc`, and a `.card__links` repo link when there is a `repoUrl` — so a
+generated card is the same markup as the hand-written ones beside it. It carries
+**no accent**: `.card` has no `--edge-brand` hook, so a project's colour shows on
+its own page and on the projects index, not on the home page. The old bento cell
+(`.box--edge`, `area-*`) and the `data-projects` count are gone with the grid.
 
 A project's colour is **one `#rrggbb` in the `accent` column**, emitted as
 `class="… is-custom" style="--edge-brand:…"`. The four `.is-comfy` /
@@ -150,11 +154,12 @@ derives the shade and tint with `color-mix`, per theme. Adding a project is no
 longer a stylesheet edit, and that is the whole point — do not reintroduce a
 named palette.
 
-Which cell of the bento a project holds is `home_slot`
+Whether a project appears on the home page, and in what order, is `home_slot`
 (`feature` | `tall` | `smallA` | `smallB`), unique among non-NULL values by
-index. Assigning an occupied cell **swaps** the two projects. The cards are
-compacted into the first N cells when fewer than four are placed, so the grid
-never renders a hole.
+index. Assigning an occupied slot **swaps** the two projects. Since the home
+page is a linear list, the names no longer point at grid cells — they are only
+a fixed sort key, read in the order above. A NULL `home_slot` keeps the project
+off the home page while leaving it on the projects index.
 
 Rules the implementation enforces — keep them enforced:
 
@@ -195,6 +200,68 @@ generated copies first for those two URLs (`location = /` in
 `deploy/nginx-kira1q.dev.conf`); the rsynced ones are the template and the
 never-published fallback.
 
+## Sections, edited on the page itself
+
+The home page's own writing — the hero, and the ledes of about, setup and
+readme — is a second small CMS, and it is driven from `index.html` rather than
+from the panel. Signed in as an admin, a pen appears in the top-right of each
+editable section; clicking it swaps that section's content for EN/DE fields in
+place, at the same measure and in the same type as the words it replaced.
+
+It is the projects splice again, not a new mechanism. Each region is a marker
+pair named after the section id:
+
+```html
+<section class="section" id="about" data-edit="about">
+  <div class="split">…</div>
+  <!-- section:about:start -->
+  <div class="region" data-region="about">…</div>
+  <!-- section:about:end -->
+  <ul class="facts">…</ul>
+</section>
+```
+
+`spliceRegion()` in `server/src/projects/render.ts` is the shared primitive;
+`renderHome()` and `SectionsService.renderHome()` are its two callers. They
+compose without knowing about each other because both read the generated
+`index.html` back as their own template and a splice keeps every marker it did
+not come for — so whichever runs last still has the other's region in front of
+it. Both write through `server/src/site/pages.ts`, which is the single
+filename allowlist.
+
+Rules the implementation enforces — keep them enforced:
+
+- **`live_blocks IS NULL` means "leave that region alone".** Before a section's
+  first Publish the hand-written markup between its markers is what ships. That
+  is what makes the table safe to create on a running Pi.
+- **Save is not Publish.** Save writes `draft_blocks` and touches no file; the
+  live page keeps showing `live_blocks` until Publish. The pen carries a dot
+  while a draft is ahead of the page.
+- **An element carrying `data-de` must be plain text.** `initLang()` captures
+  `data-en` from `textContent` and swaps `textContent`, so markup inside a
+  translated element is destroyed the first time someone presses DE. The
+  renderer therefore escapes a paragraph that has a German twin and only runs
+  `inline()` — the `` `code` `` / `[label](url)` mini-markdown — on one that
+  does not. Do not emit `data-de` on a paragraph that went through `inline()`;
+  it looks right until the language changes.
+- **The editor seeds itself from the page, reading `data-en`, never
+  `textContent`.** On a page already toggled to German `textContent` *is* the
+  German, and reading it would translate the site into German twice and lose
+  the English.
+- **The `.region` wrapper is always emitted, even empty.** It is the handle
+  `edit.js` grabs; a section emptied to nothing would otherwise publish itself
+  out of reach of the pen that emptied it.
+- **`edit.js` is in no page's markup.** `script.js` injects it only for someone
+  whose sign-in came back with `role === "admin"`, or on `?edit` / `#edit`. A
+  visitor downloads nothing extra and makes no extra request, which is how
+  "a published page calls no API" stays true. The flag is a hint about who is
+  looking; the gate is `/auth/me` and the guards on every route.
+- **Only prose so far.** `text` and `heading`, on `top`, `about`, `setup` and
+  `readme` — the `SECTION_KEYS` registry in `server/src/sections/blocks.ts` is
+  the whole list, because every key must match a marker pair a human put in the
+  page. The `.facts` lists, the `.rig` clips, the README block and `#contact`'s
+  `.soc` rows are still hand-written.
+
 ## Comments
 
 The front end carries **few comments on purpose**. What stays is what you would
@@ -212,10 +279,14 @@ adjusting this line get it wrong without you.
 - **The repo is public.** No secret, no database, no vault document may ever
   be committed. A commit is permanent even if a later commit deletes the file.
 - **Pages authored in the panel live only in the SQLite database on the Pi** —
-  and so do the home page's project cards, since the rebuild. For them,
-  `git clone` is no longer a complete backup of the site's content. Treat
-  panel-authored content as existing in exactly one place; the file under
+  and so do the home page's project cards, and now the home page's own prose.
+  For them, `git clone` is no longer a complete backup of the site's content.
+  Treat authored content as existing in exactly one place; the file under
   `PAGES_DIR` is output, not a copy of the source.
+- **The rsynced `index.html` is the bootstrap template, markers and all.** Drop
+  a `<!-- section:*:start -->` / `:end` pair from it by hand and Publish for
+  that section silently stops working — the renderer logs a warning and skips
+  the region rather than failing the whole write.
 - **The vault page must not name its documents.** The list comes from the API
   after authentication. It was hardcoded once, which told anyone who viewed
   source what documents existed. Do not put it back. There is a check for this
@@ -228,7 +299,7 @@ adjusting this line get it wrong without you.
 - **Native modules.** `better-sqlite3` and `argon2` need a compiler. They are
   built in CI inside the Docker image and never on the Pi — and they will not
   install on a Node version without prebuilds unless Python is present.
-- **Commits carry no AI attribution.** Author is `kiraa1q`, no
+- **Commits carry no AI attribution.** Author is `7qob`, no
   `Co-Authored-By` trailer, no mention of Claude anywhere.
 - **A markup change in the renderer needs a Publish to take effect.** The
   generated `projects.html` on the Pi was written by the renderer that shipped
