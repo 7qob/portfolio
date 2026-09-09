@@ -3395,6 +3395,14 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
 }
 
 .rig__text { color: var(--fg-mute); }
+.rig__text p + p { margin-top: var(--space); }
+
+/* A lone figure stacks. Two paragraphs beside a 260px rail leave about
+   thirty characters a line inside the shell, which is under the floor the
+   row's own comment names. */
+.rig--solo .rig__row { grid-template-columns: minmax(0, 1fr); }
+.rig--solo .rig__media { max-width: 480px; }
+.rig--solo { margin-bottom: calc(var(--space) * 2); }
 
 .rig__name {
   display: block;

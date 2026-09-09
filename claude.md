@@ -397,9 +397,8 @@ of these written out longhand.
 
 ## Sections, edited on the page itself
 
-The home page's own writing — the hero, and the ledes of about, setup and
-readme — is a second small CMS, driven from `index.html` rather than from the
-panel. Signed in as an admin, a pen appears in the top-right of each editable
+The home page's own writing — the hero, and the ledes of about and readme — is
+a second small CMS, driven from `index.html` rather than from the panel. Signed in as an admin, a pen appears in the top-right of each editable
 section; clicking it swaps that section's content for EN/DE fields in place, at
 the same measure and in the same type as the words it replaced.
 
@@ -449,11 +448,11 @@ Rules the implementation enforces — keep them enforced:
   visitor downloads nothing extra and makes no extra request, which is how
   "a published page calls no API" stays true. The flag is a hint about who is
   looking; the gate is `/auth/me` and the guards on every route.
-- **Only prose so far.** `text` and `heading`, on `top`, `about`, `setup` and
-  `readme` — the `SECTION_KEYS` registry in `server/src/sections/blocks.ts` is
-  the whole list, because every key must match a marker pair a human put in the
-  page. The `.facts` lists, the `.rig` clips, the README block and `#contact`'s
-  `.soc` rows are still hand-written.
+- **Only prose so far.** `text` and `heading`, on `top`, `about` and `readme` —
+  the `SECTION_KEYS` registry in `server/src/sections/blocks.ts` is the whole
+  list, because every key must match a marker pair a human put in the page. The
+  `.facts` list, the Pi clip, the README block and `#contact`'s `.soc` rows are
+  still hand-written.
 
 ## Comments
 

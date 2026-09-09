@@ -543,7 +543,7 @@ function showSignedIn(user) {
     var out = el("button", "icon-btn site-header__signout");
     out.type = "button";
     var nameOut = function () {
-      out.title = t("Sign out", "Abmelden");
+      out.title = t("Log out", "Abmelden");
       out.setAttribute("aria-label", out.title);
     };
     nameOut();
@@ -856,7 +856,7 @@ function initLogin() {
       .finally(function () {
         if (submit) {
           submit.disabled = false;
-          submit.textContent = t("Sign in", "Anmelden");
+          submit.textContent = t("Log in", "Anmelden");
         }
       });
   });
@@ -1182,10 +1182,13 @@ function ghError(root) {
   chart.appendChild(msg);
 }
 
-var ICON_SIGN_IN =
+/* Feather log-in and log-out. The arrow points into the box to go in and out
+   of it to leave; both used to be log-out glyphs mirrored, which read as the
+   same button twice. */
+var ICON_LOG_IN =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>';
+var ICON_LOG_OUT =
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>';
-var ICON_SIGN_OUT =
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 5 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>';
 var ICON_FILE =
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
 var ICON_DOWNLOAD =
@@ -1247,12 +1250,16 @@ function initVaultPanel() {
     locked.hidden = on;
 
     if (!toggle) return;
-    toggle.setAttribute("aria-label", on ? "Sign out" : "Sign in");
-    toggle.title = on ? "Sign out" : "Sign in";
+    var label = on ? t("Log out", "Abmelden") : t("Log in", "Anmelden");
+    toggle.setAttribute("aria-label", label);
+    toggle.title = label;
 
     var icon = toggle.querySelector("[data-session-icon]");
-    if (icon) icon.innerHTML = on ? ICON_SIGN_OUT : ICON_SIGN_IN;
+    if (icon) icon.innerHTML = on ? ICON_LOG_OUT : ICON_LOG_IN;
   }
+
+  // Text JS wrote, so the switch has to rewrite it: list.hidden is the state.
+  onLangChange(function () { signedIn(!list.hidden); });
 
   function openVault() {
     return api("/vault/items")

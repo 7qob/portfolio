@@ -35,9 +35,9 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
           </span>
         </button>
-        <button class="tool" type="button" id="session-toggle" aria-label="Sign in" title="Sign in">
+        <button class="tool" type="button" id="session-toggle" aria-label="Log in" title="Log in">
           <span data-session-icon>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
           </span>
         </button>
       </span>
@@ -139,70 +139,9 @@
         </details>
       </section>
 
-      <section class="section" id="setup" data-edit="setup">
-        <div class="split">
-          <span class="split__n">02</span>
-          <span class="split__l">setup</span>
-          <span class="split__bar"></span>
-        </div>
-        <!-- section:setup:start -->
-        <div class="region" data-region="setup">
-          <div class="prose">
-            <p class="muted" data-de="Der Schreibtisch und das Homelab dahinter.">The desk and the homelab behind it.</p>
-          </div>
-        </div>
-        <!-- section:setup:end -->
-
-        <!-- Closed on purpose: inside a closed <details> a loading=lazy image has
-             no layout box, so none of these 48 MB is fetched until it is opened. -->
-        <details class="rig">
-          <summary class="disclose">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
-            <span data-de="Mein Setup">My setup</span>
-            <span class="rig__hint">4 clips &middot; 48 MB</span>
-          </summary>
-
-          <div class="rig__body">
-
-            <figure class="rig__row">
-              <img class="rig__media" src="assets/setup.gif" width="480" height="270" loading="lazy" decoding="async" alt="A pan across the desk: a monitor on an arm, headphones, a keyboard, a microphone on a boom arm, an audio interface and a drawing tablet, with the wall behind lit red.">
-              <figcaption class="rig__text">
-                <b class="rig__name" data-de="Der Schreibtisch">The desk</b>
-                <p data-de="Der Monitor hängt an einem Arm, also steht auf dem Tisch nur, was ich auch anfasse: Tastatur, Kopfhörer, das Mikrofon an seinem eigenen Arm, das Interface dahinter und das Grafiktablett. Der Tower steht darunter auf dem Boden. Beleuchtet ist die Wand, nicht der Tisch.">The monitor is on an arm, so the only things standing on the desk are the ones I touch: keyboard, headphones, the microphone on its own boom, the interface behind it and the drawing tablet. The tower is on the floor underneath. What is lit is the wall, not the desk.</p>
-              </figcaption>
-            </figure>
-
-            <figure class="rig__row">
-              <img class="rig__media" src="assets/keyboard.gif" width="480" height="270" loading="lazy" decoding="async" alt="A close pass along a black mechanical keyboard with dark keycaps, on a wooden desk.">
-              <figcaption class="rig__text">
-                <b class="rig__name" data-de="Die Tastatur">The keyboard</b>
-                <p data-de="Komplett schwarz — schwarzes Gehäuse, schwarze Keycaps, nichts darauf gedruckt, was das Licht fängt. Sie steht mittig vor dem Monitor, das Kabel läuft hinten über die Tischkante.">All black — black case, black keycaps, nothing printed on them that catches the light. It sits square in front of the monitor with the cable running back over the edge of the desk.</p>
-              </figcaption>
-            </figure>
-
-            <figure class="rig__row">
-              <img class="rig__media" src="assets/mouse.gif" width="480" height="270" loading="lazy" decoding="async" alt="A black wireless mouse turning slowly on a cloth mousepad.">
-              <figcaption class="rig__text">
-                <b class="rig__name" data-de="Die Maus">The mouse</b>
-                <p data-de="Kabellos, symmetrisch und matt schwarz, auf dem Stoffpad, das die rechte Hälfte des Tisches einnimmt. In keinem Frame des Clips ist ein Kabel zu sehen, weil es keines gibt.">Wireless, symmetric and matte black, on the cloth pad that takes up the right half of the desk. There is no cable in any frame of the clip because there is no cable.</p>
-              </figcaption>
-            </figure>
-
-            <figure class="rig__row">
-              <img class="rig__media" src="assets/rpi5.gif" width="480" height="270" loading="lazy" decoding="async" alt="A Raspberry Pi 5 with an NVMe HAT stacked on its GPIO header, a Samsung 970 EVO Plus SSD on the HAT and its status LEDs lit, sitting on top of a black perforated case.">
-              <figcaption class="rig__text">
-                <b class="rig__name" data-de="Der Pi">The Pi</b>
-                <p data-de="Das Homelab-Ende von alldem: ein Raspberry Pi 5 mit einem NVMe-HAT auf dem GPIO-Header und einer Samsung 970 EVO Plus im Slot, damit er ab SSD statt ab SD-Karte läuft. Der Minecraft-Server hinter Stalkr läuft auf einem Pi 5 wie diesem.">The homelab end of all this: a Raspberry Pi 5 with an NVMe HAT on the GPIO header and a Samsung 970 EVO Plus in the slot, so it runs off an SSD rather than an SD card. The Minecraft server behind Stalkr runs on a Pi 5 like this one.</p>
-              </figcaption>
-            </figure>
-
-          </div>
-        </details>
-      </section>
-
       <section class="section" id="projects">
         <div class="split">
-          <span class="split__n">03</span>
+          <span class="split__n">02</span>
           <span class="split__l" data-de="Projekte">projects</span>
           <span class="split__bar"></span>
         </div>
@@ -273,7 +212,7 @@
 
       <section class="section" id="readme" data-edit="readme">
         <div class="split">
-          <span class="split__n">04</span>
+          <span class="split__n">03</span>
           <span class="split__l">readme</span>
           <span class="split__bar"></span>
         </div>
@@ -284,6 +223,19 @@
           </div>
         </div>
         <!-- section:readme:end -->
+        <!-- One clip, unfolded: it is the machine this section is describing,
+             and hiding it behind a summary would bury the point. -->
+        <div class="rig rig--solo">
+          <figure class="rig__row">
+            <img class="rig__media" src="assets/rpi5.gif" width="480" height="270" loading="lazy" decoding="async" alt="A Raspberry Pi 5 with an NVMe HAT stacked on its GPIO header, a Samsung 970 EVO Plus SSD on the HAT and its status LEDs lit, sitting on top of a black perforated case.">
+            <figcaption class="rig__text">
+              <b class="rig__name" data-de="Der Server">The server</b>
+              <p data-de="Die Seite l&auml;uft auf dem Ger&auml;t im Bild. Ein Raspberry Pi 5 mit NVMe-HAT auf dem GPIO-Header und einer Samsung 970 EVO Plus im Slot, damit er ab SSD statt ab SD-Karte startet.">This site runs on the machine in the picture. A Raspberry Pi 5 with an NVMe HAT on the GPIO header and a Samsung 970 EVO Plus in the slot, so it boots from an SSD rather than an SD card.</p>
+              <p data-de="nginx liefert die statischen Dateien direkt von der Platte. Die API ist ein Docker-Container auf 127.0.0.1, erreichbar also nur f&uuml;r nginx, und das Ger&auml;t h&auml;ngt hinter einem Cloudflare Tunnel statt an einem offenen Port. GitHub Actions baut das arm64-Image, der Pi zieht es nur. Der Uptime-Z&auml;hler im Footer ist der dieser Maschine.">nginx serves the static files straight off the disk. The API is a Docker container bound to 127.0.0.1, so nothing but nginx can reach it, and the machine sits behind a Cloudflare Tunnel rather than an open port. GitHub Actions builds the arm64 image, the Pi only pulls it. The uptime counter in the footer is this machine&#39;s.</p>
+            </figcaption>
+          </figure>
+        </div>
+
         <details>
           <summary class="disclose">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
@@ -292,7 +244,7 @@
           <div class="readme"><b>kira1q.dev</b>
 Static front end. No framework, no build step,
 no dependencies, about 50 KB in total. Only the
-sign-in and the vault ever talk to the API.
+log-in and the vault ever talk to the API.
 
 <b>stack</b>
 NestJS and SQLite behind nginx, argon2id and
@@ -309,7 +261,7 @@ never on the LAN.</div>
 
       <section class="section" id="vault">
         <div class="split">
-          <span class="split__n">05</span>
+          <span class="split__n">04</span>
           <span class="split__l">vault</span>
           <span class="split__bar"></span>
         </div>
@@ -321,23 +273,23 @@ never on the LAN.</div>
                    autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false">
             <input class="in" id="vault-pass" name="password" type="password" placeholder="password"
                    required autocomplete="current-password">
-            <button class="btn" type="submit"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span data-de="anmelden">sign in</span></button>
+            <button class="btn" type="submit"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg><span data-de="anmelden">log in</span></button>
             <span class="vform__err" id="vault-error" role="status"></span>
           </form>
-          <button class="btn" type="button" id="vault-open"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span data-de="anmelden">sign in</span></button>
+          <button class="btn" type="button" id="vault-open"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg><span data-de="anmelden">log in</span></button>
         </div>
 
         <!-- Empty on purpose. The list is drawn from the API after the session
              check, so an unauthenticated visitor is never told what exists. -->
         <div class="stack" id="vault-open-list" hidden>
           <div id="vault-docs" style="width:100%"></div>
-          <button class="btn muted" type="button" id="vault-signout"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 5 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg><span data-de="abmelden">sign out</span></button>
+          <button class="btn muted" type="button" id="vault-signout"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span data-de="abmelden">log out</span></button>
         </div>
       </section>
 
       <section class="section" id="contact">
         <div class="split">
-          <span class="split__n">06</span>
+          <span class="split__n">05</span>
           <span class="split__l" data-de="Kontakt">contact</span>
           <span class="split__bar"></span>
         </div>

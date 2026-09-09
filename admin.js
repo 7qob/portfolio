@@ -358,7 +358,7 @@ function loadSessions() {
           s.ip,
           shortAgent(s.user_agent),
           button("Revoke", "", function () {
-            if (!confirm("Sign out " + s.username + " on this session?")) return;
+            if (!confirm("Log out " + s.username + " on this session?")) return;
             api("/admin/sessions/" + s.id, { method: "DELETE" }).then(function () {
               reload("sessions");
             });
