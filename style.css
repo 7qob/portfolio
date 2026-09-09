@@ -3237,7 +3237,6 @@ body.is-single {
   transition: color var(--motion), background var(--motion);
 }
 
-.tool:hover { color: var(--fg-strong); background: var(--line); }
 .tool:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: -2px; }
 
 /* script.js swaps the icon inside this span, so the span is what has to be a
@@ -3374,6 +3373,12 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
   transition: color var(--motion);
 }
 
+/* The word signal, declared once. Anything that is really a word takes the
+   accent on hover and on focus: prose links, the socials, footer links,
+   document rows, card links, the header switches, the buttons and every
+   disclosure. Boxes are the other signal and take --border-hover instead.
+   Add a selector to this list; do not write the colour again. Two of these
+   used to hover to --fg-mute, which dimmed the thing under the cursor. */
 .prose a:hover,
 .prose a:focus-visible,
 .fold__body a:hover,
@@ -3381,7 +3386,23 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
 .card__desc a:hover,
 .card__desc a:focus-visible,
 .rig__text a:hover,
-.rig__text a:focus-visible { color: var(--accent); }
+.rig__text a:focus-visible,
+.card__links a:hover,
+.card__links a:focus-visible,
+.tool:hover,
+.tool:focus-visible,
+.btn:hover,
+.btn:focus-visible,
+.disclose:hover,
+.disclose:focus-visible,
+.pagefoot a:hover,
+.pagefoot a:focus-visible,
+.soc:hover,
+.soc:hover b,
+.soc:focus-visible,
+.is-single .doc:hover,
+.is-single .doc:hover b,
+.is-single .doc:focus-visible { color: var(--accent); }
 
 /* ---- The long read, folded under 01 ---- */
 .fold { margin-top: calc(var(--space) * 3); }
@@ -3566,7 +3587,6 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
   text-decoration: none;
 }
 
-.card__links a:hover { color: var(--fg-strong); }
 .card__links svg { width: 13px; height: 13px; }
 
 /* The file size sits a shade under the filename. It is typed in only once the
@@ -3589,7 +3609,6 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
 }
 
 .disclose::-webkit-details-marker { display: none; }
-.disclose:hover { color: var(--fg-mute); }
 .disclose:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: 4px; }
 .disclose svg { width: 16px; height: 16px; transition: transform var(--motion); }
 [open] > .disclose svg { transform: rotate(90deg); }
@@ -3618,7 +3637,6 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
 
 .soc b { color: var(--fg-strong); font-weight: 400; }
 .soc__at { margin-left: auto; }
-.soc:hover, .soc:hover b { color: var(--fg-strong); }
 .soc:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: 2px; }
 .soc svg { width: 16px; height: 16px; }
 
@@ -3636,7 +3654,6 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
 }
 
 .pagefoot a { color: inherit; text-decoration: none; }
-.pagefoot a:hover { color: var(--fg-strong); }
 
 /* ---- Vault, inline ---- */
 .stack { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space); }
@@ -3669,7 +3686,6 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
   cursor: pointer;
 }
 
-.btn:hover { color: var(--fg-mute); }
 .btn:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: 4px; }
 .btn svg { width: 16px; height: 16px; }
 
@@ -3687,7 +3703,6 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
 
 .is-single .doc b { color: var(--fg-strong); font-weight: 400; }
 .doc__size { margin-left: auto; }
-.is-single .doc:hover, .is-single .doc:hover b { color: var(--fg-strong); }
 .is-single .doc:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: 2px; }
 .is-single .doc svg { width: 16px; height: 16px; }
 
@@ -3716,7 +3731,7 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
 
 .section--top .ed-pen { top: 0; }
 
-.ed-pen:hover { color: var(--fg-strong); border-color: var(--line); }
+.ed-pen:hover { color: var(--fg-strong); border-color: var(--border-hover); }
 .ed-pen:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: 2px; }
 .ed-pen:disabled { opacity: 0.4; cursor: default; }
 .ed-pen svg { display: block; width: 15px; height: 15px; }
@@ -3762,7 +3777,7 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
   cursor: pointer;
 }
 
-.ed-row__tool:hover { color: var(--fg-strong); border-color: var(--line); }
+.ed-row__tool:hover { color: var(--fg-strong); border-color: var(--border-hover); }
 .ed-row__tool:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: 1px; }
 
 .ed-field { display: block; margin-bottom: var(--space); }
