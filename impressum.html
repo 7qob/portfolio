@@ -6,14 +6,12 @@
   <title>Impressum · 7qob</title>
   <meta name="description" content="Legal information and privacy statement for kira1q.dev.">
 
-  <!-- Open Graph (empty; fill before sharing) -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="">
-  <meta property="og:description" content="">
-  <meta property="og:image" content="">
-  <meta property="og:url" content="">
+  <meta property="og:title" content="Impressum · 7qob">
+  <meta property="og:description" content="Legal information and privacy statement for kira1q.dev.">
+  <meta property="og:url" content="https://kira1q.dev/impressum.html">
 
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%23000'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='.5' y='.5' width='31' height='31' fill='%230e0e0e' stroke='%232a2a2a'/%3E%3Crect x='9' y='9' width='14' height='14' fill='%23ff1e2f'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css">
 
   <!-- Saved theme, applied before first paint so a light visitor sees no flash. -->
@@ -25,79 +23,91 @@
     } catch (e) {}
   </script>
 </head>
-<body>
+<!-- The home page's design, not the old subpage chrome: same topbar, same rail,
+     same numbered sections, same footer. The one difference is the third tool,
+     which is a sign-in button on the home page and nothing here: the vault
+     lives in that page and a button that opens nothing is worse than none. -->
+<body class="is-single">
 
-  <header class="site-header">
-    <a class="site-brand" href="index.html" aria-label="7qob, home" data-de-label="7qob, Startseite">
-      <span class="site-brand__name">7qob</span>
-    </a>
-    <nav class="site-nav" aria-label="Main" data-de-label="Hauptnavigation">
-      <a href="projects.html" data-de="Projekte">Projects</a>
-      <a href="vault/index.html">Vault</a>
-    </nav>
-    <div class="site-controls">
-      <button class="icon-btn" type="button" id="theme-toggle" aria-label="Toggle dark/bright" data-de-label="Hell/Dunkel umschalten" aria-pressed="false">
-        <span data-theme-icon>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-        </span>
-      </button>
+  <header class="topbar">
+    <div class="topbar__inner">
+      <a class="brand" href="index.html">7qob</a>
+      <span class="tools">
+        <button class="tool" type="button" id="lang-toggle" aria-label="Auf Deutsch umschalten">DE</button>
+        <button class="tool" type="button" id="theme-toggle" aria-label="Toggle dark/bright" aria-pressed="false">
+          <span data-theme-icon>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </span>
+        </button>
+      </span>
     </div>
   </header>
 
-  <div class="page-head">
-    <p class="page-head__label" data-de="Rechtliches">Legal</p>
-    <h1 class="page-head__title" id="page-title">Impressum</h1>
-    <p class="page-head__lede" data-de="Rechtliche Angaben zu dieser Website.">Legal information about this website.</p>
-  </div>
+  <main>
 
-  <main class="page-body" aria-labelledby="page-title">
+    <div class="col">
+      <section class="section section--top" id="top">
+        <h1 class="hero__title">Impressum</h1>
+        <div class="prose">
+          <p data-de="Rechtliche Angaben und Datenschutz f&uuml;r kira1q.dev.">Legal information and privacy for kira1q.dev.</p>
+        </div>
+      </section>
+    </div>
 
-    <section class="box box--static box--narrow" aria-labelledby="lbl-angaben">
-      <h2 class="box__label" id="lbl-angaben"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg><span data-de="Angaben">Details</span></h2>
+    <div class="col">
 
-      <!-- A contact address and a place, and deliberately nothing more: no
-           street, no postcode, no phone number. -->
-      <dl class="field-list">
-
-        <div class="field">
-          <dt class="field__label">Name</dt>
-          <dd class="field__value">Matti Näf</dd>
+      <section class="section" id="details">
+        <div class="split">
+          <span class="split__i"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span>
+          <span class="split__l" data-de="Angaben">details</span>
+          <span class="split__bar"></span>
         </div>
 
-        <div class="field">
-          <dt class="field__label" data-de="Kontakt / Email">Contact / Email</dt>
-          <dd class="field__value">matti.naef@bwdbern.ch</dd>
+        <!-- A contact address and a place, and deliberately nothing more: no
+             street, no postcode, no phone number. The contact block's own rows,
+             so the two pages read as one site; the address is a link because it
+             is the one thing here anybody actually wants to use. -->
+        <span class="soc">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><b>Name</b><span class="soc__at">Matti N&auml;f</span>
+        </span>
+        <a class="soc" href="mailto:matti.naef@bwdbern.ch">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><b data-de="Kontakt">contact</b><span class="soc__at">matti.naef@bwdbern.ch</span>
+        </a>
+        <span class="soc">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><b data-de="Ort">place</b><span class="soc__at" data-de="Bern, Schweiz">Bern, Switzerland</span>
+        </span>
+      </section>
+
+      <section class="section" id="privacy">
+        <div class="split">
+          <span class="split__i"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+          <span class="split__l" data-de="Datenschutz">privacy</span>
+          <span class="split__bar"></span>
         </div>
 
-        <div class="field">
-          <dt class="field__label" data-de="Ort / Datum">Place / Date</dt>
-          <dd class="field__value" data-de="Bern, Schweiz">Bern, Switzerland</dd>
+        <div class="prose">
+          <p data-de="Die &ouml;ffentlichen Seiten dieser Website setzen keine Cookies, binden keine Analyse- oder Tracking-Dienste ein und speichern nichts &uuml;ber Besucherinnen und Besucher.">The public pages of this site set no cookies, embed no analytics or tracking services, and store nothing about visitors.</p>
+
+          <p data-de='Der gesch&uuml;tzte Bereich <span lang="en">(Vault)</span> ist nur mit einem pers&ouml;nlichen Zugang nutzbar. Wer sich anmeldet, f&uuml;r den werden gespeichert: Benutzername, Zeitpunkt der Anmeldung, IP-Adresse, Browserkennung <span lang="en">(User-Agent)</span> sowie welche Dokumente wann heruntergeladen wurden. Auch fehlgeschlagene Anmeldeversuche werden protokolliert. Das ist n&ouml;tig, um Missbrauch zu erkennen und automatisierte Angriffe zu bremsen.'>The protected area (Vault) can only be used with a personal account. For anyone who signs in, the following is stored: username, time of sign-in, IP address, browser identification (User-Agent), and which documents were downloaded when. Failed sign-in attempts are logged as well. That is necessary to detect misuse and to slow down automated attacks.</p>
+
+          <p data-de='Diese Eintr&auml;ge werden nach 90 Tagen automatisch gel&ouml;scht. Passw&ouml;rter werden ausschliesslich als <span lang="en">argon2id</span>-Hash gespeichert und sind auch f&uuml;r mich nicht lesbar. Die Daten liegen auf einem privat betriebenen Server in der Schweiz und werden nicht an Dritte weitergegeben.'>These entries are deleted automatically after 90 days. Passwords are stored exclusively as an argon2id hash and are unreadable even to me. The data sits on a privately operated server in Switzerland and is not passed on to third parties.</p>
+
+          <p data-de='Die Beitragsgrafik auf der Startseite wird von einem Drittanbieter geladen <span lang="en">(github-contributions-api.jogruber.de)</span>; dabei wird die IP-Adresse an diesen Dienst &uuml;bermittelt.'>The contributions graph on the home page is loaded from a third party (github-contributions-api.jogruber.de); the visitor&#39;s IP address is transmitted to that service in the process.</p>
+
+          <p data-de="Auskunft &uuml;ber gespeicherte Daten sowie deren L&ouml;schung k&ouml;nnen jederzeit &uuml;ber die oben genannte Kontaktadresse verlangt werden.">Information about stored data, and its deletion, can be requested at any time via the contact address above.</p>
         </div>
+      </section>
 
-      </dl>
-    </section>
-
-    <section class="box box--static box--narrow reading" aria-labelledby="lbl-daten">
-      <h2 class="box__label" id="lbl-daten"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span data-de="Datenschutz">Privacy</span></h2>
-
-      <p class="box__text" data-de="Die öffentlichen Seiten dieser Website setzen keine Cookies, binden keine Analyse- oder Tracking-Dienste ein und speichern nichts über Besucherinnen und Besucher.">The public pages of this site set no cookies, embed no analytics or tracking services, and store nothing about visitors.</p>
-
-      <p class="box__text" data-de='Der geschützte Bereich <span lang="en">(Vault)</span> ist nur mit einem persönlichen Zugang nutzbar. Wer sich anmeldet, für den werden gespeichert: Benutzername, Zeitpunkt der Anmeldung, IP-Adresse, Browserkennung <span lang="en">(User-Agent)</span> sowie welche Dokumente wann heruntergeladen wurden. Auch fehlgeschlagene Anmeldeversuche werden protokolliert. Das ist nötig, um Missbrauch zu erkennen und automatisierte Angriffe zu bremsen.'>The protected area (Vault) can only be used with a personal account. For anyone who signs in, the following is stored: username, time of sign-in, IP address, browser identification (User-Agent), and which documents were downloaded when. Failed sign-in attempts are logged as well. That is necessary to detect misuse and to slow down automated attacks.</p>
-
-      <p class="box__text" data-de='Diese Einträge werden nach 90 Tagen automatisch gelöscht. Passwörter werden ausschliesslich als <span lang="en">argon2id</span>-Hash gespeichert und sind auch für mich nicht lesbar. Die Daten liegen auf einem privat betriebenen Server in der Schweiz und werden nicht an Dritte weitergegeben.'>These entries are deleted automatically after 90 days. Passwords are stored exclusively as an argon2id hash and are unreadable even to me. The data sits on a privately operated server in Switzerland and is not passed on to third parties.</p>
-
-      <p class="box__text" data-de='Die Beitragsgrafik auf der Startseite wird von einem Drittanbieter geladen <span lang="en">(github-contributions-api.jogruber.de)</span>; dabei wird die IP-Adresse an diesen Dienst übermittelt.'>The contributions graph on the home page is loaded from a third party (github-contributions-api.jogruber.de); the visitor's IP address is transmitted to that service in the process.</p>
-
-      <p class="box__text" data-de="Auskunft über gespeicherte Daten sowie deren Löschung können jederzeit über die oben genannte Kontaktadresse verlangt werden.">Information about stored data, and its deletion, can be requested at any time via the contact address above.</p>
-    </section>
-
+    </div>
   </main>
 
-  <!-- Legal + credit only. Navigation is in the header. -->
-  <footer class="site-footer">
-    <span class="site-footer__meta">&copy; <span id="year"></span> 7qob &middot; v1.0.0</span>
-    <a href="impressum.html">Impressum</a>
-    <a href="https://github.com/7qob" target="_blank" rel="noopener">GitHub<svg class="footer-arrow" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
+  <!-- The home page's footer, with its one link pointing back rather than at
+       the page it is already on. -->
+  <footer class="pagefoot">
+    <div class="pagefoot__inner">
+      <span>7qob &middot; v2.0.0<span id="uptime" hidden></span></span>
+      <a href="index.html" data-de="Zur&uuml;ck zur Startseite">Back to the site</a>
+    </div>
   </footer>
 
   <script src="script.js"></script>

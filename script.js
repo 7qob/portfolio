@@ -1042,6 +1042,19 @@ function ghWeeks(chart, total) {
   return Math.max(1, Math.min(total, Math.floor((box.width + gap) / (cell + gap))));
 }
 
+/* The square the grid is actually built from. The columns used to be 1fr, so
+   whatever width was left over after the last whole week got shared out and
+   every cell came back a few pixels wider than it was tall. Handing the grid
+   the measured size instead keeps them square, and space-between puts the
+   remainder back into the gaps, where a third of a pixel each is invisible. */
+function ghCell(chart) {
+  var box = chart.getBoundingClientRect();
+  if (!box.height) return 0;
+
+  var gap = parseFloat(getComputedStyle(chart).getPropertyValue("--gh-gap")) || 0;
+  return (box.height - (GH_ROWS - 1) * gap) / GH_ROWS;
+}
+
 function ghLabel(slots) {
   var total = 0, first = null, last = null;
 
@@ -1071,6 +1084,9 @@ function ghDraw(root, days) {
 
   var cells = el("div", "gh-cells");
   cells.style.setProperty("--gh-weeks", String(weeks));
+
+  var side = ghCell(chart);
+  if (side > 0) cells.style.setProperty("--gh-cell", side.toFixed(2) + "px");
   cells.setAttribute("role", "img");
   cells.setAttribute("aria-label", ghLabel(slots));
 
@@ -1269,6 +1285,19 @@ function initVaultPanel() {
       })
       .then(function (data) {
         vaultDocs((data && data.items) || []);
+
+        /* The name in the guard line. initAuth() does not run on this page, so
+           nothing has asked who is signed in yet; me() is memoized and this is
+           reached only by someone who already has a session, so an anonymous
+           visit still makes no call. */
+        if (!authUser) {
+          me().then(function (user) {
+            if (!user || authUser) return;
+            authUser = user;
+            vaultDocs(vaultItems || []);
+          });
+        }
+
         remember(localStorage, "vault:seen", "1");
         signedIn(true);
         return true;
@@ -1347,17 +1376,61 @@ function initVaultPanel() {
   if (recall(localStorage, "vault:seen")) openVault();   // a returning cookie, not a stored login
 }
 
+/* The signed-in half of the vault section: a guard line that says who is
+   looking and that downloads are recorded, one row per document, and the ZIP
+   of all of them. Held in a variable and redrawn on a language switch, because
+   every string in here was written by JS and none of it is in the markup. */
+var vaultItems = null;
+var vaultDrawBound = false;
+
 function vaultDocs(items) {
+  vaultItems = items;
+
+  if (!vaultDrawBound) {
+    vaultDrawBound = true;
+    var again = function () { if (vaultItems) vaultDocs(vaultItems); };
+
+    /* Two things arrive after the list does: a language switch, and the answer
+       to /auth/me that puts a name in the guard line. Both redraw it. */
+    onLangChange(again);
+    onAuth(again);
+  }
+
   var box = document.getElementById("vault-docs");
   box.textContent = "";
 
   if (!items.length) {
-    box.appendChild(el("p", "muted", "Nothing has been shared with this account yet."));
+    box.appendChild(el("p", "muted",
+      t("Nothing has been shared with this account yet.",
+        "Für diesen Zugang ist noch nichts freigegeben.")));
     return;
   }
 
+  var ready = 0;
+  var bytes = 0;
   items.forEach(function (item) {
-    var row = el(item.available ? "a" : "span", "doc");
+    if (!item.available) return;
+    ready++;
+    bytes += item.sizeBytes || 0;
+  });
+
+  /* Who, how many, and that it is logged. The count is not sensitive and the
+     sentence is the same one the vault page shows above its list. */
+  var who = authUser ? authUser.username : "";
+  var count = items.length + " " + (items.length === 1
+    ? t("document", "Dokument")
+    : t("documents", "Dokumente"));
+
+  box.appendChild(el("p", "vault-note",
+    (who ? t("Signed in as ", "Angemeldet als ") + who + " · " : "") +
+    count + " · " +
+    t("every download is recorded.", "jeder Download wird protokolliert.")));
+
+  var list = el("div", "doclist");
+
+  items.forEach(function (item) {
+    var row = el(item.available ? "a" : "span",
+                 "doc" + (item.available ? "" : " doc--off"));
     if (item.available) row.href = API_BASE + "/vault/items/" + item.id + "/file";
 
     row.appendChild(iconSpan("icon", ICON_FILE));
@@ -1365,11 +1438,45 @@ function vaultDocs(items) {
 
     var size = item.available ? formatBytes(item.sizeBytes) : "";
     row.appendChild(el("span", "doc__size",
-      item.available ? (size ? "PDF · " + size : "PDF") : "not uploaded"));
+      item.available ? (size ? "PDF · " + size : "PDF")
+                     : t("not uploaded", "nicht hochgeladen")));
 
-    box.appendChild(row);
+    /* The slot is there either way: without it the one row that has no arrow
+       pushes its own words further right than every row that has one. */
+    row.appendChild(iconSpan("doc__go", item.available ? ICON_DOWN : ""));
+    list.appendChild(row);
   });
+
+  box.appendChild(list);
+
+  /* One file per document means answering a save dialog per document. The
+     archive is built server-side and still logs one download per document, so
+     the record stays as detailed as it was.
+
+     It goes in the action band beside sign-out rather than at the foot of the
+     list: drawn as one more row it read as a fourth document, and a thing you
+     do is not a thing you have. */
+  var actions = document.querySelector(".vault-actions");
+  if (!actions) return;
+
+  var was = actions.querySelector(".vault-all");
+  if (was) actions.removeChild(was);
+  if (ready < 2) return;
+
+  var all = el("a", "btn btn--go vault-all");
+  all.href = API_BASE + "/vault/archive";
+  all.setAttribute("download", "vault-documents.zip");
+
+  all.appendChild(iconSpan("icon", ICON_DOWN));
+  all.appendChild(el("span", null, t("Download all", "Alle herunterladen")));
+
+  var total = formatBytes(bytes);
+  all.appendChild(el("span", "vault-all__meta",
+    "ZIP · " + ready + " " + t("files", "Dateien") + (total ? " · " + total : "")));
+
+  actions.insertBefore(all, actions.firstChild);
 }
+
 
 function loadEditor() {
   if (isOffline()) return;

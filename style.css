@@ -19,6 +19,11 @@
   --fg-strong:   #efefef;   /* headings, name                    */
   --fg-mute:     #8a8a8a;   /* section eyebrows, captions        */
   --accent:      #ff1e2f;   /* section eyebrows, captions  #DE9100;      #ff1e2f;  */
+  --select:      #1a3cff;   /* text selection, and the graph's field */
+
+  /* The ink a filled accent button carries, and the ground it swaps to on
+     hover. One pair, one invert. */
+  --accent-ink:  #ffffff;
 
   --bw:          1px;
 
@@ -91,8 +96,12 @@ html {
   scrollbar-gutter: stable;
 }
 
+/* Blue, not the accent: a selection covers whole paragraphs, and the red that
+   marks one eyebrow at a time reads as an error when it lies under a sentence.
+   The same blue as the contributions graph, so the page has one loud colour
+   that is not a warning. */
 ::selection {
-  background: var(--accent);
+  background: var(--select);
   color: #fff;
 }
 
@@ -731,8 +740,11 @@ textarea:focus-visible,
   min-width: 0;
   display: grid;
   grid-auto-flow: column;                        /* a column is a week */
-  grid-template-columns: repeat(var(--gh-weeks, 53), 1fr);
+  /* Square cells, not stretched ones: the width comes from JS, which measures
+     it off the height. 1fr is the fallback for a draw that could not measure. */
+  grid-template-columns: repeat(var(--gh-weeks, 53), var(--gh-cell, 1fr));
   grid-template-rows: repeat(7, 1fr);
+  justify-content: space-between;
   gap: var(--gh-gap);
 }
 
@@ -3163,24 +3175,41 @@ body.is-single {
      not. Scoped here rather than swapped in :root, because both designs share
      one stylesheet. */
   --font: var(--font-mono);
-  --fg: #efefef;
   --bw: 2px;
   --radius: 4px;
 
-  --fs-name: 1.7rem;
-  --fs-subtitle: 1.15rem;
-  --fs-heading: 1rem;
-  --fs-lede: 1rem;
+  /* Body copy is one step under a heading, and that step is what was missing:
+     this used to raise --fg to #efefef, which is --fg-strong, so `strong` and
+     `normal` resolved to the same colour and every rule that distinguished
+     them distinguished nothing. Pointing --text at --fg restores the ladder
+     (--fg-strong for what you scan, --fg for what you read, --fg-mute for
+     what you check) and does it per theme, which a literal here could not. */
+  --text: var(--fg);
+
+  /* One display size, one subhead, one lede, one body, two caption steps.
+     The old scale ran 1.7 / 1.15 / 1 / 1 / 1: three of its five steps were
+     the same size, which is not a scale, and the page read as one grey field.
+     The hero clamps rather than taking a media query: it is the only type on
+     the site big enough for the viewport to have an opinion about. */
+  --fs-name: clamp(2.1rem, 7vw, 2.75rem);
+  --fs-subtitle: 1.3rem;
+  --fs-heading: 1.1rem;
+  --fs-lede: 1.125rem;
 
   --measure: 66ch;
   --measure-wide: 78ch;
 
-  /* White stepped by opacity on one solid block of blue, which is the only
-     large colour on the page and deliberately not the accent. */
-  --gh-ink: #ffffff;
-  --gh-field: #1a3cff;
-  --gh-gap: 2px;
-  --gh-radius: 1px;
+  /* The plate: one saturated blue ground and one bone ink, hard-edged, no
+     gradient and no anti-aliased shading. It is the page's only large colour
+     and deliberately not the accent. Every blue block on the page is drawn
+     from these two, so the graph and the empty covers read as one material. */
+  --plate-field: var(--select);
+  --plate-ink: #eae7cd;
+
+  --gh-ink: var(--plate-ink);
+  --gh-field: var(--select);
+  --gh-gap: 3px;
+  --gh-radius: 2px;
 
   font-family: var(--font);
   display: block;
@@ -3226,18 +3255,18 @@ body.is-single {
   align-items: center;
   justify-content: center;
   padding: 0;
-  border: 0;
+  border: var(--bw) solid var(--line);
   border-radius: var(--radius);
-  background: none;
+  background: var(--panel);
   color: var(--fg-mute);
   font: inherit;
   font-size: var(--fs-meta);
   letter-spacing: 0.08em;
   cursor: pointer;
-  transition: color var(--motion), background var(--motion);
+  transition: color var(--motion), border-color var(--motion), background var(--motion);
 }
 
-.tool:hover { color: var(--fg-strong); background: var(--line); }
+.tool:hover { color: var(--fg-strong); border-color: var(--border-hover); }
 .tool:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: -2px; }
 
 /* script.js swaps the icon inside this span, so the span is what has to be a
@@ -3252,11 +3281,16 @@ body.is-single {
    across as the width allows, so the graph stays responsive. Do not express
    this as an aspect-ratio on .gh-cells: the ratio would depend on --gh-weeks,
    which that same measurement sets, and the two feed each other. */
+/* Its own air. The hero section carries no bottom padding, and the graph is
+   not a .section, so without this it butts straight into the lede. */
 .is-single .gh {
-  height: calc(var(--space) * 10);
+  margin-top: calc(var(--space) * 4);
+  /* 15 units, not 10: at 80px tall the seven rows left an 8px cell, which is
+     small enough that a busy week and a quiet one look the same. */
+  height: calc(var(--space) * 15);
   background: var(--gh-field);
   border-radius: var(--radius);
-  padding: calc(var(--space) * 0.75);
+  padding: calc(var(--space) * 1.25);
 }
 
 /* Load-bearing. A stretched flex item will not shrink under its own content,
@@ -3284,8 +3318,15 @@ body.is-single {
 }
 
 main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
-.section { padding: calc(var(--space) * 3) 0; }
+
+/* All of the air above, none below: a gap that belongs to the section it
+   opens cannot be read as belonging to the one that just ended. With the
+   header sitting 2.5 units above its own content, the distance to the section
+   before is twice the distance to the words below, and the eye groups on that
+   ratio rather than on the rule. */
+.section { padding: calc(var(--space) * 5) 0 0; }
 .section--top { padding-top: 0; }
+.col:last-child .section:last-child { padding-bottom: calc(var(--space) * 4); }
 
 /* Splitter: number, label, and a rule that draws itself in on first sight. */
 .split {
@@ -3295,13 +3336,14 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
   margin-bottom: calc(var(--space) * 2.5);
 }
 
-.split__n { font-size: var(--fs-caption); color: var(--fg-mute); }
+.split__n { font-size: var(--fs-meta); color: var(--fg-mute); }
 
 .split__i { display: flex; color: var(--fg-mute); }
 .split__i svg { display: block; width: 14px; height: 14px; }
 
 .split__l {
   font-size: var(--fs-caption);
+  font-weight: 700;          /* the anchor of the section, at caption size */
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--fg-strong);
@@ -3324,12 +3366,24 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
 
 .hero__title {
   font-size: var(--fs-name);
-  line-height: 1.35;
+  line-height: 1.08;
+  letter-spacing: -0.03em;   /* mono opens up at display size; this closes it */
   color: var(--fg-strong);
-  margin-bottom: var(--space);
+  margin-bottom: calc(var(--space) * 1.5);
 }
 
-.prose p { margin-bottom: var(--space); }
+/* The one sentence that introduces the whole site, a step above the body it
+   sits over. Chosen by position rather than by a class: the hero's words come
+   out of the sections CMS, and the renderer emits `.prose p` and nothing else. */
+.section--top .prose p {
+  font-size: var(--fs-lede);
+  line-height: 1.55;
+}
+
+/* A paragraph break has to be bigger than a line break or it is not one. At
+   line-height 1.75 a single --space gap is smaller than the leading inside the
+   paragraph, and three paragraphs read as one block. */
+.prose p { margin-bottom: calc(var(--space) * 2); }
 .prose p:last-child { margin-bottom: 0; }
 .muted { color: var(--fg-mute); }
 
@@ -3342,10 +3396,11 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
    stop lining up. The knob is the min-width, not a fixed track. */
 .facts--wide b { min-width: 11ch; }
 
-/* The interests list under 01. Same label / value rows, but each sits on its
-   own divider so a run of one-line entries reads as a list rather than as a
-   block of prose. The value needs `flex: 1; min-width: 0` or a long line
-   pushes the row past the column instead of wrapping inside it. */
+/* The stack table under 03. Same label / value rows, but each sits on its own
+   soft divider so a run of entries reads as a list rather than as a block of
+   prose. Soft on purpose: `--line` is the section rule and nothing inside a
+   section should compete with it. The value needs `flex: 1; min-width: 0` or
+   a long line pushes the row past the column instead of wrapping inside it. */
 .facts--seam li {
   align-items: baseline;
   border-top: var(--bw) solid var(--line-soft);
@@ -3364,9 +3419,8 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
    blue underline. .card__desc is on the list because a card blurb written in
    the panel goes through inline(), which turns [text](url) into a real link. */
 .prose a,
-.fold__body a,
-.card__desc a,
-.rig__text a {
+.rig__text a,
+.card__desc a {
   color: var(--fg-strong);
   text-decoration: underline;
   text-decoration-color: var(--accent);
@@ -3376,48 +3430,17 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
 
 .prose a:hover,
 .prose a:focus-visible,
-.fold__body a:hover,
-.fold__body a:focus-visible,
-.card__desc a:hover,
-.card__desc a:focus-visible,
 .rig__text a:hover,
-.rig__text a:focus-visible { color: var(--accent); }
+.rig__text a:focus-visible,
+.card__desc a:hover,
+.card__desc a:focus-visible { color: var(--accent); }
 
-/* ---- The long read, folded under 01 ---- */
-.fold { margin-top: calc(var(--space) * 3); }
-
-.fold__body {
-  display: flex;
-  flex-direction: column;
-  gap: calc(var(--space) * 2.5);
-  padding-top: calc(var(--space) * 2.5);
-  color: var(--fg-mute);
-}
-
-.fold__body p + p { margin-top: var(--space); }
-
-.fold__h {
-  display: block;
-  margin-bottom: 0.35em;
-  color: var(--fg-strong);
-  font-weight: 400;
-}
-
-/* ---- Setup ---- */
+/* ---- A picture band -----------------------------------------------------
+   What the sections renderer emits for a `media` block, and the only markup
+   on this page that is not hand-written. The rest of the old .rig went with
+   the readme section it was built for. */
 .rig { margin-top: calc(var(--space) * 2); }
 
-.rig__hint { font-size: var(--fs-meta); color: var(--fg-mute); }
-
-.rig__body {
-  display: flex;
-  flex-direction: column;
-  gap: calc(var(--space) * 3);
-  padding-top: calc(var(--space) * 3);
-}
-
-/* A 260px picture rail with the words beside it. The clips are 480px native,
-   so this is still a downscale. Push the rail much wider and the text column
-   inside the 66ch .col drops under ~30 characters and stops reading. */
 .rig__row {
   display: grid;
   grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
@@ -3426,7 +3449,7 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
 }
 
 /* Stacked before the text gets squeezed, not at a phone breakpoint: below this
-   the clip goes full width, which is the biggest it is anywhere on the page. */
+   the picture goes full width, which is the biggest it is anywhere on the page. */
 @media (max-width: 720px) {
   .rig__row { grid-template-columns: 1fr; }
   .rig__media { max-width: 480px; }
@@ -3445,30 +3468,11 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
 .rig__text p + p { margin-top: var(--space); }
 
 /* A lone figure stacks, and stops being a grid while it does: one column is
-   not a layout. Two paragraphs beside the 260px rail would leave about thirty
-   characters a line inside the shell, under the floor the row's own comment
-   names, so the picture goes over the words rather than next to them.
-
-   It fills the column on purpose. Capped at its native 480 it ended short of
-   the measure and its right edge lined up with nothing, which read as a crop
-   rather than a decision. */
+   not a layout. It fills the column on purpose, because capped at its native
+   width its right edge lines up with nothing. */
 .rig--solo .rig__row { display: block; }
 .rig--solo .rig__text { margin-top: calc(var(--space) * 1.5); }
 .rig--solo { margin-bottom: calc(var(--space) * 3); }
-
-/* The file belongs to the machine above it, so it sits inside the same block
-   rather than after it: one seam for the pair, not one each. Unfolded, because
-   a summary that hides three lines is a click asking to be paid for nothing. */
-.rig__file { margin-top: calc(var(--space) * 2); }
-
-.rig__file__name {
-  display: block;
-  margin-bottom: calc(var(--space) * 0.75);
-  color: var(--fg-mute);
-  font-size: var(--fs-meta);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
 
 .rig__name {
   display: block;
@@ -3487,7 +3491,10 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
   align-items: start;
 }
 
-.card + .card { border-top: var(--bw) solid var(--line); }
+/* Soft, not the section rule. `--line` is what separates one section from the
+   next, and a divider between two rows of the same list drawn at that weight
+   makes six lines of one meaning where there is one. */
+.card + .card { border-top: var(--bw) solid var(--line-soft); }
 
 @media (max-width: 560px) {
   .card { grid-template-columns: 1fr; }
@@ -3541,6 +3548,8 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
 .card__name {
   font-size: var(--fs-subtitle);
   font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
   color: var(--fg-strong);
   text-decoration: underline;
   text-decoration-color: transparent;
@@ -3558,7 +3567,7 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
   color: var(--fg-mute);
 }
 
-.card__desc { color: var(--fg-mute); margin-top: 0.15em; }
+.card__desc { color: var(--fg-mute); margin-top: 0.4em; }
 
 .card__links {
   display: flex;
@@ -3583,38 +3592,6 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
    PDF is actually there, so an empty slot collapses instead of leaving a gap. */
 .card__sz { opacity: 0.65; }
 .card__sz:empty { display: none; }
-
-/* ---- Readme ---- */
-/* <details> rather than a button: the open/closed state is the element's own,
-   so every fold on the page costs no JavaScript at all. Shared by the readme,
-   the long read under 01 and the setup fold under 02. */
-.disclose {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55em;
-  width: max-content;
-  color: var(--fg-strong);
-  cursor: pointer;
-  list-style: none;
-}
-
-.disclose::-webkit-details-marker { display: none; }
-.disclose:hover { color: var(--fg-mute); }
-.disclose:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: 4px; }
-.disclose svg { width: 16px; height: 16px; transition: transform var(--motion); }
-[open] > .disclose svg { transform: rotate(90deg); }
-
-.readme {
-  margin-top: var(--space);
-  padding: calc(var(--space) * 2) calc(var(--space) * 2.5);
-  background: var(--panel);
-  border-radius: var(--radius);
-  color: var(--fg-mute);
-  font-size: 0.9rem;
-  white-space: pre-wrap;
-}
-
-.readme b { color: var(--fg-strong); font-weight: 400; }
 
 /* ---- Socials ---- */
 .soc {
@@ -3667,21 +3644,61 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
 
 .in:focus { outline: 0; border-color: var(--fg-mute); }
 
+/* A button is a surface. It used to be an icon and a word sitting straight on
+   the page, which on a background this dark is indistinguishable from a line
+   of copy: nothing said it could be pressed until the cursor was already on
+   it. The panel fill plus a rim is the secondary; the accent fill below is the
+   one thing in a section worth doing first. */
 .btn {
   display: inline-flex;
   align-items: center;
   gap: 0.55em;
-  padding: 0;
-  border: 0;
-  background: none;
+  padding: calc(var(--space) * 0.9) calc(var(--space) * 1.6);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
   color: var(--fg-strong);
   font: inherit;
+  font-size: var(--fs-body);
+  text-decoration: none;   /* the archive link wears this too, not just buttons */
   cursor: pointer;
+  transition: color var(--motion), border-color var(--motion), background var(--motion);
 }
 
-.btn:hover { color: var(--fg-mute); }
-.btn:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: 4px; }
+.btn:hover { color: var(--fg-strong); border-color: var(--border-hover); }
+.btn:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: 2px; }
 .btn svg { width: 16px; height: 16px; }
+
+/* The primary. One per band, never two: a page where everything is the first
+   thing to do has no first thing to do.
+
+   It inverts on hover rather than shifting a shade, and does it in 50ms: the
+   swap is the feedback, so it has to land inside the same beat as the click
+   rather than fade in after it. */
+.btn--go {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+  transition: color 50ms linear, background 50ms linear, border-color 50ms linear;
+}
+
+/* The rim stays red through the swap. Without it the light theme hovers a
+   white button onto an off-white page and the button disappears. */
+.btn--go:hover,
+.btn--go:focus-visible {
+  border-color: var(--accent);
+  background: var(--accent-ink);
+  color: var(--accent);
+}
+
+/* .muted is the class the sign-out button carries. On a surface it means the
+   secondary of the secondary, so it keeps the quieter ink and loses the fill. */
+.btn.muted {
+  background: none;
+  color: var(--fg-mute);
+}
+
+.btn.muted:hover { color: var(--fg-strong); }
 
 /* Scoped: .doc is also the row on the subpage vault list further up, and an
    unscoped rule here wins on specificity ties and flattens it. */
@@ -3701,6 +3718,78 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
 .is-single .doc:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: 2px; }
 .is-single .doc svg { width: 16px; height: 16px; }
 
+/* ---- The vault list on the single page --------------------------------
+   Names are legible here rather than covered: this is the owner's own page,
+   the list only exists after a session check, and the redaction bars stay on
+   /vault/ where a shared screen is the likelier risk. What is added instead
+   is the part a reader needs: who is signed in, that downloads are logged,
+   and one row that fetches the lot. */
+.vault-note {
+  width: 100%;
+  margin-bottom: calc(var(--space) * 1.5);
+  font-size: var(--fs-meta);
+  color: var(--fg-mute);
+}
+
+/* No rule above the first row and none below the last: the list is bounded by
+   the section rule above it and by the action band below it, and a border on
+   each end drew two more lines that meant nothing. What is left is one soft
+   divider between two rows, which is the only thing a divider should say. */
+.doclist { width: 100%; }
+
+.is-single .doclist .doc { padding: 0.8em 0; }
+.is-single .doclist .doc + .doc { border-top: var(--bw) solid var(--line-soft); }
+
+.is-single .doc__size {
+  margin-left: auto;
+  font-size: var(--fs-meta);
+  white-space: nowrap;
+}
+
+/* The arrow follows the size, so the row reads name, weight, action. Fixed
+   width because the slot is drawn empty on a row with no file behind it. */
+.doc__go {
+  flex: none;
+  width: 14px;
+  opacity: 0.5;
+  transition: opacity var(--motion);
+}
+.is-single .doc__go svg { width: 14px; height: 14px; }
+.is-single .doc:hover .doc__go { opacity: 1; }
+
+/* Inert on purpose: a document with no file behind it is a row, not a link. */
+.is-single .doc--off { opacity: 0.5; }
+.is-single .doc--off:hover, .is-single .doc--off:hover b { color: var(--fg-mute); }
+
+/* The action band. Two things you can do, in the type the rest of the page
+   speaks, with no divider and no right-hand column, so nothing here can be
+   mistaken for a fourth document. */
+.vault-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--space) * 3);
+  margin-top: calc(var(--space) * 1.5);
+}
+
+/* Its own name, not the subpage's `.doc-all`: that one is a full-width
+   bordered box, and reusing the class would have leaked its `width: 100%`
+   into a button that is meant to be as wide as its words.
+
+   Its own zone behind a rule, not more label. Run on after the words it made
+   one long line that read as a sentence and set the button's width; behind a
+   divider it is plainly the detail of the thing above it. currentColor for
+   both, so the whole zone inverts with the button. */
+.is-single .vault-all__meta {
+  margin-left: 0.15em;
+  padding-left: 0.7em;
+  border-left: var(--bw) solid currentColor;
+  color: inherit;
+  opacity: 0.7;
+  font-size: var(--fs-meta);
+}
+
+
 /* ---- On-page editor (edit.js) -----------------------------------------
    Only ever in the DOM for a signed-in admin: edit.js is not in any page's
    markup, so none of this matches for a visitor. It borrows the page's own
@@ -3710,33 +3799,50 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
 /* The pen hangs off the section box, so the section has to be the origin. */
 .section { position: relative; }
 
+/* The last item of the section's header row: the number, the label, the rule,
+   then this. It carries its own rim rather than growing one on hover, because
+   the row it sits in is already a line and an unbordered glyph on a line is
+   not a button anybody can see. */
 .ed-pen {
-  position: absolute;
-  border-radius: var(--radius);
-  top: calc(var(--space) * 3);
-  right: 0;
-  display: flex;
+  position: relative;
+  flex: none;
+  display: inline-flex;
   align-items: center;
-  padding: 4px;
-  border: var(--bw) solid transparent;
-  background: none;
+  gap: 0.5em;
+  padding: 3px 8px;
+  border: var(--bw) solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
   color: var(--fg-mute);
+  font: inherit;
+  font-size: var(--fs-caption);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
   cursor: pointer;
   transition: color var(--motion), border-color var(--motion);
 }
 
-.section--top .ed-pen { top: 0; }
+/* The hero has no header row to sit in, so there it keeps the old corner. */
+.ed-pen--float {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
 
-.ed-pen:hover { color: var(--fg-strong); border-color: var(--line); }
+.ed-pen:hover { color: var(--fg-strong); border-color: var(--border-hover); }
 .ed-pen:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: 2px; }
 .ed-pen:disabled { opacity: 0.4; cursor: default; }
-.ed-pen svg { display: block; width: 15px; height: 15px; }
+.ed-pen svg { display: block; width: 14px; height: 14px; }
 
-/* A saved draft the live page is not showing yet. */
+@media (max-width: 560px) {
+  /* The rule gives way before the word does. */
+  .ed-pen__label { display: none; }
+  .ed-pen { padding: 5px; }
+}
+
+/* A saved draft the live page is not showing yet. Part of the row rather than
+   pinned to a corner: with a word beside it, a corner dot lands on the text. */
 .ed-pen__dot {
-  position: absolute;
-  top: 1px;
-  right: 1px;
   width: 5px;
   height: 5px;
   background: var(--accent);
@@ -3861,18 +3967,32 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
   padding: 5px 10px;
   border-radius: var(--radius);
   border: var(--bw) solid var(--line);
-  background: none;
+  background: var(--panel);
   color: var(--fg-mute);
   font: inherit;
   font-size: var(--fs-meta);
   cursor: pointer;
-  transition: color var(--motion), border-color var(--motion);
+  transition: color var(--motion), border-color var(--motion), background var(--motion);
 }
 
 .ed__btn:hover:not(:disabled) { color: var(--fg-strong); border-color: var(--border-hover); }
 .ed__btn:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: 2px; }
 .ed__btn:disabled { opacity: 0.5; cursor: default; }
-.ed__btn--go { color: var(--fg-strong); border-color: var(--fg-mute); }
+/* Publish is the irreversible one, so it is the one that is filled. Same
+   invert as .btn--go, same 50ms. */
+.ed__btn--go {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+  transition: color 50ms linear, background 50ms linear, border-color 50ms linear;
+}
+
+.ed__btn--go:hover:not(:disabled),
+.ed__btn--go:focus-visible {
+  border-color: var(--accent);
+  background: var(--accent-ink);
+  color: var(--accent);
+}
 
 @media (max-width: 640px) {
   .ed__bar { flex-wrap: wrap; }

@@ -57,7 +57,7 @@ export type SectionBlock = SectionHeadingBlock | SectionTextBlock | SectionMedia
  * a marker pair that a human put in index.html. A key that is not in this list
  * has nowhere to be written to, so it is a 400 rather than a row.
  */
-export const SECTION_KEYS = ['top', 'about', 'readme'] as const;
+export const SECTION_KEYS = ['top', 'about'] as const;
 export type SectionKey = (typeof SECTION_KEYS)[number];
 
 export function isSectionKey(value: unknown): value is SectionKey {

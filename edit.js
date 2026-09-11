@@ -57,15 +57,32 @@
 
     var pen = el("button", "ed-pen");
     pen.type = "button";
-    pen.title = "Edit this section";
     pen.setAttribute("aria-label", "Edit the " + row.key + " section");
-    pen.appendChild(iconSpan("icon", ICON_PEN));
+    pen.appendChild(iconSpan("ed-pen__icon", ICON_PEN));
+
+    /* Named, not just drawn. A 15px glyph with no rim and no word was invisible
+       against the rule it was sitting on, and there is room on that row. */
+    var label = el("span", "ed-pen__label", t("edit", "bearbeiten"));
+    pen.appendChild(label);
+    onLangChange(function () { label.textContent = t("edit", "bearbeiten"); });
 
     // A dot means there is a saved draft the live page is not showing yet.
     if (row.hasDraft) pen.appendChild(el("span", "ed-pen__dot"));
 
     pen.addEventListener("click", function () { openEditor(row.key, section, pen); });
-    section.appendChild(pen);
+
+    /* Into the section's own header row when there is one. Absolute at the
+       section's top right, which is what this used to be, puts the button on
+       top of the rule that runs from the label to the right edge: the hairline
+       came through the glyph and the whole thing read as broken. The row is a
+       flex line ending in that rule, so appending shortens the rule instead. */
+    var split = section.querySelector(".split");
+    if (split) {
+      split.appendChild(pen);
+    } else {
+      pen.classList.add("ed-pen--float");
+      section.appendChild(pen);
+    }
   }
 
   // ---------------------------------------------------------------------------
