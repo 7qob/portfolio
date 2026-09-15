@@ -1765,14 +1765,7 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
    .reveal, .datarow and .linklist all obey it.
    THE RAIL. Article capped at --measure-wide, text at --measure. Two right
    edges on a page, and the wide one is only for pictures and tables. */
-.page-body--project {
-  display: flex;
-  flex-direction: column;
-  gap: var(--stack-lg);
-  width: 100%;
-  max-width: var(--measure-wide);
-  margin-inline: auto;
-}
+
 
 .project {
   display: flex;
@@ -1782,19 +1775,12 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
 }
 
 /* Every band in the article shares one opening seam. */
-.project > .project__section,
 .project > .figure,
 .project > .reveal {
   padding-top: var(--stack-md);
   border-top: var(--border-width) solid var(--border);
 }
 
-.project__lede {
-  font-size: var(--fs-lede);
-  line-height: 1.5;
-  max-width: var(--measure);
-  color: var(--fg-strong);
-}
 
 
 
@@ -1802,15 +1788,11 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
 
 
 
-.project__section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--stack-md);
-}
+
+
 
 /* A band heading is read, not scanned, so it drops back to the serif and out of
    the caption role it inherits. */
-.project__section > .section-label,
 .linklist > .section-label,
 .reveal__summary > .section-label {
   display: flex;
@@ -1823,7 +1805,6 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
   color: var(--fg-strong);
 }
 
-.project__section > .section-label::before,
 .linklist > .section-label::before,
 .reveal__summary > .section-label::before {
   content: "";
@@ -1835,7 +1816,6 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
 }
 
 /* Folding is presentational: a folded band keeps the same reading measure. */
-.project__section p,
 .reveal__body > p {
   font-size: var(--fs-body);
   max-width: var(--measure);
@@ -2085,16 +2065,9 @@ code {
   transition: color var(--motion);
 }
 
-.linklist__label {
-  font-size: var(--fs-body);
-}
 
-.linklist__note {
-  grid-column: 1 / -1;
-  font-size: var(--fs-caption);
-  line-height: 1.5;
-  color: var(--fg-mute);
-}
+
+
 
 .linklist svg {
   flex: 0 0 auto;
@@ -2120,26 +2093,12 @@ code {
   }
 }
 
-.page-head--project {
-  border-bottom: 0;
-  background-image: linear-gradient(90deg, var(--edge-1), var(--edge-2) 45%, var(--edge-3));
-  background-size: 100% 2px;
-  background-position: bottom left;
-  background-repeat: no-repeat;
-}
+
 
 /* Lede on a project page carries the one-line pitch — same line as the card. */
-.page-head--project .page-head__title {
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: var(--space);
-}
 
-.page-head--project {
-  gap: calc(var(--space) * 1.25);
-  padding-bottom: var(--stack-md);
-}
+
+
 
 .pager {
   margin-top: auto;
@@ -2169,19 +2128,13 @@ code {
   color: var(--fg-strong);
 }
 
-.pager__dir {
-  font-family: var(--font-mono);
-  font-size: var(--fs-caption);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--fg-mute);
-}
 
-.pager__next { text-align: right; }
+
+
 
 /* First / last project: one link only — don't let it stretch the full width. */
 .pager a:only-child { flex: 0 1 320px; }
-.pager__next:only-child { margin-left: auto; }
+
 
 /* One --measure of text + the .mediarow rail + the gap between them. */
 .about {
@@ -2194,7 +2147,6 @@ code {
 }
 
 /* Same band rule as the project pages: hairline, air, next band. */
-.about > .project__section,
 .about > .reveal {
   padding-top: var(--stack-md);
   border-top: var(--border-width) solid var(--border);
@@ -2314,7 +2266,7 @@ code {
   }
 
 
-  .pager__next { text-align: left; }
+
 
   :root {
     --stack-lg: calc(var(--space) * 4);
@@ -2819,6 +2771,16 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
   text-transform: uppercase;
   color: var(--fg-mute);
 }
+
+/* Project pages are single pages too: the home page's 2px rims and rounding,
+   and no red on anything but the focus ring. */
+.is-single { --border-width: var(--bw); }
+.hero__title .tag { vertical-align: middle; }
+.section--top .chips { margin-top: calc(var(--space) * 2); }
+.is-single .mediarow__media { border-radius: var(--radius); }
+.is-single .reveal__summary:hover .reveal__mark,
+.is-single .reveal__summary:focus-visible .reveal__mark { color: var(--fg-strong); }
+.is-single .clip-track__fill { background: var(--fg-strong); }
 
 .card__desc { color: var(--fg-mute); margin-top: 0.4em; }
 

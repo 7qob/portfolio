@@ -1342,7 +1342,8 @@ function buildProjectEditor(host, record, mediaRows, allProjects) {
     markDirty(true);
   });
   accentWrap.appendChild(accent.root);
-  grid.appendChild(accentWrap);
+  // Not shown: project pages no longer draw the accent. Kept so a save sends
+  // the stored colour back instead of clearing it.
 
   var chipsWrap = el("div", "pe-field pe-field--wide");
   chipsWrap.appendChild(el("span", "pe-field__label", "Chips"));

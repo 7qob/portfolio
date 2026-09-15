@@ -335,10 +335,11 @@ Rules the implementation enforces — keep them enforced:
   that work over `file://`, exactly like the hand-written ones. Authoring
   touches the API; the published page never does.
 - **The renderer emits only markup that style.css already styles.** A new
-  block type that needs a new CSS rule is a design change, not a feature. The
-  target output is `docs/preview-project-sample.html`, which is the spec: the
-  renderer reproduces it tag for tag, and if the two disagree one of them is
-  wrong.
+  block type that needs a new CSS rule is a design change, not a feature. A
+  project page is the home page's markup: `body.is-single`, `.col`, the title
+  as `.hero__title`, one numbered `.split` section per block, and a last
+  "more" section of `.soc` rows (source, previous, next, all projects). The
+  project's accent colour is no longer drawn on it.
 - **The one style attribute is a regex-validated hex.** `accent` is checked in
   the DTO on the way in and again in the renderer on the way out, because
   there is a database between those two moments.

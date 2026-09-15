@@ -12,12 +12,10 @@
  *
  * Security stance: every author-supplied value passes through esc() first. The
  * only markup an author can produce is [text](url) and `code`, applied AFTER
- * escaping and with the href checked against SAFE_HREF. The one style attribute
- * is re-tested against the hex regex here rather than trusted from the record —
- * the DTO checked what arrived over HTTP, this checks what is about to reach a
- * public page, and there is a database between those two moments.
+ * escaping and with the href checked against SAFE_HREF. No style attribute is
+ * emitted at all.
  */
-import { ACCENT_HEX, Block, Chip, MediaBlock, SAFE_HREF, TextBlock } from './blocks';
+import { Block, Chip, MediaBlock, SAFE_HREF, TextBlock } from './blocks';
 
 export interface MediaRef {
   filename: string;
@@ -133,14 +131,8 @@ export const CHIP_ICON_NAMES: ReadonlySet<string> = new Set(Object.keys(CHIP_ICO
 const ICON_MOON =
   '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
 
-const ICON_EXTERNAL = svg('<line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>', 13);
-
 const ICON_CHEVRON =
   '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
-
-const ICON_STAR = svg('<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>', 14);
-
-const ICON_FOLDER = svg('<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>', 14);
 
 const ICON_GITHUB = svg(
   '<path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>',
@@ -255,11 +247,10 @@ function chipList(chips: Chip[], pad: string): string {
   return indent(`<ul class="chips">\n${items}\n</ul>`, pad) + '\n';
 }
 
-function accentAttrs(accent: string | null): { cls: string; style: string } {
-  if (!accent || !ACCENT_HEX.test(accent)) return { cls: '', style: '' };
-  return { cls: ' is-custom', style: ` style="--edge-brand:${accent.toLowerCase()}"` };
-}
-
+/**
+ * One block as a home-page section: the numbered .split header, then the
+ * content. The number is the block's index + 1, read back out of its id.
+ */
 function band(opts: {
   id: string;
   heading: string;
@@ -267,12 +258,20 @@ function band(opts: {
   collapsible: boolean;
   hint?: string;
   hintDe?: string;
-  bodyClass?: string;
 }): string {
+  const n = String(Number(opts.id.replace(/\D/g, '')) + 1).padStart(2, '0');
+  const head = `<span class="split__n">${n}</span>
+          <span class="split__l" id="${opts.id}">${esc(opts.heading)}</span>
+          <span class="split__bar"></span>`;
+
   if (!opts.collapsible) {
-    return `      <section class="project__section" aria-labelledby="${opts.id}">
-        <h2 class="section-label" id="${opts.id}">${esc(opts.heading)}</h2>
-${indent(opts.inner, '        ')}
+    return `      <section class="section" aria-labelledby="${opts.id}">
+        <div class="split">
+          ${head}
+        </div>
+        <div class="prose">
+${indent(opts.inner, '          ')}
+        </div>
       </section>
 `;
   }
@@ -282,18 +281,17 @@ ${indent(opts.inner, '        ')}
     ? `\n          <span class="reveal__hint"${de}>${opts.hint}</span>`
     : '';
 
-  return `      <details class="reveal">
-        <summary class="reveal__summary">
-          <h2 class="section-label">${esc(opts.heading)}</h2>${hint}
-          <span class="reveal__mark" aria-hidden="true">
-            ${ICON_CHEVRON}
-          </span>
-        </summary>
-
-        <div class="reveal__body${opts.bodyClass ?? ''}">
-${indent(opts.inner, '          ')}
-        </div>
-      </details>
+  return `      <section class="section" aria-labelledby="${opts.id}">
+        <details class="reveal">
+          <summary class="split reveal__summary">
+          ${head}${hint}
+          <span class="reveal__mark" aria-hidden="true">${ICON_CHEVRON}</span>
+          </summary>
+          <div class="reveal__body prose">
+${indent(opts.inner, '            ')}
+          </div>
+        </details>
+      </section>
 `;
 }
 
@@ -303,7 +301,6 @@ function renderTextBand(b: TextBlock, id: string): string {
     heading: b.heading,
     inner: b.body.map((par) => `<p>${inline(par)}</p>`).join('\n'),
     collapsible: b.collapsible,
-    bodyClass: ' reading',
   });
 }
 
@@ -361,23 +358,12 @@ function renderBlock(b: Block, index: number, media: MediaLookup, p: string): st
   return b.type === 'text' ? renderTextBand(b, id) : renderMediaBand(b, id, media, p);
 }
 
-function repoLink(url: string): string {
-  const label = url.replace(/^https:\/\//i, '').replace(/\/+$/, '');
-  return `    <nav class="linklist" aria-labelledby="lbl-repo">
-      <h2 class="section-label" id="lbl-repo" data-de="Quellcode">Source</h2>
-      <ul>
-        <li>
-          <a href="${esc(url)}" target="_blank" rel="noopener">
-            <span class="linklist__label">${esc(label)}</span>
-            ${ICON_EXTERNAL}
-            <span class="linklist__note" data-de="Das Repository, das diese Seite beschreibt.">The repository this page describes.</span>
-          </a>
-        </li>
-      </ul>
-    </nav>
-`;
-}
-
+/**
+ * A project page is the home page's single column: the title as the hero, the
+ * lede and chips under it, one numbered section per block, and a last section
+ * of .soc rows (source, previous, next, back) where the linklist and the pager
+ * used to be. The project's accent colour is not used here any more.
+ */
 export function renderProjectPage(
   project: PageProject,
   prev: Neighbour | null,
@@ -386,67 +372,52 @@ export function renderProjectPage(
   opts: RenderOptions = {},
 ): string {
   const p = opts.assetPrefix ?? '';
-
-  /* Featured is the eyebrow's job now, so it is not also a badge on the name. */
-  const status =
-    project.status && project.status !== 'Featured'
-      ? ` <span class="status">${esc(project.status)}</span>`
-      : '';
-
-  const eyebrow =
-    project.status === 'Featured'
-      ? `${ICON_STAR}<span data-de="Empfohlen">Featured</span>`
-      : `${ICON_FOLDER}<span data-de="Projekt">Project</span>`;
-
-  const accent = accentAttrs(project.accent);
+  const tag = project.status === 'WIP' ? ` <span class="tag">WIP</span>` : '';
 
   let html = head(project.title, 'article', p, {
     desc: project.lede ?? project.cardBlurb ?? undefined,
-  });
+  }).replace('<body>', '<body class="is-single">');
   html += '\n';
   html += header(p);
   html += `
-  <div class="page-head page-head--project${accent.cls}"${accent.style}>
-    <p class="page-head__label">${eyebrow}</p>
-    <h1 class="page-head__title" id="page-title">${esc(project.title)}${status}</h1>
-${chipList(project.chips, '    ')}  </div>
-
-  <main class="page-body page-body--project" aria-labelledby="page-title">
-    <article class="project reading">
+  <main>
+    <div class="col">
+      <section class="section section--top">
+        <h1 class="hero__title" id="page-title">${esc(project.title)}${tag}</h1>
+`;
+  if (project.lede) html += `        <div class="prose"><p>${inline(project.lede)}</p></div>\n`;
+  html += chipList(project.chips, '        ');
+  html += `      </section>
 
 `;
-  if (project.lede) {
-    html += `      <p class="project__lede">${inline(project.lede)}</p>\n\n`;
-  }
 
   html += project.blocks.map((b, i) => renderBlock(b, i, media, p)).join('\n');
-  html += `
-    </article>
 
-`;
-
-  if (project.repoUrl) html += repoLink(project.repoUrl);
-
-  if (prev || next) {
-    const prevLink = prev
-      ? `      <a class="pager__prev" href="${p}project-${esc(prev.slug)}.html">
-        <span class="pager__dir" data-de="&larr; Zurück">&larr; Previous</span>
-        <span>${esc(prev.title)}</span>
-      </a>\n`
-      : '';
-    const nextLink = next
-      ? `      <a class="pager__next" href="${p}project-${esc(next.slug)}.html">
-        <span class="pager__dir" data-de="Weiter &rarr;">Next &rarr;</span>
-        <span>${esc(next.title)}</span>
-      </a>\n`
-      : '';
-    html += `
-    <nav class="pager" aria-label="More projects" data-de-label="Weitere Projekte">
-${prevLink}${nextLink}    </nav>
-`;
+  const rows: string[] = [];
+  if (project.repoUrl && SAFE_HREF.test(project.repoUrl)) {
+    const label = project.repoUrl.replace(/^https:\/\//i, '').replace(/\/+$/, '');
+    rows.push(`<a class="soc" href="${esc(project.repoUrl)}" target="_blank" rel="noopener">${ICON_GITHUB}<b data-de="Quellcode">source</b><span class="soc__at">${esc(label)}</span></a>`);
   }
+  if (prev) {
+    rows.push(`<a class="soc" href="${p}project-${esc(prev.slug)}.html"><b data-de="zur&uuml;ck">previous</b><span class="soc__at">${esc(prev.title)}</span></a>`);
+  }
+  if (next) {
+    rows.push(`<a class="soc" href="${p}project-${esc(next.slug)}.html"><b data-de="weiter">next</b><span class="soc__at">${esc(next.title)}</span></a>`);
+  }
+  rows.push(`<a class="soc" href="${p}index.html#projects"><b data-de="alle Projekte">all projects</b><span class="soc__at">7qob</span></a>`);
 
-  html += `  </main>
+  html += `
+      <section class="section" aria-labelledby="lbl-more">
+        <div class="split">
+          <span class="split__n">${String(project.blocks.length + 1).padStart(2, '0')}</span>
+          <span class="split__l" id="lbl-more" data-de="mehr">more</span>
+          <span class="split__bar"></span>
+        </div>
+${rows.map((r) => `        ${r}`).join('\n')}
+      </section>
+
+    </div>
+  </main>
 
 `;
   html += footer(p);
