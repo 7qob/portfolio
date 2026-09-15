@@ -89,11 +89,15 @@ export class VaultController {
     res.setHeader('Cache-Control', 'no-store, private, max-age=0');
     res.setHeader('X-Content-Type-Options', 'nosniff');
 
-    // The filename is quoted and stripped of anything that could break out of
-    // the header. It comes from the database rather than the request, but a
-    // header built by concatenation is worth making unbreakable regardless.
-    const safeTitle = `${item.slug.replace(/[^a-z0-9._-]/gi, '')}.pdf`;
-    res.setHeader('Content-Disposition', `attachment; filename="${safeTitle}"`);
+    // filename* carries the real name (umlauts, capitals) percent-encoded, so
+    // nothing in it can break the header; filename is the ASCII fallback for
+    // clients that ignore filename*.
+    const name = this.vault.fileNameFor(item.title);
+    const ascii = name.normalize('NFD').replace(/[^\x20-\x7e]/g, '').replace(/"/g, '');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${ascii}"; filename*=UTF-8''${encodeURIComponent(name)}`,
+    );
 
     stream.pipe(res);
   }
