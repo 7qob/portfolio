@@ -571,6 +571,11 @@ loud when the pull touched `render.ts`, because a renderer change does not
 reach a visitor until Publish runs and that is the way a deploy most often
 looks finished and is not.
 
+`deploy/auto-update.sh --install` puts that on a 10-minute cron: each run
+calls `update.sh --static` only when `origin/main` moved, and `update.sh --api`
+plus a `render` only when GHCR has a newer image than the running container.
+It needs passwordless sudo and logs to `~/auto-update.log`.
+
 Three scripts, and the split matters:
 
 - `sync-site.sh` — **the only copy of the rsync exclude list in the repo.** It
