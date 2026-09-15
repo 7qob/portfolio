@@ -180,8 +180,8 @@ one.
   its own, and fifteen copies of one colour drift the moment somebody updates
   fourteen. What stays local to a component is only what is unique to it: an
   underline, a rotation, an arrow that nudges, an offset. Three rules override
-  the shared offset (`.site-nav a`, `.admin-tab`, `.reveal__summary`) and
-  nothing else should.
+  the shared offset (`.tool`, `.admin-tab`, `.reveal__summary`) and nothing
+  else should.
 - Visible `:focus-visible` states everywhere, not just `:hover`. Never
   `outline: none` without putting a ring back: the footer links carried one
   for months and a keyboard visitor could not see where they were.
@@ -193,20 +193,21 @@ one.
 
 ### The header
 
-Three tracks: brand left, nav centred, switches right (`1fr auto 1fr`, so the
-nav is centred on the page rather than on what the switches left over). **The
-brand is the home link — that is why there is no Home item in the nav.** It is
-the word `7qob` and nothing else: the accent square that used to sit beside it
-is gone, and the hover it carried moved onto the word. Every switch lives in
-`.site-controls`; `script.js` puts the language button and the sign-out button
-there too, so the grid keeps its three tracks however many switches exist.
+**Every page, generated ones included, has the same `.topbar` and `.pagefoot`.**
+The old `.site-header` with its Projects / Vault nav and the `.site-footer` are
+gone; `render.ts` emits the same chrome. There is no nav: the brand `7qob` is
+the home link, and `.tools` on the right holds `.tool` buttons, in this order:
+DE, theme, then the session button (home page) or a sign-out door (script.js,
+other pages, only when signed in), then `.who`.
 
-On a phone the header becomes two rows — brand and switches, then the nav
-across the full width as **equal columns**. Each item gets the same share, so a
-fifth one (Admin, once signed in) costs no layout, nothing shrinks, nothing
-scrolls and there is no hamburger to open. It is sticky, and `width: auto` is
-load-bearing there: the shell's `width: 100%` fights the negative margins and
-the bar stops short of the right edge without it.
+`.who` is the signed-in username, the last item in the bar. **An admin's name
+is a link to `admin.html`, and it is the only link to the panel anywhere.** It
+never uppercases: it is data, not a label. On a subpage it is drawn only when
+`vault:seen` says this browser signed in before, or the page is the vault or
+the panel, so an anonymous visit still makes no `/auth/me` call.
+
+Subpages keep their padded body; `body:not(.is-single) > .topbar` / `.pagefoot`
+bleed back out with negative margins.
 
 ### Subpage rules (project pages, about, impressum, projects index)
 
