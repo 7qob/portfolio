@@ -104,19 +104,9 @@ function applyLang() {
   }
 }
 
-/* Built here rather than written into every page, for the same reason the
-   projects filter is: without JS it could not switch anything, and a button
-   that does nothing is worse than no button. */
 function initLangToggle() {
-  // The single page ships its own button in the markup, so there is nothing to
-  // build there — only to bind. Everywhere else the button is created, for the
-  // same reason the projects filter is: without JS it could switch nothing.
-  var existing = document.getElementById("lang-toggle");
-  var header = document.querySelector(".site-header");
-  if (!existing && !header) return;
-
-  var btn = existing || el("button", "icon-btn lang-btn");
-  btn.type = "button";
+  var btn = document.getElementById("lang-toggle");
+  if (!btn) return;
 
   function sync() {
     // The button names the language it switches to, not the one in use.
@@ -133,13 +123,6 @@ function initLangToggle() {
     sync();
     for (var i = 0; i < langHooks.length; i++) langHooks[i]();
   });
-
-  if (existing) return;   // already in the markup, and already in the right place
-
-  /* The header's right-hand column. Every switch lives in it, so the header
-     grid keeps its three tracks however many switches there are. */
-  var controls = header.querySelector(".site-controls") || header;
-  controls.insertBefore(btn, controls.firstChild);
 }
 
 /* Run at parse time, not on DOMContentLoaded: this file is the last thing in
@@ -148,11 +131,6 @@ function initLangToggle() {
 applyLang();
 
 document.addEventListener("DOMContentLoaded", function () {
-
-  var year = document.getElementById("year");
-  if (year) {
-    year.textContent = new Date().getFullYear();
-  }
 
   renderContributions();
   initThemeToggle();
@@ -512,10 +490,13 @@ function onAuth(fn) {
 }
 
 function initAuth() {
-  // Only where there is a header to decorate. Every onAuth consumer lives on a
-  // page that has one; the single page has its own session button instead, and
-  // asking here would put an API call on every anonymous visit to buy nothing.
-  if (isOffline() || !document.querySelector(".site-nav")) return;
+  // The home page asks through its own vault panel. Elsewhere only a page that
+  // is nothing without a session, or a browser that has signed in before, asks:
+  // an anonymous visit makes no call.
+  if (isOffline() || document.getElementById("session-toggle")) return;
+  if (!recall(localStorage, "vault:seen") &&
+      !document.getElementById("vault-list") &&
+      !document.getElementById("admin-body")) return;
 
   me().then(function (user) {
     if (!user) return;
@@ -526,21 +507,21 @@ function initAuth() {
   });
 }
 
+/* Who is signed in, as the last item in the topbar: right of the session
+   button, or of a sign-out door on pages that have none. No page links to the
+   panel, so an admin's name is the link to it. null clears it. */
 function showSignedIn(user) {
-  var nav = document.querySelector(".site-nav");
-  if (!nav) return;
+  var tools = document.querySelector(".topbar .tools");
+  if (!tools) return;
 
-  if (user.role === "admin" && !nav.querySelector("[data-admin-link]")) {
-    var admin = el("a", null, "Admin");
-    admin.href = "/admin.html";
-    admin.setAttribute("data-admin-link", "");
-    if (location.pathname === "/admin.html") admin.setAttribute("aria-current", "page");
-    nav.appendChild(admin);
-  }
+  var was = tools.querySelector(".who");
+  if (was) tools.removeChild(was);
+  if (!user) return;
 
-  var header = nav.parentNode;
-  if (header && !header.querySelector("[data-signout]")) {
-    var out = el("button", "icon-btn site-header__signout");
+  remember(localStorage, "vault:seen", "1");
+
+  if (!document.getElementById("session-toggle") && !tools.querySelector("[data-signout]")) {
+    var out = el("button", "tool");
     out.type = "button";
     var nameOut = function () {
       out.title = t("Log out", "Abmelden");
@@ -551,13 +532,25 @@ function showSignedIn(user) {
     out.setAttribute("data-signout", "");
     out.innerHTML = ICON_DOOR;
     out.addEventListener("click", function () {
-      api("/auth/logout", { method: "POST" })
-        .then(function () { location.href = "/index.html"; })
-        .catch(function () { location.href = "/index.html"; });
+      function home() {
+        try {
+          localStorage.removeItem("vault:seen");
+          localStorage.removeItem("admin");
+        } catch (e) {}
+        location.href = "/index.html";
+      }
+      api("/auth/logout", { method: "POST" }).then(home, home);
     });
-    var controls = header.querySelector(".site-controls") || header;
-    controls.appendChild(out);
+    tools.appendChild(out);
   }
+
+  var admin = user.role === "admin";
+  var who = el(admin ? "a" : "span", "who", user.username);
+  if (admin) {
+    who.href = "/admin.html";
+    if (location.pathname === "/admin.html") who.setAttribute("aria-current", "page");
+  }
+  tools.appendChild(who);
 }
 
 /* ---- The Vault ----------------------------------------------------------
@@ -1294,6 +1287,7 @@ function initVaultPanel() {
           me().then(function (user) {
             if (!user || authUser) return;
             authUser = user;
+            showSignedIn(user);
             vaultDocs(vaultItems || []);
           });
         }
@@ -1312,6 +1306,8 @@ function initVaultPanel() {
       .catch(function () {})
       .then(function () {
         forgetMe();
+        authUser = null;
+        showSignedIn(null);
         try {
           localStorage.removeItem("vault:seen");
           localStorage.removeItem("admin");

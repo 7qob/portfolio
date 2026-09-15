@@ -137,94 +137,12 @@ body {
    page-level width: a block that wants to be narrower centres itself inside
    this, and the rail is what keeps the header, the content and the footer on
    the same two edges. */
-.site-header,
 .page-head,
 .page-body,
-.bento,
-.site-footer {
+.bento {
   width: 100%;
   max-width: var(--shell);
   margin-inline: auto;
-}
-
-/* ==== Site header — the site's one navigation ==== */
-/* 1fr auto 1fr: the nav is centred on the page, not on the space the controls
-   left over. The two 1fr columns are what make that true at any brand or
-   control width. */
-.site-header {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: calc(var(--space) * 2);
-  padding-bottom: var(--space);
-  border-bottom: var(--border-width) solid var(--border);
-}
-
-/* The brand is the home link — that is why there is no Home item in the nav. */
-.site-brand {
-  display: inline-flex;
-  align-items: center;
-  min-height: 30px;
-  justify-self: start;
-  color: var(--text);
-  text-decoration: none;
-  transition: color var(--motion);
-}
-
-.site-brand__name {
-  font-family: var(--font-mono);
-  font-size: var(--fs-caption);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.site-controls {
-  display: flex;
-  align-items: center;
-  gap: calc(var(--space) * 0.5);
-  justify-self: end;
-  margin-right: calc(var(--space) * -0.5);   /* the buttons' own padding, back */
-}
-
-.site-nav {
-  display: flex;
-  align-items: center;
-  gap: 0;               /* the padding on each link is the spacing */
-  justify-content: center;
-}
-
-.site-nav a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 30px;
-  padding: 0 calc(var(--space) * 1.5);
-  font-family: var(--font-mono);
-  font-size: var(--fs-caption);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--fg-mute);
-  text-decoration: none;
-  border-bottom: var(--border-width) solid transparent;
-  transition: color var(--motion), border-color var(--motion);
-}
-
-/* The rule under the word is the nav's own, and the only thing it adds. */
-.site-nav a:hover,
-.site-nav a:focus-visible {
-  border-bottom-color: var(--accent);
-}
-
-/* The current page is already marked by the accent rule, so its hover has
-   only the colour left to move. That is deliberate: the rule stays put and
-   nothing appears to change page under the pointer. */
-.site-nav a[aria-current="page"] {
-  color: var(--text);
-  border-bottom-color: var(--accent);
-}
-
-/* Inside the link, not around it: a sticky bar clips an outer ring. */
-.site-nav a:focus-visible {
-  outline-offset: -2px;
 }
 
 .box {
@@ -258,12 +176,8 @@ body {
    what is unique to it — an underline, a rotation, an arrow that nudges. */
 
 /* --- Signal one: the word. Hover and focus always move together. --- */
-.site-brand:hover,
-.site-brand:focus-visible,
-.site-nav a:hover,
-.site-nav a:focus-visible,
-.site-footer a:hover,
-.site-footer a:focus-visible,
+a.who:hover,
+a.who:focus-visible,
 .box__text a:hover,
 .box__text a:focus-visible,
 .link-box__note a:hover,
@@ -283,8 +197,6 @@ body {
 .project-filter__toggle:hover,
 .project-filter__toggle:focus-visible,
 .chip--filter:hover,
-.icon-btn:hover,
-.icon-btn:focus-visible,
 .clip-btn:hover,
 .clip-btn:focus-visible,
 .gh__retry:hover,
@@ -404,7 +316,6 @@ textarea:focus-visible,
 /* Every glyph on the site is an inline SVG inside a span that has already
    been given a size, and every one of them wants the same five lines. They
    are declared here once; a component sizes its span and stops there. */
-.icon-btn [data-theme-icon] svg,
 .link-box__icon svg,
 .doc__icon svg,
 .doc__arrow svg,
@@ -1014,7 +925,7 @@ textarea:focus-visible,
 
 /* ==== Subpages (projects / about / impressum) ==== */
 
-/* Every subpage is the same shell: .page-head, .page-body, .site-footer. */
+/* Every subpage is the same shell: .page-head, .page-body, .pagefoot. */
 /* The masthead is the one place the words themselves are centred. Below it the
    prose goes back to a left edge — a centred column of body copy costs the eye
    the start of every line. */
@@ -1092,33 +1003,6 @@ textarea:focus-visible,
   max-width: var(--measure);
   margin-inline: auto;
 }
-
-.icon-btn {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 30px;
-  padding: 0 calc(var(--space) * 0.5);
-  border: 0;
-  border-radius: var(--radius);
-  background: none;
-  color: var(--fg-mute);
-  font: inherit;
-  line-height: 1;
-  text-decoration: none;
-  cursor: pointer;
-  transition: color var(--motion);
-}
-
-.icon-btn [data-theme-icon] {
-  width: 16px;
-  height: 16px;
-  display: block;
-  fill: none;
-  stroke: currentColor;
-}
-
 
 /* ---- Impressum fields ---- */
 .field-list {
@@ -1224,23 +1108,6 @@ textarea:focus-visible,
   margin-top: calc(var(--space) * 3);
   color: var(--fg-mute);
   font-size: var(--fs-meta);
-}
-
-.site-header__signout { order: 1; }   /* always the last control */
-
-/* The language switch is an .icon-btn whose icon is two letters, so it takes
-   the nav's caption type rather than the body's. */
-.lang-btn {
-  font-family: var(--font-mono);
-  font-size: var(--fs-caption);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.site-header__signout svg {
-  width: 16px;
-  height: 16px;
-  display: block;
 }
 
 .admin-tabs {
@@ -2844,46 +2711,6 @@ code {
 }
 
 
-/* ==== Footer (shared) — legal + credit, nothing else ==== */
-/* Centred, like the header it answers: one row of three, not a bar with a
-   left end and a right end. */
-.site-footer {
-  margin-top: auto;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space) calc(var(--space) * 3);
-  padding-top: calc(var(--space) * 2);
-  border-top: var(--border-width) solid var(--border);
-  font-family: var(--font-mono);
-  font-size: var(--fs-caption);
-  letter-spacing: 0.04em;
-  color: var(--fg-mute);
-}
-
-.site-footer a {
-  display: inline-flex;
-  align-items: center;
-  gap: calc(var(--space) * 0.5);
-  color: var(--fg-mute);
-  text-decoration: none;
-  border-bottom: var(--border-width) solid transparent;
-  transition: color var(--motion), border-color var(--motion);
-}
-
-.site-footer a:hover,
-.site-footer a:focus-visible {
-  border-bottom-color: var(--accent);
-}
-
-.footer-arrow {
-  width: 13px;
-  height: 13px;
-  fill: none;
-  stroke: currentColor;
-}
-
 /* ==== One-screen home page (desktop) ==== */
 /* The lock, in three parts: the body stops scrolling, every grid row is
    allowed to shrink, and .box__body becomes the scroll container instead. */
@@ -2970,57 +2797,6 @@ code {
 
 /* ==== Responsive ==== */
 @media (max-width: 768px) {
-/* Two rows, not one squeezed line: brand and switches keep the top row, the
-     nav takes the full width underneath as equal columns. Every item gets the
-     same share, so a fifth one (Admin, once signed in) costs no layout — and
-     nothing has to shrink, scroll or hide behind a hamburger. */
-  .site-header {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    background: var(--bg);
-    /* width:auto, or the shell's width:100% fights the negative margins and
-       the sticky bar stops short of the right edge. */
-    width: auto;
-    margin: calc(var(--gap) * -1) calc(var(--gap) * -1) 0;
-    padding: calc(var(--space) * 0.5) var(--gap) 0;
-    grid-template-columns: auto auto;
-    grid-template-areas:
-      "brand controls"
-      "nav   nav";
-    gap: calc(var(--space) * 0.75) var(--space);
-    justify-content: space-between;
-  }
-
-  .site-brand    { grid-area: brand; }
-  .site-controls { grid-area: controls; margin-right: 0; }
-
-  .site-nav {
-    grid-area: nav;
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(0, 1fr);
-    border-top: var(--border-width) solid var(--line-soft);
-  }
-
-  .site-nav a {
-    min-height: 44px;
-    justify-content: center;
-    padding: 0 calc(var(--space) * 0.25);
-    letter-spacing: 0.06em;
-  }
-
-  .icon-btn {
-    min-height: 40px;
-    padding: 0 calc(var(--space) * 1.25);
-  }
-
-  .icon-btn [data-theme-icon],
-  .site-header__signout svg {
-    width: 18px;
-    height: 18px;
-  }
-
   /* A definite height, not a floor: the grid stretches to the chart, so an
      auto-height chart collapses to its own gaps. Width stays on flex: 1. */
   .gh__chart {
@@ -3151,14 +2927,9 @@ code {
   .linklist a { padding: calc(var(--space) * 1.75) 0; }
 }
 
-@media (max-width: 480px) {
-  /* Below this the label is the only thing that can give: five equal columns
-     on a 320px screen is 60px each. */
-  .site-nav a { font-size: var(--fs-meta); letter-spacing: 0.04em; }
-}
 /* ==== Single page ========================================================
    The whole site is one scrolling column: header, hero, graph, then numbered
-   sections. Nothing here is shared with the pages that predate it.
+   sections. The topbar and the footer are shared with every other page.
 
    The type is the one real break with the subpages: they are set in the serif
    --font, this is set in the mono stack. Scoped here rather than swapped in
@@ -3270,6 +3041,26 @@ body.is-single {
    the button's centre — visibly out of line with the DE label beside it. */
 .tool > span { display: flex; }
 .tool svg { display: block; width: 16px; height: 16px; }
+
+/* Who is signed in, right of the session button. Data, not a label, so it
+   keeps the case it was issued in. An admin's name is the way to the panel. */
+.who {
+  display: inline-block;
+  max-width: 18ch;
+  padding: 0 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--fs-meta);
+  color: var(--fg-mute);
+  text-decoration: none;
+}
+
+/* The subpages pad their body, so the two bars bleed back out to its edges,
+   and they keep the mono face the single page gives everything. */
+.topbar, .pagefoot { font-family: var(--font-mono); }
+body:not(.is-single) > .topbar { margin: calc(var(--gap) * -1) calc(var(--gap) * -1) 0; }
+body:not(.is-single) > .pagefoot { margin: auto calc(var(--gap) * -1) calc(var(--gap) * -1); }
 
 /* The graph fills a height the bento used to give it; a scrolling column gives
    none, and repeat(7, 1fr) then collapses to zero. One number puts it back —

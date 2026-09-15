@@ -22,20 +22,17 @@
      to read. -->
 <body class="is-admin">
 
-  <header class="site-header">
-    <a class="site-brand" href="index.html" aria-label="7qob, home" data-de-label="7qob, Startseite">
-      <span class="site-brand__name">7qob</span>
-    </a>
-    <nav class="site-nav" aria-label="Main" data-de-label="Hauptnavigation">
-      <a href="projects.html" data-de="Projekte">Projects</a>
-      <a href="vault/index.html">Vault</a>
-    </nav>
-    <div class="site-controls">
-      <button class="icon-btn" type="button" id="theme-toggle" aria-label="Toggle dark/bright" data-de-label="Hell/Dunkel umschalten" aria-pressed="false">
-        <span data-theme-icon>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-        </span>
-      </button>
+  <header class="topbar">
+    <div class="topbar__inner">
+      <a class="brand" href="index.html">7qob</a>
+      <span class="tools">
+        <button class="tool" type="button" id="lang-toggle" aria-label="Auf Deutsch umschalten">DE</button>
+        <button class="tool" type="button" id="theme-toggle" aria-label="Toggle dark/bright" aria-pressed="false">
+          <span data-theme-icon>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </span>
+        </button>
+      </span>
     </div>
   </header>
 
@@ -208,10 +205,11 @@
 
   </main>
 
-  <footer class="site-footer">
-    <span class="site-footer__meta">&copy; <span id="year"></span> 7qob &middot; v1.0.0</span>
-    <a href="impressum.html">Impressum</a>
-    <a href="https://github.com/7qob" target="_blank" rel="noopener">GitHub<svg class="footer-arrow" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
+  <footer class="pagefoot">
+    <div class="pagefoot__inner">
+      <span>7qob &middot; v2.0.0</span>
+      <a href="impressum.html" data-de="Impressum und Datenschutz">Impressum and privacy</a>
+    </div>
   </footer>
 
   <script src="script.js"></script>

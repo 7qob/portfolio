@@ -226,30 +226,28 @@ function head(
 }
 
 function header(p: string): string {
-  return `  <header class="site-header">
-    <a class="site-brand" href="${p}index.html" aria-label="7qob, home" data-de-label="7qob, Startseite">
-      <span class="site-brand__name">7qob</span>
-    </a>
-    <nav class="site-nav" aria-label="Main" data-de-label="Hauptnavigation">
-      <a href="${p}projects.html" aria-current="page" data-de="Projekte">Projects</a>
-      <a href="${p}vault/index.html">Vault</a>
-    </nav>
-    <div class="site-controls">
-      <button class="icon-btn" type="button" id="theme-toggle" aria-label="Toggle dark/bright" data-de-label="Hell/Dunkel umschalten" aria-pressed="false">
-        <span data-theme-icon>
-          ${ICON_MOON}
-        </span>
-      </button>
+  return `  <header class="topbar">
+    <div class="topbar__inner">
+      <a class="brand" href="${p}index.html">7qob</a>
+      <span class="tools">
+        <button class="tool" type="button" id="lang-toggle" aria-label="Auf Deutsch umschalten">DE</button>
+        <button class="tool" type="button" id="theme-toggle" aria-label="Toggle dark/bright" aria-pressed="false">
+          <span data-theme-icon>
+            ${ICON_MOON}
+          </span>
+        </button>
+      </span>
     </div>
   </header>
 `;
 }
 
 function footer(p: string): string {
-  return `  <footer class="site-footer">
-    <span class="site-footer__meta">&copy; <span id="year"></span> 7qob &middot; v1.0.0</span>
-    <a href="${p}impressum.html">Impressum</a>
-    <a href="https://github.com/7qob" target="_blank" rel="noopener">GitHub<svg class="footer-arrow" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
+  return `  <footer class="pagefoot">
+    <div class="pagefoot__inner">
+      <span>7qob &middot; v2.0.0</span>
+      <a href="${p}impressum.html" data-de="Impressum und Datenschutz">Impressum and privacy</a>
+    </div>
   </footer>
 
   <script src="${p}script.js"></script>
