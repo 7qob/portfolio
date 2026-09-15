@@ -144,15 +144,6 @@ one.
   roles. The scale used to run 1.7 / 1.15 / 1 / 1 / 1: three steps at one size
   is not a scale. Display sizes take negative tracking and tight leading; the
   caption roles take positive tracking and uppercase.
-- **A button is a surface, and one per band is filled.** `.btn` is a panel
-  fill with a rim; `.btn--go` is the accent itself, and on hover it inverts to
-  `--accent-ink` with the rim staying red, in 50ms, because the swap is the
-  feedback and has to land inside the same beat as the pointer. The rim is what
-  keeps a white-on-white hover visible in the light theme. Two filled buttons in
-  one band means neither is the first thing to do; the log-in, the archive and
-  Publish are the three that qualify. Note the tradeoff that was taken
-  deliberately: white on `--accent` is about 3.6:1, under AA for body-size
-  text, and the accent was chosen over a darkened fill anyway.
 - **Two line weights, and each says one thing.** `--line` is the boundary
   between sections: the `.split__bar`, the topbar, the footer, a box's own rim.
   `--line-soft` is a divider between two rows of the same list: `.card + .card`,

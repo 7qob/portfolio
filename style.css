@@ -21,10 +21,6 @@
   --accent:      #ff1e2f;   /* section eyebrows, captions  #DE9100;      #ff1e2f;  */
   --select:      #1a3cff;   /* text selection, and the graph's field */
 
-  /* The ink a filled accent button carries, and the ground it swaps to on
-     hover. One pair, one invert. */
-  --accent-ink:  #ffffff;
-
   --bw:          1px;
 
   --bg-raised:    var(--panel);
@@ -3255,18 +3251,18 @@ body.is-single {
   align-items: center;
   justify-content: center;
   padding: 0;
-  border: var(--bw) solid var(--line);
+  border: 0;
   border-radius: var(--radius);
-  background: var(--panel);
+  background: none;
   color: var(--fg-mute);
   font: inherit;
   font-size: var(--fs-meta);
   letter-spacing: 0.08em;
   cursor: pointer;
-  transition: color var(--motion), border-color var(--motion), background var(--motion);
+  transition: color var(--motion), background var(--motion);
 }
 
-.tool:hover { color: var(--fg-strong); border-color: var(--border-hover); }
+.tool:hover { color: var(--fg-strong); background: var(--line); }
 .tool:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: -2px; }
 
 /* script.js swaps the icon inside this span, so the span is what has to be a
@@ -3644,61 +3640,22 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
 
 .in:focus { outline: 0; border-color: var(--fg-mute); }
 
-/* A button is a surface. It used to be an icon and a word sitting straight on
-   the page, which on a background this dark is indistinguishable from a line
-   of copy: nothing said it could be pressed until the cursor was already on
-   it. The panel fill plus a rim is the secondary; the accent fill below is the
-   one thing in a section worth doing first. */
 .btn {
   display: inline-flex;
   align-items: center;
   gap: 0.55em;
-  padding: calc(var(--space) * 0.9) calc(var(--space) * 1.6);
-  border: var(--bw) solid var(--line);
-  border-radius: var(--radius);
-  background: var(--panel);
+  padding: 0;
+  border: 0;
+  background: none;
   color: var(--fg-strong);
   font: inherit;
-  font-size: var(--fs-body);
   text-decoration: none;   /* the archive link wears this too, not just buttons */
   cursor: pointer;
-  transition: color var(--motion), border-color var(--motion), background var(--motion);
 }
 
-.btn:hover { color: var(--fg-strong); border-color: var(--border-hover); }
-.btn:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: 2px; }
+.btn:hover { color: var(--fg-mute); }
+.btn:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: 4px; }
 .btn svg { width: 16px; height: 16px; }
-
-/* The primary. One per band, never two: a page where everything is the first
-   thing to do has no first thing to do.
-
-   It inverts on hover rather than shifting a shade, and does it in 50ms: the
-   swap is the feedback, so it has to land inside the same beat as the click
-   rather than fade in after it. */
-.btn--go {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: var(--accent-ink);
-  transition: color 50ms linear, background 50ms linear, border-color 50ms linear;
-}
-
-/* The rim stays red through the swap. Without it the light theme hovers a
-   white button onto an off-white page and the button disappears. */
-.btn--go:hover,
-.btn--go:focus-visible {
-  border-color: var(--accent);
-  background: var(--accent-ink);
-  color: var(--accent);
-}
-
-/* .muted is the class the sign-out button carries. On a surface it means the
-   secondary of the secondary, so it keeps the quieter ink and loses the fill. */
-.btn.muted {
-  background: none;
-  color: var(--fg-mute);
-}
-
-.btn.muted:hover { color: var(--fg-strong); }
 
 /* Scoped: .doc is also the row on the subpage vault list further up, and an
    unscoped rule here wins on specificity ties and flattens it. */
@@ -3776,16 +3733,13 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
    bordered box, and reusing the class would have leaked its `width: 100%`
    into a button that is meant to be as wide as its words.
 
-   Its own zone behind a rule, not more label. Run on after the words it made
-   one long line that read as a sentence and set the button's width; behind a
-   divider it is plainly the detail of the thing above it. currentColor for
-   both, so the whole zone inverts with the button. */
+   Its own zone behind a hairline, not more label: run on after the words it
+   reads as one long sentence. */
 .is-single .vault-all__meta {
   margin-left: 0.15em;
   padding-left: 0.7em;
-  border-left: var(--bw) solid currentColor;
-  color: inherit;
-  opacity: 0.7;
+  border-left: var(--bw) solid var(--line);
+  color: var(--fg-mute);
   font-size: var(--fs-meta);
 }
 
@@ -3812,7 +3766,7 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
   padding: 3px 8px;
   border: var(--bw) solid var(--line);
   border-radius: var(--radius);
-  background: var(--panel);
+  background: var(--bg);
   color: var(--fg-mute);
   font: inherit;
   font-size: var(--fs-caption);
@@ -3967,32 +3921,18 @@ main { padding: calc(var(--space) * 4) 0 calc(var(--space) * 3); }
   padding: 5px 10px;
   border-radius: var(--radius);
   border: var(--bw) solid var(--line);
-  background: var(--panel);
+  background: none;
   color: var(--fg-mute);
   font: inherit;
   font-size: var(--fs-meta);
   cursor: pointer;
-  transition: color var(--motion), border-color var(--motion), background var(--motion);
+  transition: color var(--motion), border-color var(--motion);
 }
 
 .ed__btn:hover:not(:disabled) { color: var(--fg-strong); border-color: var(--border-hover); }
 .ed__btn:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: 2px; }
 .ed__btn:disabled { opacity: 0.5; cursor: default; }
-/* Publish is the irreversible one, so it is the one that is filled. Same
-   invert as .btn--go, same 50ms. */
-.ed__btn--go {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: var(--accent-ink);
-  transition: color 50ms linear, background 50ms linear, border-color 50ms linear;
-}
-
-.ed__btn--go:hover:not(:disabled),
-.ed__btn--go:focus-visible {
-  border-color: var(--accent);
-  background: var(--accent-ink);
-  color: var(--accent);
-}
+.ed__btn--go { color: var(--fg-strong); border-color: var(--fg-mute); }
 
 @media (max-width: 640px) {
   .ed__bar { flex-wrap: wrap; }

@@ -1463,7 +1463,7 @@ function vaultDocs(items) {
   if (was) actions.removeChild(was);
   if (ready < 2) return;
 
-  var all = el("a", "btn btn--go vault-all");
+  var all = el("a", "btn vault-all");
   all.href = API_BASE + "/vault/archive";
   all.setAttribute("download", "vault-documents.zip");
 
