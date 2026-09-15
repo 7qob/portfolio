@@ -26,7 +26,6 @@ import {
   PageProject,
   renderHome,
   renderProjectPage,
-  renderProjectsIndex,
 } from './render';
 
 export interface ProjectRow {
@@ -382,11 +381,9 @@ export class ProjectsService {
       writePage(`project-${row.slug}.html`, html);
     }
 
-    writePage('projects.html', renderProjectsIndex(chain.map((r) => this.toPage(r))));
-
     // The home page's cards are drawn from the same chain, so a project that
-    // is unpublished or hidden leaves the bento by the same act that takes it
-    // off the index — a cell can never link to a page that is not there.
+    // is unpublished or hidden leaves the home page by the same act that takes
+    // it out of the pagers — a card can never link to a page that is not there.
     const slotted = chain
       .filter((r) => r.home_slot !== null)
       .sort((a, b) => this.slotOrder(a.home_slot) - this.slotOrder(b.home_slot))

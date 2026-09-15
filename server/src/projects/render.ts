@@ -138,9 +138,6 @@ const ICON_EXTERNAL = svg('<line x1="7" y1="17" x2="17" y2="7"/><polyline points
 const ICON_CHEVRON =
   '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
 
-const ICON_BOX_ARROW =
-  '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
-
 const ICON_STAR = svg('<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>', 14);
 
 const ICON_FOLDER = svg('<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>', 14);
@@ -149,16 +146,6 @@ const ICON_GITHUB = svg(
   '<path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>',
   20,
 );
-
-const ICON_USER = svg(
-  '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
-  20,
-);
-
-/* The box arrow's twin: same size, pointing out of the page rather than into
-   it. Both sit inside a span that is already aria-hidden. */
-const ICON_BOX_ARROW_EXT =
-  '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>';
 
 const CLIP_CONTROLS = `<button class="clip-btn clip-btn--play" type="button" data-clip-toggle aria-label="Pause clip">
   <span data-clip-icon="pause">
@@ -499,126 +486,6 @@ function projectCard(proj: PageProject, opts: { p: string }): string {
             </a>${desc}${repo}
           </div>
         </article>`;
-}
-
-/**
- * A card on the projects index: the bento cell the home page renders, given a
- * cover and room to breathe. Same box, same rim, same arrow, same eyebrow and
- * chips in the same order, so the two indexes read as one system.
- *
- * The first project takes the feature card, which spans the row and stands its
- * cover beside the words — the same "first project is the large one" rule the
- * home page's cells follow.
- *
- * The cover is decorative: the card is already named by the stretched link, so
- * an alt repeating the title would only be read out twice. Under every cover
- * sits the plate, which shows through when a project has no picture yet or the
- * file behind one has gone missing.
- */
-function projectIndexCard(proj: PageProject, p: string, feature: boolean): string {
-  const accent = accentAttrs(proj.accent);
-  const label =
-    proj.status === 'Featured'
-      ? `${ICON_STAR}<span data-de="Empfohlen">Featured</span>`
-      : `${ICON_FOLDER}<span data-de="Projekt">Project</span>`;
-  const wip = proj.status === 'WIP' ? `<span class="status">WIP</span>` : '';
-  const blurb = proj.cardBlurb ?? proj.lede ?? '';
-  const img = proj.cover
-    ? `\n          <img src="${mediaSrc(proj.cover, p)}"${dims(proj.cover)}` +
-      ` loading="lazy" decoding="async" alt="">`
-    : '';
-  const cls = `box box--link box--edge project-card${feature ? ' project-card--feature' : ''}${accent.cls}`;
-
-  return `      <li class="${cls}"${accent.style}>
-        <a class="stretched-link" href="${p}project-${esc(proj.slug)}.html" aria-label="${esc(proj.title)} project page" data-de-label="${esc(proj.title)} Projektseite"></a>
-        <span class="project-card__shot">
-          <span class="shot-plate">
-            <span class="shot-plate__mark">${esc(proj.title)}</span>
-            <span class="shot-plate__note" data-de="Screenshot folgt">Screenshot pending</span>
-          </span>${img}
-        </span>
-        <div class="project-card__body">
-          <span class="box-arrow" aria-hidden="true">
-            ${ICON_BOX_ARROW}
-          </span>
-          <p class="box__label">${label}</p>
-          <div class="project-card__head">
-            <h2 class="project-card__name" id="p-${esc(proj.slug)}">${esc(proj.title)}</h2>${wip}
-          </div>
-          <p>${inline(blurb)}</p>
-${chipList(proj.chips, '          ')}        </div>
-      </li>`;
-}
-
-/** The two link boxes that close the index. */
-function indexEndcap(p: string): string {
-  return `    <section class="endcap" aria-labelledby="lbl-elsewhere">
-      <h2 class="section-label" id="lbl-elsewhere" data-de="Anderswo">Elsewhere</h2>
-      <div class="linkrow">
-
-        <a class="link-box" href="https://github.com/7qob" target="_blank" rel="noopener">
-          <span class="link-box__caption" data-de="Profil">Profile</span>
-          <span class="link-box__label">
-            <span class="link-box__icon" aria-hidden="true">
-              ${ICON_GITHUB}
-            </span>
-            GitHub
-          </span>
-          <span class="link-box__note" data-de="Der Quellcode zu allem hier, plus die kleineren Sachen.">The source behind these, plus the smaller things.</span>
-          <span class="box-arrow box-arrow--external" aria-hidden="true">
-            ${ICON_BOX_ARROW_EXT}
-          </span>
-        </a>
-
-        <a class="link-box" href="${p}index.html#about">
-          <span class="link-box__caption" data-de="Kontext">Context</span>
-          <span class="link-box__label">
-            <span class="link-box__icon" aria-hidden="true">
-              ${ICON_USER}
-            </span>
-            <span data-de="Über mich">About me</span>
-          </span>
-          <span class="link-box__note" data-de="Wer das hier baut, und warum diese Dinge.">Who builds these, and why these things.</span>
-          <span class="box-arrow" aria-hidden="true">
-            ${ICON_BOX_ARROW}
-          </span>
-        </a>
-
-      </div>
-    </section>
-`;
-}
-
-export function renderProjectsIndex(projects: PageProject[], opts: RenderOptions = {}): string {
-  const p = opts.assetPrefix ?? '';
-  const cards = projects.map((proj, i) => projectIndexCard(proj, p, i === 0)).join('\n\n');
-
-  let html = head('Projects', 'website', p, {
-    titleDe: 'Projekte',
-    desc: 'Tools, servers and experiments, mostly things I wanted for myself first.',
-  });
-  html += '\n';
-  html += header(p);
-  html += `
-  <div class="page-head">
-    <p class="page-head__label" data-de="Übersicht">Index</p>
-    <h1 class="page-head__title" id="page-title" data-de="Projekte">Projects</h1>
-    <p class="page-head__lede" data-de="Tools, Server und Experimente, meistens Dinge, die ich zuerst selbst haben wollte.">Tools, servers and experiments, mostly things I wanted for myself first.</p>
-  </div>
-
-  <main class="page-body" aria-labelledby="page-title">
-
-    <ul class="project-grid">
-
-${cards}
-
-    </ul>
-
-${indexEndcap(p)}  </main>
-
-`;
-  html += footer(p);
-  return html;
 }
 
 /**

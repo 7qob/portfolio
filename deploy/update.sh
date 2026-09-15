@@ -147,9 +147,9 @@ check() {
 }
 
 check /                     200
-check /projects.html        200
+check /projects.html        404   # removed, stale /pages/ copy blocked
 check /style.css            200
-check /vault/               200
+check /vault/               404   # removed, the vault is on the home page
 check /no-such-page.html    404   # the site's own 404 page, not nginx's
 check /api/health           200
 check /api/vault/items      401   # the data behind the vault stays shut

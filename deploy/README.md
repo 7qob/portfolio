@@ -83,12 +83,11 @@ rsync does not do.
 it installs nginx and creates directories every time, which an update does not
 need.
 
-`index.html` and `projects.html` are deliberately **not** excluded. They are
-rsynced as before, but they are no longer the pages visitors get once anything
-has been published: nginx serves `/pages/index.html` and `/pages/projects.html`
-first for those two URLs (the `location = /` blocks in the server config), and
-the rsynced copies are the template the renderer splices project cards into
-plus the fallback for a Pi that has never published. Overwriting them is
+`index.html` is deliberately **not** excluded. It is rsynced as before, but it
+is no longer the page visitors get once anything has been published: nginx
+serves `/pages/index.html` first (the `location = /` blocks in the server
+config), and the rsynced copy is the template the renderer splices project
+cards into plus the fallback for a Pi that has never published. Overwriting it is
 therefore how you update the template, which is what you want — the generated
 copies live in `pages/`, which `--delete` still cannot touch.
 
@@ -286,13 +285,9 @@ curl -s -o /dev/null -w 'items:      %{http_code}\n' localhost/api/vault/items
 curl -s -o /dev/null -w 'file:       %{http_code}\n' localhost/api/vault/items/1/file
 curl -s -o /dev/null -w 'admin:      %{http_code}\n' localhost/api/admin/overview
 curl -s -o /dev/null -w 'old path:   %{http_code}\n' localhost/vault/files/cv.pdf
-curl -s              -w '\nvault page bytes above\n' localhost/vault/index.html | grep -ci 'curriculum\|zeugnis'
 ```
 
-Wanted: **401, 401, 401, 404**, and **0** matches on the last one — the vault
-page must not name a single document before you have signed in. That last
-check is the one worth repeating after any change to `vault/index.html`,
-because it is the property the old setup did not have.
+Wanted: **401, 401, 401, 404**.
 
 ### 3.7 Upload the documents
 
@@ -362,11 +357,6 @@ finishing a deploy does not require signing into a browser.
 `update.sh` notices when the renderer was in the pull and prints the command
 at the end, because this is the way a deploy most often looks finished and is
 not.
-
-If the live index ever shows the projects as a plain bulleted list with no
-cards and no covers, this is what happened: the pages on disk predate the
-rebuild that replaced `.project-row` with `.project-card`, and the classes
-they ask for are no longer in `style.css`. One `render` fixes it.
 
 ### What this protects against, and what it doesn't
 

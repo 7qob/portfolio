@@ -138,10 +138,8 @@ document.addEventListener("DOMContentLoaded", function () {
   initFigures();
   initClipToggles();
   initBoxScroll();
-  initProjectFilter();
 
   initAuth();
-  initVault();
   initLogin();
 
   // The single page's own: the rail animation, the inline vault, the editor
@@ -212,169 +210,6 @@ function initFigures() {
     if (img.complete && img.naturalWidth === 0) hide();
     else img.addEventListener("error", hide);
   }
-}
-
-/* Projects index filter. The technologies come out of the chips already in the
-   cards, so the list is never maintained twice, and the bar is only built when
-   there is something to choose between — no JS, no bar, whole grid. */
-/* Two columns and a wide first card leave a hole whenever an even number of
-   cards is on screen: the last one would sit alone in its row. It takes the
-   width instead. Measured from what is actually showing, so a filter that
-   hides two cards closes the grid again rather than punching a gap in it. */
-function layoutCards(rows) {
-  var shown = [];
-  for (var i = 0; i < rows.length; i++) {
-    rows[i].classList.remove("project-card--wide");
-    if (!rows[i].hidden) shown.push(rows[i]);
-  }
-  if (!shown.length) return;
-
-  shown[0].classList.add("project-card--wide");
-  if (shown.length % 2 === 0) shown[shown.length - 1].classList.add("project-card--wide");
-}
-
-function initProjectFilter() {
-  var list = document.querySelector(".project-grid");
-  if (!list) return;
-
-  var rows = list.querySelectorAll(".project-card");
-  layoutCards(rows);
-  if (rows.length < 2) return;
-
-  var techs = [];      // every distinct chip label, in reading order
-  var owned = [];      // parallel to rows: the labels each row carries
-
-  for (var i = 0; i < rows.length; i++) {
-    var chips = rows[i].querySelectorAll(".chips .chip");
-    var mine = [];
-    for (var j = 0; j < chips.length; j++) {
-      var text = chips[j].textContent.trim();
-      if (!text || mine.indexOf(text) !== -1) continue;
-      mine.push(text);
-      if (techs.indexOf(text) === -1) techs.push(text);
-    }
-    owned.push(mine);
-  }
-  if (techs.length < 2) return;
-
-  /* How many cards each technology would leave showing. Written on the chip,
-     so the cost of a filter is legible before it is paid rather than after. */
-  function countFor(tech) {
-    if (tech === "") return rows.length;
-    var n = 0;
-    for (var i = 0; i < owned.length; i++) if (owned[i].indexOf(tech) !== -1) n++;
-    return n;
-  }
-
-  var bar = el("div", "project-filter");
-
-  var toggle = el("button", "project-filter__toggle");
-  toggle.type = "button";
-  toggle.id = "project-filter-label";
-  toggle.setAttribute("aria-expanded", "false");
-  toggle.setAttribute("aria-controls", "project-filter-chips");
-
-  // "Filter" is the same word in both languages, so it never needs redrawing.
-  var state = el("span", "project-filter__state");
-  toggle.appendChild(el("span", "project-filter__word", "Filter"));
-  toggle.appendChild(state);
-  toggle.appendChild(iconSpan("project-filter__mark", ICON_CHEVRON));
-  bar.appendChild(toggle);
-
-  var chipList = el("ul", "chips");
-  chipList.id = "project-filter-chips";
-  chipList.setAttribute("aria-labelledby", "project-filter-label");
-  chipList.hidden = true;
-  bar.appendChild(chipList);
-
-  var buttons = [];
-  var active = "";
-
-  /* Only whether the panel is open is remembered. The filter itself is not:
-     coming back to a page that silently hides most of it is a bug report
-     waiting to happen, and the panel state costs nothing to be wrong about. */
-  var OPEN_KEY = "projectFilterOpen";
-
-  function setOpen(open) {
-    chipList.hidden = !open;
-    toggle.setAttribute("aria-expanded", open ? "true" : "false");
-    remember(localStorage, OPEN_KEY, open ? "1" : "0");
-  }
-
-  function isOpen() {
-    return toggle.getAttribute("aria-expanded") === "true";
-  }
-
-  /* The collapsed bar still says what is on. Without this the panel could be
-     shut over an active filter and the grid would look like the whole set. */
-  function syncState() {
-    state.textContent = (active === "" ? t("All", "Alle") : active) +
-                        " · " + countFor(active);
-    bar.classList.toggle("is-filtered", active !== "");
-    toggle.setAttribute("aria-label", active === ""
-      ? t("Filter projects, showing all", "Projekte filtern, alle werden gezeigt")
-      : t("Filter projects, showing ", "Projekte filtern, gezeigt wird ") + active);
-  }
-
-  /* Clicking the chip that is already on clears it, so the filter can always
-     be undone where it was set rather than only from the All chip. */
-  function apply(tech) {
-    active = tech === active ? "" : tech;
-    for (var i = 0; i < rows.length; i++) {
-      rows[i].hidden = active !== "" && owned[i].indexOf(active) === -1;
-    }
-    for (var k = 0; k < buttons.length; k++) {
-      var on = buttons[k].getAttribute("data-tech") === active;
-      buttons[k].setAttribute("aria-pressed", on ? "true" : "false");
-    }
-    syncState();
-    layoutCards(rows);
-  }
-
-  function addChip(tech, label) {
-    var chip = el("button", "chip chip--filter");
-    chip.type = "button";
-    chip.setAttribute("data-tech", tech);
-    chip.setAttribute("aria-pressed", "false");
-
-    var name = el("span", null, label);
-    chip.appendChild(name);
-    chip.appendChild(el("span", "chip__count", countFor(tech)));
-    chip.addEventListener("click", function () { apply(tech); });
-
-    var item = el("li");
-    item.appendChild(chip);
-    chipList.appendChild(item);
-    buttons.push(chip);
-    return name;
-  }
-
-  var allLabel = addChip("", t("All", "Alle"));
-
-  /* The technologies are product names — React, Rust — so they read the same
-     in either language and are never translated. */
-  for (var n = 0; n < techs.length; n++) addChip(techs[n], techs[n]);
-
-  toggle.addEventListener("click", function () { setOpen(!isOpen()); });
-
-  /* Escape backs out one step at a time: the filter first, then the panel. */
-  bar.addEventListener("keydown", function (e) {
-    if (e.key !== "Escape" && e.keyCode !== 27) return;
-    if (active !== "") apply(active);
-    else setOpen(false);
-    toggle.focus();
-  });
-
-  onLangChange(function () {
-    allLabel.textContent = t("All", "Alle");
-    syncState();
-  });
-
-  var wasOpen = recall(localStorage, OPEN_KEY) === "1";
-
-  list.parentNode.insertBefore(bar, list);
-  setOpen(wasOpen);
-  apply("");
 }
 
 function initClipToggles() {
@@ -494,9 +329,7 @@ function initAuth() {
   // is nothing without a session, or a browser that has signed in before, asks:
   // an anonymous visit makes no call.
   if (isOffline() || document.getElementById("session-toggle")) return;
-  if (!recall(localStorage, "vault:seen") &&
-      !document.getElementById("vault-list") &&
-      !document.getElementById("admin-body")) return;
+  if (!recall(localStorage, "vault:seen") && !document.getElementById("admin-body")) return;
 
   me().then(function (user) {
     if (!user) return;
@@ -553,243 +386,15 @@ function showSignedIn(user) {
   tools.appendChild(who);
 }
 
-/* ---- The Vault ----------------------------------------------------------
-   Three things are sensitive on this page, and they are not the same thing.
-
-   1. Whether a document exists. That never leaves the server unauthenticated:
-      the markup ships empty and /api/vault/items answers a session or nothing.
-      Already true, and the reason vault/index.html has no rows in it.
-   2. What a document is called. "Zeugnis Sek II" tells a bystander, a screen
-      share or a beamer what the file is without anyone getting past the
-      password, and the list sits open on screen far longer than it is read.
-      So the names arrive and are not painted: each row wears a redaction bar
-      until the visitor asks, and asking is one click.
-   3. Who read what. That one is handled by saying so: the guard bar states
-      that every download is recorded, because it is.
-
-   The cover is display, not access. A revealed list lasts the tab and not the
-   machine (sessionStorage, never localStorage), and covers itself again once
-   the tab has been away long enough to have been left rather than glanced
-   away from. */
-
-var VAULT_REVEAL_KEY = "vaultRevealed";
-
-/* Long enough that switching tabs to copy an email address is not punished,
-   short enough that a walk to the coffee machine is. A cover that fires on
-   every blur gets revealed once and resented; this one is rarely wrong. */
-var VAULT_RECOVER_MS = 20000;
-
 /* ---- Icons --------------------------------------------------------------
    One block rather than two scattered ones, all from the same 24x24 stroked
    set, all sized by the class of the span that holds them rather than by a
    width attribute. The stylesheet has a single rule that makes an svg fill
    its span, so a new glyph needs no CSS of its own. */
-var ICON_DOC = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>';
 var ICON_DOWN = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
-var ICON_EYE = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
-var ICON_EYE_OFF = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
-var ICON_CHEVRON = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
 var ICON_MOON = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
 var ICON_SUN = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>';
 var ICON_DOOR = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>';
-
-/* The bar stands for the title without measuring it. Quantised to steps of
-   four and capped, so a long name and a longer one look the same, while the
-   rows still vary enough not to read as a column of identical smudges. */
-function redactionBar(text) {
-  var len = Math.min(Math.max(Math.round((text || "").length / 4) * 4, 8), 24);
-  return new Array(len + 1).join("\u2588");
-}
-
-function initVault() {
-  var list = document.getElementById("vault-list");
-  var status = document.getElementById("vault-status");
-  var guard = document.getElementById("vault-guard");
-  var actions = document.getElementById("vault-actions");
-  if (!list) return;
-
-  if (isOffline()) {
-    setText(status,
-      "The Vault needs the live site. It cannot be opened from a local file.",
-      "Der Vault braucht die Live-Seite. Aus einer lokalen Datei l\u00e4sst er sich nicht \u00f6ffnen.");
-    return;
-  }
-
-  api("/vault/items")
-    .then(function (res) {
-      if (res.status === 401) {
-        location.replace("/login.html?next=" + encodeURIComponent(location.pathname));
-        throw new Error("redirecting");
-      }
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      return res.json();
-    })
-    .then(function (data) {
-      var items = (data && data.items) || [];
-
-      if (!items.length) {
-        setText(status, "No documents are published right now.",
-                        "Zurzeit sind keine Dokumente ver\u00f6ffentlicht.");
-        return;
-      }
-
-      var ready = 0;    // documents with a file behind them
-      var bytes = 0;
-      items.forEach(function (item) {
-        if (!item.available) return;
-        ready++;
-        bytes += item.sizeBytes || 0;
-      });
-
-      var revealed = recall(sessionStorage, VAULT_REVEAL_KEY) === "1";
-
-      var note = el("p", "doc-guard__note");
-
-      var eye = el("button", "doc-guard__btn");
-      eye.type = "button";
-      eye.setAttribute("aria-controls", "vault-list");
-      eye.addEventListener("click", function () { setRevealed(!revealed); });
-
-      var eyeMark = iconSpan("doc-guard__mark", "");
-      var eyeWord = el("span");
-
-      eye.appendChild(eyeMark);
-      eye.appendChild(eyeWord);
-      guard.appendChild(note);
-      guard.appendChild(eye);
-      guard.hidden = false;
-
-      /* Count and size are not sensitive and stay legible while the names are
-         covered: a visitor needs to know there is something worth fetching
-         before deciding whether to uncover anything. */
-      function drawGuard() {
-        var who = authUser ? authUser.username : "";
-        var count = items.length + " " + (items.length === 1
-          ? t("document", "Dokument")
-          : t("documents", "Dokumente"));
-
-        note.textContent =
-          (who ? t("Signed in as ", "Angemeldet als ") + who + " \u00b7 " : "") +
-          count + " \u00b7 " +
-          t("every download is recorded.", "jeder Download wird protokolliert.");
-
-        eyeMark.innerHTML = revealed ? ICON_EYE_OFF : ICON_EYE;
-        eyeWord.textContent = revealed
-          ? t("Cover names", "Namen verdecken")
-          : t("Show names", "Namen zeigen");
-        eye.setAttribute("aria-pressed", revealed ? "true" : "false");
-      }
-
-      /* One file per document means a reader clicking six times and answering
-         six save dialogs. The archive is built server-side and logs a download
-         per document, so the record stays as detailed as it was. */
-      function drawActions() {
-        if (ready < 2) return;
-        actions.textContent = "";
-
-        var size = formatBytes(bytes);
-        var all = el("a", "doc-all");
-        all.href = API_BASE + "/vault/archive";
-        all.setAttribute("download", "vault-documents.zip");
-
-        all.appendChild(iconSpan("doc-all__icon", ICON_DOWN));
-        all.appendChild(el("span", "doc-all__label",
-          t("Download all", "Alle herunterladen")));
-        all.appendChild(el("span", "doc-all__meta",
-          "ZIP \u00b7 " + ready + " " + t("files", "Dateien") +
-          (size ? " \u00b7 " + size : "")));
-
-        actions.appendChild(all);
-        actions.hidden = false;
-      }
-
-      /* Redrawn rather than relabelled on a switch: a row carries a size, a
-         state and a cover, and rebuilding it is shorter than reaching into
-         each part. */
-      function draw() {
-        list.textContent = "";
-        items.forEach(function (item) {
-          list.appendChild(vaultRow(item, revealed));
-        });
-        drawGuard();
-        drawActions();
-      }
-
-      function setRevealed(on) {
-        revealed = on;
-        remember(sessionStorage, VAULT_REVEAL_KEY, on ? "1" : "0");
-        draw();
-        eye.focus();
-      }
-
-      var leftAt = 0;
-      document.addEventListener("visibilitychange", function () {
-        if (document.hidden) { leftAt = Date.now(); return; }
-        if (revealed && leftAt && Date.now() - leftAt > VAULT_RECOVER_MS) {
-          revealed = false;
-          remember(sessionStorage, VAULT_REVEAL_KEY, "0");
-          draw();
-        }
-      });
-
-      draw();
-      onLangChange(draw);
-      onAuth(drawGuard);
-
-      list.hidden = false;
-      if (status) status.remove();
-    })
-    .catch(function (err) {
-      if (err && err.message === "redirecting") return;
-      setText(status, "The document list could not be loaded. Please reload.",
-                      "Die Dokumentliste konnte nicht geladen werden. Bitte neu laden.");
-    });
-}
-
-function vaultRow(item, revealed) {
-  var li = el("li", "doc" + (revealed ? "" : " doc--covered") +
-                    (item.available ? "" : " doc--missing"));
-
-  /* An anchor when there is a file behind it, a span when there is not: a
-     link that goes nowhere is worse than a row that is plainly inert. */
-  var row = el(item.available ? "a" : "span", "doc__link");
-  if (item.available) row.href = API_BASE + "/vault/items/" + item.id + "/file";
-
-  var size = item.available ? formatBytes(item.sizeBytes) : "";
-
-  row.appendChild(iconSpan("doc__icon", ICON_DOC));
-  row.appendChild(fillCovered(el("span", "doc__name"), item.title, revealed));
-  row.appendChild(el("span", "doc__meta", item.available
-    ? (size ? "PDF \u00b7 " + size : "PDF")
-    : t("Not uploaded", "Nicht hochgeladen")));
-
-  if (item.description) {
-    row.appendChild(fillCovered(el("span", "doc__desc"), item.description, revealed));
-  }
-
-  if (item.available) row.appendChild(iconSpan("doc__arrow", ICON_DOWN));
-
-  li.appendChild(row);
-  return li;
-}
-
-/* Covered on screen, intact to a screen reader. The bar is what a room can
-   see; the words still reach assistive tech, which is read to one person
-   through an earpiece rather than shown to everyone standing behind them.
-   Covering it there would take the row's only meaning away and protect nobody. */
-function fillCovered(node, text, revealed) {
-  if (revealed) {
-    node.textContent = text;
-    return node;
-  }
-
-  var bar = el("span", "doc__redaction", redactionBar(text));
-  bar.setAttribute("aria-hidden", "true");
-
-  node.appendChild(bar);
-  node.appendChild(el("span", "visually-hidden", text));
-  return node;
-}
 
 function initLogin() {
   var form = document.getElementById("login-form");
@@ -881,7 +486,7 @@ function showLoginError(el, message) {
 }
 
 function safeNext(raw) {
-  var fallback = "/vault/";
+  var fallback = "/";
   if (!raw || raw.charAt(0) !== "/") return fallback;
   if (raw.charAt(1) === "/" || raw.charAt(1) === "\\") return fallback;
   return raw;

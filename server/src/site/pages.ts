@@ -19,7 +19,7 @@ const logger = new Logger('Pages');
  * regex produce a path. index.html joined the list when the home page's
  * project cards started coming out of the database.
  */
-export const PAGE_NAME = /^(project-[a-z0-9-]{1,48}\.html|projects\.html|index\.html)$/;
+export const PAGE_NAME = /^(project-[a-z0-9-]{1,48}\.html|index\.html)$/;
 
 /** Same last-line-of-defence shape as VaultService.resolvePath. */
 export function resolvePagePath(name: string): string {

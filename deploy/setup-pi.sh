@@ -87,7 +87,7 @@ sudo systemctl reload nginx
 
 echo
 echo "==> Local check"
-for p in / /projects.html /style.css; do
+for p in / /style.css; do
   code=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost$p" || echo "ERR")
   printf '    %-22s %s\n' "$p" "$code"
 done
@@ -123,16 +123,6 @@ check_code /api/vault/items/1/file 401
 check_code /api/admin/overview     401
 check_code /api/admin/sections     401
 check_code /vault/files/cv.pdf     404
-
-echo
-echo "==> The vault page must not name a single document:"
-# This is the property the old Basic Auth setup did NOT have: the list used to
-# be hardcoded in the HTML, so viewing source told anyone what documents
-# existed before they hit the password. It now arrives from the API after
-# authentication. Re-run this after any change to vault/index.html.
-hits=$(curl -s "http://localhost/vault/index.html" | grep -ci 'curriculum\|zeugnis\|\.pdf' || true)
-printf '    %-28s %s   %s\n' "leaked document names" "$hits" \
-  "$([ "$hits" = "0" ] && echo '(ok)' || echo '<-- EXPECTED 0')"
 
 echo
 echo "==> The home page must still carry its splice markers:"

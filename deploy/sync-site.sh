@@ -45,10 +45,10 @@ echo "==> Copying site (dev-only files excluded)"
 # deploy. Both are anchored with a leading slash — they mean these exact
 # directories at the web root, not any directory anywhere called "up".
 #
-# index.html and projects.html are NOT excluded, and that is deliberate. Both
-# now have a generated counterpart under /pages/, and nginx serves that one
-# first for those two URLs — so the copies landing here are the template the
-# renderer splices into and the fallback for a Pi that has never published.
+# index.html is NOT excluded, and that is deliberate. It has a generated
+# counterpart under /pages/, and nginx serves that one first, so the copy
+# landing here is the template the renderer splices into and the fallback for
+# a Pi that has never published.
 # Overwriting them is how the template is updated. The generated pages are
 # safe because they are under /pages/, which is excluded above.
 #

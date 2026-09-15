@@ -775,9 +775,9 @@ function buildHomeEditor(host, rows) {
   host.appendChild(cells);
 
   var order = el("section", "pe-card");
-  order.appendChild(el("span", "pe-card__label", "Order on projects.html"));
+  order.appendChild(el("span", "pe-card__label", "Order"));
   order.appendChild(el("p", "pe-field__hint",
-    "The index page and the prev/next pager at the bottom of every project follow this order, independently of the bento."));
+    "The prev/next pager at the bottom of every project follows this order, independently of the home page."));
 
   var table = el("table", "admin-table");
   var sorted = rows.slice().sort(function (a, b) {
@@ -806,7 +806,7 @@ function buildHomeEditor(host, rows) {
     var listed = el("input");
     listed.type = "checkbox";
     listed.checked = row.visible;
-    listed.title = "Shown on projects.html, in the pagers and on the home page";
+    listed.title = "Shown in the pagers and on the home page";
     listed.addEventListener("change", function () {
       api("/admin/projects/" + row.id, { method: "PUT", body: { visible: listed.checked } })
         .then(function (res) { return ok(res, "Failed."); })
