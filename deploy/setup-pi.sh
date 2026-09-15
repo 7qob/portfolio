@@ -47,6 +47,7 @@ echo "==> Creating the API's writable directories"
 sudo mkdir -p "$WEBROOT/assets"          # rsync owns this one; just the parent
 sudo install -d -o 1000 -g 1000 -m 755 "$WEBROOT/pages"
 sudo install -d -o 1000 -g 1000 -m 755 "$WEBROOT/assets/up"
+sudo install -d -o 1000 -g 1000 -m 750 /var/lib/kira1q/vault-files   # PDF uploads from the panel
 
 echo "==> Copying site (dev-only files excluded)"
 # The exclude list lives in sync-site.sh, which update.sh runs too. Keeping

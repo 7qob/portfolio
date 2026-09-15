@@ -111,6 +111,8 @@ if [ "$DO_API" = 1 ]; then
   step "Pulling the API image"
   # A no-op when the digest already matches, so this is cheap to run every
   # time rather than something to remember to do after a server/ change.
+  # The panel writes PDFs here; a folder left root-owned turns every upload into a 500.
+  sudo install -d -o 1000 -g 1000 -m 750 /var/lib/kira1q/vault-files
   ( cd "$REPO" && sudo docker compose pull --quiet && sudo docker compose up -d )
 
   step "Waiting for the API to come back"

@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  InternalServerErrorException,
   Logger,
   NotFoundException,
   PayloadTooLargeException,
@@ -133,8 +134,15 @@ export class VaultService {
     const filename = `${row.slug}.pdf`;
     const path = this.resolvePath(filename);
     const tmp = path + '.tmp';
-    writeFileSync(tmp, buffer);
-    renameSync(tmp, path);
+    try {
+      writeFileSync(tmp, buffer);
+      renameSync(tmp, path);
+    } catch (err) {
+      this.logger.error(`Could not store ${filename}: ${(err as Error).message}`);
+      throw new InternalServerErrorException(
+        'Could not store the PDF: the vault folder on the server is not writable.',
+      );
+    }
 
     this.database.db
       .prepare(
