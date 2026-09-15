@@ -560,10 +560,10 @@ var CHIP_ICONS = ["nodes", "image", "python", "rust", "proxy", "stream",
                   "cloud", "react", "typescript", "kobold", "node"];
 
 var HOME_SLOTS = [
-  ["feature", "Feature", "wide · two rows"],
-  ["tall",    "Tall",    "two rows"],
-  ["smallA",  "Small A", ""],
-  ["smallB",  "Small B", ""]
+  ["feature", "1st", ""],
+  ["tall",    "2nd", ""],
+  ["smallA",  "3rd", ""],
+  ["smallB",  "4th", ""]
 ];
 
 var DEFAULT_ACCENT = "#ff1e2f";
@@ -610,7 +610,7 @@ function loadProjectsTable() {
 
           if (p.publishedAt) {
             actions.appendChild(button("Unpublish", "", function () {
-              if (!confirm("Take project-" + p.slug + ".html off the site? It also leaves the home page and the index.")) return;
+              if (!confirm("Take project-" + p.slug + ".html off the site? It also leaves the home page.")) return;
               api("/admin/projects/" + p.id + "/unpublish", { method: "POST" })
                 .then(function (res) { return ok(res, "Failed."); })
                 .then(function () { reload("projects"); loaded.home = false; })
@@ -680,56 +680,18 @@ function buildHomeEditor(host, rows) {
   state.textContent = unplaced
     ? unplaced + " placed page" + (unplaced === 1 ? " is" : "s are") + " not published, so " +
       (unplaced === 1 ? "it does" : "they do") + " not appear on the home page yet."
-    : placed.length + " of 4 cells in use.";
+    : placed.length + " of 4 cards on the home page.";
   bar.appendChild(state);
   bar.appendChild(el("span", "pe-bar__spacer"));
   bar.appendChild(button("Write the pages again", "admin-btn--accent", function () {
-    republish(function () { alert("Home page, index and every published project page rewritten."); });
+    republish(function () { alert("Home page and every published project page rewritten."); });
   }));
   host.appendChild(bar);
 
-  host.appendChild(el("p", "pe-annot",
-    "The home page lists up to four project cards. Only published, listed pages appear there. The hero and " +
-    "about are edited with the pen on the page itself."));
-
   var cells = el("section", "pe-card");
-  cells.appendChild(el("span", "pe-card__label", "The four cells"));
-
-  var map = el("div", "pe-slots pe-slots--lg");
-  map.setAttribute("role", "group");
-  map.setAttribute("aria-label", "Home page cells");
-
-  HOME_SLOTS.forEach(function (slot) {
-    var holder = null;
-    rows.forEach(function (r) { if (r.homeSlot === slot[0]) holder = r; });
-
-    var cell = el("button", "pe-slot pe-slot--" + slot[0]);
-    cell.type = "button";
-    cell.setAttribute("aria-pressed", holder ? "true" : "false");
-    if (holder) {
-      cell.setAttribute("data-taken", "1");
-      if (holder.accent) cell.style.setProperty("--edge-brand", holder.accent);
-    }
-
-    var name = el("strong");
-    name.appendChild(el("span", "pe-slot__dot"));
-    name.appendChild(document.createTextNode(slot[1]));
-    cell.appendChild(name);
-    cell.appendChild(el("span", "pe-slot__name", holder ? holder.title : "empty"));
-    if (slot[2]) cell.appendChild(el("span", "pe-slot__name", slot[2]));
-
-    cell.addEventListener("click", function () {
-      var select = document.getElementById("slot-" + slot[0]);
-      if (select) { select.focus(); }
-    });
-
-    map.appendChild(cell);
-  });
-
-  cells.appendChild(map);
+  cells.appendChild(el("span", "pe-card__label", "Projects on the home page"));
 
   var grid = el("div", "pe-grid");
-  grid.style.marginTop = "var(--stack-md)";
 
   HOME_SLOTS.forEach(function (slot) {
     var field = el("label", "pe-field");
@@ -768,9 +730,8 @@ function buildHomeEditor(host, rows) {
 
   cells.appendChild(grid);
   cells.appendChild(el("p", "pe-field__hint",
-    "Picking a page that already holds another cell swaps the two. A cell can never hold two pages, and a page " +
-    "can never hold two cells. With fewer than four placed, the cards close up from the top and the grid reflows " +
-    "so there is no hole."));
+    "Top to bottom, in the order shown. Picking a page that is already placed swaps the two. " +
+    "Only published, listed pages appear. The hero and about are edited with the pen on the home page."));
   host.appendChild(cells);
 
   var order = el("section", "pe-card");
@@ -1336,7 +1297,7 @@ function buildProjectEditor(host, record, mediaRows, allProjects) {
 
   var ledeArea = peArea(record.lede, 3, 500);
   grid.appendChild(peField("Description", ledeArea,
-    "One text, two jobs: the opening line of the project page and the blurb on both index cards.", true));
+    "One text, two jobs: the opening line of the project page and the blurb on the home page card.", true));
 
   var blurbWrap = el("div", "pe-field pe-field--wide");
   var blurbToggle = peCheck("Use a shorter text on the cards", !!record.cardBlurb);
@@ -1357,8 +1318,6 @@ function buildProjectEditor(host, record, mediaRows, allProjects) {
   blurbWrap.appendChild(blurbField);
   grid.appendChild(blurbWrap);
 
-  // Index-facing, like the card text above it: the picture is what tells the
-  // rows apart now that a project's colour is one hairline at the seam's end.
   var coverWrap = el("div", "pe-field pe-field--wide");
   coverWrap.appendChild(el("span", "pe-field__label", "Cover picture"));
   var cover = mediaPicker(mediaRows, record.coverMediaId,

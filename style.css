@@ -207,8 +207,7 @@ a.who:focus-visible,
 .link-box:hover,
 .link-box:focus-visible,
 .pager a:hover,
-.pager a:focus-visible,
-.pe-slot:hover {
+.pager a:focus-visible {
   border-color: var(--border-hover);
 }
 
@@ -1303,63 +1302,26 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
 .pe-check input { accent-color: var(--fg-strong); }
 
 /* ---- the home-page slot picker: the bento, in miniature ---- */
-.pe-slots {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(2, 3.25rem);
-  gap: calc(var(--space) * 0.5);
-  grid-template-areas:
-    "feature feature feature tall"
-    "smallA  smallA  smallB  tall";
-  max-width: 26rem;
-}
 
-.pe-slots--lg { grid-template-rows: repeat(2, 5rem); max-width: 34rem; }
 
-.pe-slot {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 2px;
-  padding: calc(var(--space) * 0.5);
-  border: var(--bw) solid var(--line);
-  border-radius: var(--radius);
-  background: var(--panel-alt);
-  color: var(--fg-mute);
-  font-family: inherit;
-  font-size: var(--fs-meta);
-  text-align: left;
-  cursor: pointer;
-  transition: border-color var(--motion), color var(--motion);
-}
 
-.pe-slot:hover { color: var(--fg); }
+
+
+
+
 
 /* Held by another project — clicking offers a swap rather than an error. */
-.pe-slot[data-taken] { color: var(--fg); border-style: dashed; }
 
-.pe-slot[aria-pressed="true"] {
-  border-color: var(--fg-strong);
-  border-style: solid;
-  color: var(--fg-strong);
-  background: var(--line);
-}
 
-.pe-slot__name { color: var(--fg-mute); font-size: var(--fs-meta); }
-.pe-slot--feature { grid-area: feature; }
-.pe-slot--tall    { grid-area: tall; }
-.pe-slot--smallA  { grid-area: smallA; }
-.pe-slot--smallB  { grid-area: smallB; }
 
-.pe-slot__dot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border: var(--bw) solid var(--line);
-  background: var(--edge-brand, var(--line));
-  vertical-align: baseline;
-  margin-right: calc(var(--space) * 0.5);
-}
+
+
+
+
+
+
+
+
 
 /* ---- band cards ---- */
 .pe-band { border-left: 2px solid var(--line); }
