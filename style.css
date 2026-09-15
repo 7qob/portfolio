@@ -1040,10 +1040,9 @@ textarea:focus-visible,
 
 
 .admin-tab[aria-selected="true"] {
-  border-color: var(--line);
-  background: var(--panel);
   color: var(--fg-strong);
-  margin-bottom: calc(var(--border-width) * -1);
+  border-bottom: var(--bw) solid var(--accent);
+  margin-bottom: calc(var(--bw) * -1);
 }
 
 /* Inside the tab: the strip is clipped by the panel border below it. */
@@ -1227,22 +1226,37 @@ textarea:focus-visible,
 .pe-bar__state[data-dirty="1"] { color: var(--accent); }
 
 /* ---- a card. One per region of the page, in page order. ---- */
-.pe-card {
-  border: var(--bw) solid var(--line);
-  background: var(--panel);
-  padding: calc(var(--space) * 2);
-  margin-bottom: var(--gap);
-}
+/* The home page's section, not a box: air above, a .split-style header with
+   its rule, then the content. */
+.pe-card { padding-top: calc(var(--space) * 4); }
 
 .pe-card__label,
 .pe-band__kind {
-  display: block;
-  margin-bottom: var(--stack-sm);
-  color: var(--fg-mute);
+  display: flex;
+  align-items: center;
+  gap: 0.9em;
+  margin-bottom: calc(var(--space) * 2);
+  color: var(--fg-strong);
   font-size: var(--fs-caption);
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  letter-spacing: 0.3em;
   text-transform: uppercase;
 }
+
+.pe-card__label::after,
+.pe-band__kind::after {
+  content: "";
+  flex: 1;
+  height: var(--bw);
+  background: var(--line);
+}
+
+/* The panel is the single page: its tokens, its column, its 2px rims. */
+.is-admin { --border-width: var(--bw); }
+.col.admin { max-width: 60rem; }
+.is-admin .admin-tab small { display: none; }
+.admin-input { background: var(--bg); }
+.admin-stat { border-radius: var(--radius); }
 
 .pe-grid {
   display: grid;

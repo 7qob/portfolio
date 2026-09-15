@@ -18,9 +18,7 @@
     } catch (e) {}
   </script>
 </head>
-<!-- .is-admin widens the shell: the panel is a tool with tables, not a page
-     to read. -->
-<body class="is-admin">
+<body class="is-single is-admin">
 
   <header class="topbar">
     <div class="topbar__inner">
@@ -36,12 +34,12 @@
     </div>
   </header>
 
-  <div class="page-head">
-    <h1 class="page-head__title" id="page-title">Admin</h1>
-    <p class="page-head__lede">Write the site, and see who has been in it.</p>
-  </div>
-
-  <main class="page-body" aria-labelledby="page-title">
+  <main aria-labelledby="page-title">
+   <div class="col admin">
+    <section class="section section--top">
+      <h1 class="hero__title" id="page-title">Admin</h1>
+      <div class="prose"><p>Write the site, and see who has been in it.</p></div>
+    </section>
 
     <p class="box__text" id="admin-gate">Checking your session…</p>
 
@@ -58,7 +56,7 @@
 
         <div class="pe" id="projects-list">
           <p class="pe-annot">A page is a title, a description, and some bands. Publish writes
-            <code>project-&lt;slug&gt;.html</code>, the projects index and the home page, all three
+            <code>project-&lt;slug&gt;.html</code> and the home page's cards, both
             as plain static files that call no API.</p>
 
           <section class="pe-card">
@@ -203,6 +201,7 @@
 
     </div>
 
+   </div>
   </main>
 
   <footer class="pagefoot">

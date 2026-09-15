@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
   api("/auth/me")
     .then(function (res) {
       if (res.status === 401) {
-        location.replace("/login.html?next=" + encodeURIComponent(location.pathname));
+        location.replace("/index.html#vault");
         throw new Error("redirecting");
       }
       if (!res.ok) throw new Error("HTTP " + res.status);
@@ -683,7 +683,6 @@ function buildHomeEditor(host, rows) {
     : placed.length + " of 4 cells in use.";
   bar.appendChild(state);
   bar.appendChild(el("span", "pe-bar__spacer"));
-  bar.appendChild(button("Preview ↗", "", function () { window.open("/", "_blank"); }));
   bar.appendChild(button("Write the pages again", "admin-btn--accent", function () {
     republish(function () { alert("Home page, index and every published project page rewritten."); });
   }));
@@ -1268,18 +1267,6 @@ function buildProjectEditor(host, record, mediaRows, allProjects) {
     saveProject()
       .then(function () { setState("Saved. " + describe()); })
       .catch(function (err) { alert(err.message); });
-  }));
-
-  bar.appendChild(button("Preview ↗", "", function () {
-    var tab = window.open("about:blank", "_blank");
-    saveProject().then(function () {
-      var url = "/api/admin/projects/" + record.id + "/preview";
-      if (tab) tab.location = url;
-      else window.open(url, "_blank");
-    }).catch(function (err) {
-      if (tab) tab.close();
-      alert(err.message);
-    });
   }));
 
   bar.appendChild(button(record.publishedAt ? "Publish again" : "Publish", "admin-btn--accent", function () {
