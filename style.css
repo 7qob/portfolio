@@ -1160,12 +1160,15 @@ textarea:focus-visible,
 .admin-input--narrow { min-width: 64px; width: 72px; }
 
 .admin-form {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  align-items: end;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
   gap: var(--gap);
-  margin: calc(var(--space) * 2) 0;
+  margin: 0 0 calc(var(--space) * 2);
 }
+
+.admin-form .pe-field { flex: 1 1 14rem; }
+.admin-form .pe-field:has(> button) { flex: none; }
 
 
 .admin-note {
@@ -1206,7 +1209,7 @@ textarea:focus-visible,
   font-size: var(--fs-meta);
 }
 
-.pe { max-width: 52rem; margin: 0 auto; }
+.pe { max-width: none; }
 
 .pe-bar {
   position: sticky;
@@ -1385,22 +1388,9 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
 
 .pe-adders .admin-btn { font-size: var(--fs-body); padding: var(--space) calc(var(--space) * 2); }
 
-.pe-drop {
-  margin-top: var(--stack-sm);
-  padding: calc(var(--space) * 1.5);
-  border: var(--bw) dashed var(--line);
-  color: var(--fg-mute);
-  font-size: var(--fs-meta);
-  text-align: center;
-}
+.pe-drop { margin-top: var(--stack-sm); font-size: var(--fs-meta); color: var(--fg-mute); }
 
-.pe-annot {
-  margin: 0 0 var(--gap);
-  padding: var(--space) calc(var(--space) * 1.5);
-  border-left: var(--bw) solid var(--line);
-  color: var(--fg-mute);
-  font-size: var(--fs-meta);
-}
+.pe-annot { margin: 0 0 var(--gap); color: var(--fg-mute); font-size: var(--fs-meta); }
 
 /* Inline link styling lives on .reading, which this column is not. */
 .pe-annot a { color: var(--fg-strong); }
