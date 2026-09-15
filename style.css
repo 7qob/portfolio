@@ -188,15 +188,6 @@ a.who:focus-visible,
 .reading a:focus-visible,
 .linklist a:hover,
 .linklist a:focus-visible,
-.doc__link:hover,
-.doc__link:focus-visible,
-.doc-all:hover,
-.doc-all:focus-visible,
-.doc-guard__btn:hover,
-.doc-guard__btn:focus-visible,
-.project-filter__toggle:hover,
-.project-filter__toggle:focus-visible,
-.chip--filter:hover,
 .clip-btn:hover,
 .clip-btn:focus-visible,
 .gh__retry:hover,
@@ -217,13 +208,6 @@ a.who:focus-visible,
 .link-box:focus-visible,
 .pager a:hover,
 .pager a:focus-visible,
-.chip--filter:hover,
-.doc-all:hover,
-.doc-all:focus-visible,
-.doc-guard__btn:hover,
-.doc-guard__btn:focus-visible,
-.project-filter__toggle:hover,
-.project-filter__toggle:focus-visible,
 .pe-slot:hover {
   border-color: var(--border-hover);
 }
@@ -281,7 +265,6 @@ textarea:focus-visible,
 
 .box:hover::after,
 .box--link:focus-visible::after,
-.box:has(.stretched-link:focus-visible)::after,
 .link-box:hover::after,
 .link-box:focus-visible::after,
 .pager a:hover::after,
@@ -301,27 +284,12 @@ textarea:focus-visible,
    [hidden]: both remove the text from the tree, which is the opposite of what
    this is for. The vault covers a document name visually and leaves this
    copy of it for a screen reader. */
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
-}
+
 
 /* Every glyph on the site is an inline SVG inside a span that has already
    been given a size, and every one of them wants the same five lines. They
    are declared here once; a component sizes its span and stops there. */
-.link-box__icon svg,
-.doc__icon svg,
-.doc__arrow svg,
-.doc-guard__mark svg,
-.doc-all__icon svg,
-.project-filter__mark svg {
+.link-box__icon svg {
   width: 100%;
   height: 100%;
   display: block;
@@ -334,10 +302,7 @@ textarea:focus-visible,
 .box__label,
 .link-box__caption,
 .page-head__label,
-.project-filter__word,
-.field__label,
 .section-label,
-.datarow dt,
 .mediarow__title {
   /* The caption role is the mono half of the type system: everything that
      labels something rather than being read. Prose stays serif. */
@@ -421,28 +386,11 @@ textarea:focus-visible,
 }
 
 /* Hero location line (pin icon + place). */
-.hero__loc {
-  display: flex;
-  align-items: center;
-  gap: calc(var(--space) * 0.75);
-  font-size: var(--fs-body);
-  color: var(--text-muted);
-}
 
-.hero__loc-icon {
-  flex: 0 0 16px;
-  width: 16px;
-  height: 16px;
-  display: inline-flex;
-  color: var(--text-muted);
-}
 
-.hero__loc-icon svg {
-  width: 100%;
-  height: 100%;
-  fill: none;
-  stroke: currentColor;
-}
+
+
+
 
 /* ---- Chips: reusable tech / interest tags ---- */
 .chips {
@@ -503,19 +451,13 @@ textarea:focus-visible,
 }
 
 /* Featured project name reads larger (matches the projects-page feature card). */
-.project-box__name--lg { font-size: var(--fs-subtitle); }
+
 
 .project-box__head .status { margin-left: auto; }
 
-.stretched-link {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
 
-.stretched-link:focus-visible {
-  outline-offset: -2px;   /* keep the focus ring inside the clipped box */
-}
+
+
 
 /* ==== Home page type scale (index.html) ==== */
 /* The home page is the one page locked to a screen, so every pixel of type is a
@@ -597,14 +539,14 @@ textarea:focus-visible,
     "github github github github github github buttons";
 }
 
-.area-name      { grid-area: name; }
-.area-github    { grid-area: github; }
-.area-buttons   { grid-area: buttons; }
-.area-about     { grid-area: about; }
-.area-feature   { grid-area: feature; }
-.area-tall      { grid-area: tall; }
-.area-smallA    { grid-area: smallA; }
-.area-smallB    { grid-area: smallB; }
+
+
+
+
+
+
+
+
 
 /* ---- GitHub contribution heatmap (data: third-party service) ---- */
 /* Levels are derived from --accent, so the heatmap follows the accent. */
@@ -742,9 +684,7 @@ textarea:focus-visible,
   --glow-strength: 9%;
 }
 
-.box--edge.box--link:hover,
-.box--edge:has(.stretched-link:hover),
-.box--edge:has(.stretched-link:focus-visible) {
+.box--edge.box--link:hover {
   --edge-mix: 100%;
 }
 
@@ -824,42 +764,26 @@ textarea:focus-visible,
 .box--link:focus-visible .box-arrow,
 .link-box:hover .box-arrow,
 .link-box:focus-visible .box-arrow,
-.project-card:hover .box-arrow,
-.project-card:has(.stretched-link:focus-visible) .box-arrow {
+.project-card:hover .box-arrow {
   color: var(--text);
   opacity: 1;
   transform: translateX(2px);            /* arrow-right -> right */
 }
 
-.box:hover .box-arrow--external,
-.box--link:focus-visible .box-arrow--external,
-.link-box:hover .box-arrow--external,
-.link-box:focus-visible .box-arrow--external {
-  transform: translate(2px, -2px);       /* arrow-up-right -> up-right */
-}
+
 
 @media (prefers-reduced-motion: reduce) {
   .box:hover .box-arrow,
-  .box--link:focus-visible .box-arrow,
-  .link-box:hover .box-arrow,
-  .link-box:focus-visible .box-arrow,
-  .project-card:hover .box-arrow,
-  .box:hover .box-arrow--external,
-  .box--link:focus-visible .box-arrow--external,
-  .link-box:hover .box-arrow--external,
-  .link-box:focus-visible .box-arrow--external {
+.box--link:focus-visible .box-arrow,
+.link-box:hover .box-arrow,
+.link-box:focus-visible .box-arrow,
+.project-card:hover .box-arrow {
     transform: none;
   }
 }
 
 /* ==== Links column — 5 standalone link boxes ==== */
-.box-stack {
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap);   /* matches the bento grid gap so rows line up */
-  min-height: 0;
-  min-width: 0;
-}
+
 
 .link-box {
   position: relative;
@@ -1005,11 +929,7 @@ textarea:focus-visible,
 }
 
 /* ---- Impressum fields ---- */
-.field-list {
-  display: flex;
-  flex-direction: column;
-  gap: calc(var(--space) * 2);
-}
+
 
 .field {
   display: flex;
@@ -1018,23 +938,9 @@ textarea:focus-visible,
 }
 /* .field__label styling comes from the shared caption rule. */
 
-.field__value {
-  display: flex;
-  align-items: center;
-  min-height: calc(var(--space) * 5);
-  padding: var(--space) calc(var(--space) * 1.5);
-  border: var(--border-width) solid var(--line-soft);
-  border-radius: var(--radius);
-  background: var(--panel-alt);
-  font-size: var(--fs-body);
-  color: var(--text);
-}
 
-.doc-list {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-}
+
+
 
 .auth-form {
   display: flex;
@@ -1612,223 +1518,74 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
 
 /* Four tracks and two rows: the description hangs under the name, indented
    past the icon, so a row grows downwards instead of squeezing the title. */
-.doc__link {
-  display: grid;
-  grid-template-columns: 18px minmax(0, 1fr) auto auto;
-  grid-template-areas:
-    "icon name meta arrow"
-    ".    desc desc desc";
-  align-items: center;
-  column-gap: calc(var(--space) * 1.5);
-  row-gap: calc(var(--space) * 0.5);
-  padding: calc(var(--space) * 1.5) 0;
-  color: var(--text);
-  text-decoration: none;
-  transition: color var(--motion);
-}
-
-.doc__icon {
-  grid-area: icon;
-  width: 18px;
-  height: 18px;
-  display: inline-flex;
-  color: var(--fg-mute);
-  transition: color var(--motion);
-}
 
 
-.doc__name {
-  grid-area: name;
-  font-size: var(--fs-body);
-  min-width: 0;
-}
+
+
+
+
 
 /* The document's own sentence, from the panel. Secondary to the name and
    covered along with it, so uncovering does not change the row's height. */
-.doc__desc {
-  grid-area: desc;
-  font-size: var(--fs-caption);
-  line-height: 1.5;
-  color: var(--fg-mute);
-  min-width: 0;
-}
+
 
 /* A redaction bar, not a blur. This is a site of hard 1px edges and a smeared
    name would be the one soft thing on it. Mono so the blocks are all one
    width, negative tracking so they butt together into a single bar. */
-.doc__redaction {
-  display: inline-block;
-  vertical-align: middle;
-  font-family: var(--font-mono);
-  font-size: 0.8em;
-  line-height: 1;
-  letter-spacing: -0.06em;
-  color: color-mix(in srgb, var(--fg-mute) 45%, transparent);
-  user-select: none;
-}
 
-.doc__meta {
-  grid-area: meta;
-  font-size: var(--fs-caption);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--fg-mute);
-  white-space: nowrap;
-}
 
-.doc__arrow {
-  grid-area: arrow;
-  width: 16px;
-  height: 16px;
-  display: inline-flex;
-  color: var(--fg-mute);
-  opacity: 0.6;
-  transition: transform var(--motion), opacity var(--motion), color var(--motion);
-}
+
+
+
 
 /* The two glyphs are muted at rest and inherit on hover, so the row moves as
    one word rather than as three parts lighting up on their own schedule. */
-.doc__link:hover .doc__icon,
-.doc__link:focus-visible .doc__icon,
-.doc__link:hover .doc__arrow,
-.doc__link:focus-visible .doc__arrow {
-  color: inherit;
-}
 
-.doc__link:hover .doc__arrow,
-.doc__link:focus-visible .doc__arrow {
-  opacity: 1;
-  transform: translateY(2px);
-}
 
-.doc--missing .doc__link {
-  color: var(--fg-mute);
-  cursor: default;
-}
 
-.doc--missing .doc__arrow { display: none; }
+
+
+
+
 
 /* A row with no arrow drops the track as well, or the column gap after the
    size is left behind as a stray 24px of padding on that row alone. */
-.doc--missing .doc__link {
-  grid-template-columns: 18px minmax(0, 1fr) auto;
-  grid-template-areas:
-    "icon name meta"
-    ".    desc desc";
-}
+
 
 /* ---- Vault guard bar ----
    The state of the list in one line: who is signed in, how much is here, that
    downloads are recorded, and the switch that uncovers the names. It sits
    inside the box because it describes the list, not the page. */
-.doc-guard {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space);
-  padding: calc(var(--space) * 1.25) calc(var(--space) * 1.5);
-  border: var(--border-width) solid var(--line-soft);
-  background: var(--panel-alt);
-}
-
-.doc-guard__note {
-  min-width: 0;
-  font-family: var(--font-mono);
-  font-size: var(--fs-meta);
-  line-height: 1.5;
-  color: var(--fg-mute);
-}
-
-.doc-guard__btn {
-  display: inline-flex;
-  align-items: center;
-  gap: calc(var(--space) * 0.75);
-  background: none;
-  border: var(--border-width) solid var(--border);
-  border-radius: var(--radius);
-  padding: calc(var(--space) * 0.5) var(--space);
-  font-family: var(--font-mono);
-  font-size: var(--fs-caption);
-  letter-spacing: 0.03em;
-  color: var(--text);
-  white-space: nowrap;
-  cursor: pointer;
-  transition: color var(--motion), border-color var(--motion);
-}
-
-.doc-guard__mark {
-  display: inline-flex;
-  width: 14px;
-  height: 14px;
-  color: var(--fg-mute);
-  transition: color var(--motion);
-}
 
 
-.doc-guard__btn:hover .doc-guard__mark,
-.doc-guard__btn:focus-visible .doc-guard__mark {
-  color: inherit;
-}
+
+
+
+
+
+
+
+
 
 /* Pressed means the names are showing, which is the state worth marking. */
-.doc-guard__btn[aria-pressed="true"] {
-  border-color: var(--accent);
-}
+
 
 /* ---- Download all ----
    The same bordered row a document is, given the full width so it reads as
    the list's total rather than as one more entry in it. */
-.doc-actions {
-  display: flex;
-}
 
-.doc-all {
-  display: flex;
-  align-items: center;
-  gap: calc(var(--space) * 1.5);
-  width: 100%;
-  padding: calc(var(--space) * 1.5);
-  border: var(--border-width) solid var(--border);
-  color: var(--text);
-  text-decoration: none;
-  transition: color var(--motion), border-color var(--motion);
-}
 
-.doc-all__icon {
-  flex: 0 0 18px;
-  width: 18px;
-  height: 18px;
-  display: inline-flex;
-  color: var(--fg-mute);
-  transition: color var(--motion);
-}
 
-.doc-all__label {
-  font-size: var(--fs-body);
-}
 
-.doc-all__meta {
-  margin-left: auto;
-  font-family: var(--font-mono);
-  font-size: var(--fs-caption);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--fg-mute);
-  white-space: nowrap;
-}
 
-.doc-all:hover .doc-all__icon,
-.doc-all:focus-visible .doc-all__icon {
-  color: inherit;
-}
 
-@media (prefers-reduced-motion: reduce) {
-  .doc__link:hover .doc__arrow,
-  .doc__link:focus-visible .doc__arrow {
-    transform: none;
-  }
-}
+
+
+
+
+
+
+
 
 /* ---- Projects index: a bento of cards ----
    The home page's cards with room to breathe and a screenshot each: same box,
@@ -1858,83 +1615,35 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
   padding-block: var(--stack-md);
 }
 
-.project-filter__toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space);
-  background: none;
-  border: var(--border-width) solid var(--border);
-  border-radius: var(--radius);
-  padding: calc(var(--space) * 0.75) calc(var(--space) * 1.5);
-  font-family: inherit;
-  color: var(--text);
-  cursor: pointer;
-  transition: color var(--motion), border-color var(--motion);
-}
-
-.project-filter__state {
-  font-family: var(--font-mono);
-  font-size: var(--fs-caption);
-  letter-spacing: 0.03em;
-  font-variant-numeric: tabular-nums;
-}
-
-.project-filter__mark {
-  display: inline-flex;
-  width: 14px;
-  height: 14px;
-  color: var(--fg-mute);
-  transition: transform var(--motion), color var(--motion);
-}
 
 
-.project-filter__toggle[aria-expanded="true"] .project-filter__mark {
-  transform: rotate(180deg);
-}
+
+
+
+
+
+
 
 /* The three parts move together, or the row reads as a label and a value that
    happen to share a border. */
-.project-filter__toggle:hover .project-filter__word,
-.project-filter__toggle:focus-visible .project-filter__word,
-.project-filter__toggle:hover .project-filter__mark,
-.project-filter__toggle:focus-visible .project-filter__mark {
-  color: inherit;
-}
+
 
 /* An active filter wears the same accent rim the pressed chip does, so the
    shut panel and the open one agree about what "on" looks like. */
-.project-filter.is-filtered .project-filter__toggle {
-  border-color: var(--accent);
-}
+
 
 .project-filter .chips { justify-content: center; }
 
 /* The count is the cost of the filter, shown before it is paid. */
-.chip__count {
-  color: var(--fg-mute);
-  font-variant-numeric: tabular-nums;
-}
 
-.chip--filter:hover .chip__count,
-.chip--filter[aria-pressed="true"] .chip__count {
-  color: inherit;
-}
 
-@media (prefers-reduced-motion: reduce) {
-  .project-filter__mark { transition: color var(--motion); }
-}
 
-.chip--filter {
-  background: none;
-  font-family: inherit;
-  cursor: pointer;
-  transition: color var(--motion), border-color var(--motion);
-}
 
-.chip--filter[aria-pressed="true"] {
-  color: var(--fg-strong);
-  border-color: var(--accent);
-}
+
+
+
+
+
 
 /* The card carries no padding of its own: the cover bleeds to the rim and the
    words below it bring their own. */
@@ -1966,8 +1675,7 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
   object-fit: cover;
 }
 
-.project-card:hover .project-card__shot,
-.project-card:has(.stretched-link:focus-visible) .project-card__shot {
+.project-card:hover .project-card__shot {
   border-bottom-color: var(--edge-2);
 }
 
@@ -1989,63 +1697,24 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
   );
 }
 
-.shot-plate__mark {
-  font-family: var(--font-mono);
-  font-size: var(--fs-heading);
-  text-align: center;
-  text-transform: uppercase;
-  line-height: 1;
-  letter-spacing: 0.2em;
-  text-indent: 0.2em;   /* the tracking would otherwise push it off centre */
-  color: var(--fg-mute);
-}
 
-.shot-plate__note {
-  padding: calc(var(--space) * 0.5) var(--space);
-  border: var(--border-width) solid var(--border);
-  background: var(--panel);
-}
 
-.project-card__body {
-  position: relative;   /* the arrow belongs to the words, not to the cover */
-  display: flex;
-  flex-direction: column;
-  gap: var(--stack-sm);
-  padding: calc(var(--space) * 2);
-  min-width: 0;
-}
+
+
+
 
 .project-card .box-arrow {
   top: calc(var(--space) * 2);
   right: calc(var(--space) * 2);
 }
 
-.project-card__head {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space);
-  /* Room for the arrow, so a long name does not run under it. */
-  padding-right: calc(var(--space) * 3.5);
-}
 
-.project-card__name {
-  font-size: var(--fs-subtitle);
-  text-wrap: balance;
-  font-weight: 700;
-  line-height: 1.2;
-  color: var(--fg-strong);
-  transition: color var(--motion);
-}
 
-.project-card:hover .project-card__name,
-.project-card:has(.stretched-link:focus-visible) .project-card__name {
-  color: var(--accent);
-}
 
-.project-card__body p {
-  font-size: var(--fs-body);
-  color: var(--text-muted);
-}
+
+
+
+
 
 .project-card .chips { padding-top: var(--stack-sm); }
 
@@ -2055,8 +1724,6 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
    even number of cards is on screen — otherwise it would sit alone in a
    two-column row and leave a hole beside it. script.js works out which; the
    :last-child rule is the same answer for a page without it. */
-.project-card--feature,
-.project-card--wide,
 .project-card:last-child:nth-child(even) {
   grid-column: 1 / -1;
   display: grid;
@@ -2064,8 +1731,6 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
   align-items: stretch;
 }
 
-.project-card--feature .project-card__shot,
-.project-card--wide .project-card__shot,
 .project-card:last-child:nth-child(even) .project-card__shot {
   aspect-ratio: auto;
   height: 100%;
@@ -2076,51 +1741,25 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
   border-right: var(--border-width) solid var(--border);
 }
 
-.project-card--feature:hover .project-card__shot,
-.project-card--feature:has(.stretched-link:focus-visible) .project-card__shot,
-.project-card--wide:hover .project-card__shot,
-.project-card--wide:has(.stretched-link:focus-visible) .project-card__shot,
 .project-card:last-child:nth-child(even):hover .project-card__shot {
   border-right-color: var(--edge-2);
   border-bottom-color: var(--border);
 }
 
-.project-card--feature .project-card__body,
-.project-card--wide .project-card__body,
-.project-card:last-child:nth-child(even) .project-card__body {
-  align-self: center;
-  gap: var(--stack-md);
-  padding: calc(var(--space) * 3);
-}
+
 
 /* Only the hero reads at hero size. A card that went wide to close the grid is
    still an ordinary project. */
-.project-card--feature .project-card__name { font-size: var(--fs-name); }
+
 
 /* The second wide card is mirrored, so the two do not read as a repeat. */
-.project-card--wide:not(.project-card--feature),
-.project-card:last-child:nth-child(even):not(.project-card--feature) {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
-}
 
-.project-card--wide:not(.project-card--feature) .project-card__shot,
-.project-card:last-child:nth-child(even):not(.project-card--feature) .project-card__shot {
-  grid-area: 1 / 2;
-  border-right: 0;
-  border-left: var(--border-width) solid var(--border);
-}
 
-.project-card--wide:not(.project-card--feature):hover .project-card__shot,
-.project-card--wide:not(.project-card--feature):has(.stretched-link:focus-visible) .project-card__shot,
-.project-card:last-child:nth-child(even):not(.project-card--feature):hover .project-card__shot {
-  border-left-color: var(--edge-2);
-  border-right-color: var(--border);
-}
 
-.project-card--wide:not(.project-card--feature) .project-card__body,
-.project-card:last-child:nth-child(even):not(.project-card--feature) .project-card__body {
-  grid-area: 1 / 1;
-}
+
+
+
+
 
 @media (prefers-reduced-motion: reduce) {
   .project-card__shot { transition: none; }
@@ -2143,39 +1782,15 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
   gap: var(--gap);
 }
 
-.feature-list {
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  max-width: var(--measure);
-  gap: calc(var(--space) * 1.25) calc(var(--space) * 4);
-  font-size: var(--fs-body);
-  line-height: 1.45;
-  color: var(--text-muted);
-}
 
-.feature-list li {
-  display: flex;
-  gap: calc(var(--space) * 1.25);
-  padding-bottom: calc(var(--space) * 1.25);
-  border-bottom: var(--border-width) solid var(--line-soft);
-}
 
-.feature-list li::before {
-  content: "+";
-  flex: 0 0 auto;
-  color: var(--accent);
-}
 
-.box .feature-list {
-  gap: calc(var(--space) * 0.5) calc(var(--space) * 3);
-}
 
-.box .feature-list li {
-  padding-bottom: 0;
-  border-bottom: 0;
-  gap: calc(var(--space) * 0.75);
-}
+
+
+
+
+
 
 /* ==== Project detail page (project-*.html) ==== */
 /* THE BAND RULE. Every top-level block is a band: hairline along the top,
@@ -2202,7 +1817,6 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
 /* Every band in the article shares one opening seam. */
 .project > .project__section,
 .project > .figure,
-.project > .datarow,
 .project > .reveal {
   padding-top: var(--stack-md);
   border-top: var(--border-width) solid var(--border);
@@ -2215,24 +1829,11 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
   color: var(--fg-strong);
 }
 
-.datarow {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: calc(var(--space) * 2) var(--gap);
-}
 
-.datarow__cell {
-  display: flex;
-  flex-direction: column;
-  gap: calc(var(--space) * 0.5);
-  min-width: 0;
-}
 
-.datarow dd {
-  font-size: var(--fs-body);
-  line-height: 1.4;
-  color: var(--fg-strong);
-}
+
+
+
 
 .project__section {
   display: flex;
@@ -2274,91 +1875,33 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
   color: var(--text-muted);
 }
 
-.steps {
-  list-style: none;
-  counter-reset: step;
-  display: flex;
-  flex-direction: column;
-  gap: calc(var(--space) * 1.5);
-  max-width: var(--measure);
-}
 
-.steps > li {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: calc(var(--space) * 2);
-  font-size: var(--fs-body);
-  line-height: 1.7;
-  color: var(--text-muted);
-}
 
-.steps > li::before {
-  counter-increment: step;
-  content: counter(step, decimal-leading-zero);
-  font-size: var(--fs-caption);
-  letter-spacing: 0.08em;
-  color: var(--accent);
-  padding-top: 0.35em;   /* optical baseline match against the bold step title */
-}
 
-.steps b {
-  display: block;
-  font-size: var(--fs-body);
-  font-weight: 700;
-  line-height: 1.4;
-  color: var(--fg-strong);
-}
 
-.table-wrap {
-  overflow-x: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border-hover) transparent;
-}
 
-.table-wrap::-webkit-scrollbar { height: 6px; }
 
-.table-wrap::-webkit-scrollbar-track { background: transparent; }
 
-.table-wrap::-webkit-scrollbar-thumb { background: var(--border-hover); }
 
-.spec-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: var(--fs-body);
-  text-align: left;
-}
 
-.spec-table th {
-  font-size: var(--fs-caption);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  font-weight: 400;
-  color: var(--fg-mute);
-  padding: 0 calc(var(--space) * 3) calc(var(--space) * 1.25) 0;
-  border-bottom: var(--border-width) solid var(--border);
-  white-space: nowrap;
-}
 
-.spec-table td {
-  padding: calc(var(--space) * 1.5) calc(var(--space) * 3) calc(var(--space) * 1.5) 0;
-  border-bottom: var(--border-width) solid var(--line-soft);
-  color: var(--text);
-  vertical-align: top;
-}
 
-.spec-table tr:last-child td { border-bottom: 0; }
 
-.spec-table th[scope="row"] {
-  padding: calc(var(--space) * 1.5) calc(var(--space) * 3) calc(var(--space) * 1.5) 0;
-  border-bottom: var(--border-width) solid var(--line-soft);
-  vertical-align: top;
-  white-space: normal;
-}
 
-.spec-table code {
-  white-space: normal;
-  overflow-wrap: anywhere;
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 code {
   font-family: inherit;
@@ -2380,7 +1923,7 @@ code {
   color: var(--text-muted);
 }
 
-.note--accent { border-left-color: var(--accent); }
+
 
 .note strong { color: var(--fg-strong); }
 
@@ -2690,25 +2233,11 @@ code {
   border-top: var(--border-width) solid var(--border);
 }
 
-.about__lead {
-  display: flex;
-  flex-direction: column;
-  gap: var(--stack-md);
-  max-width: var(--measure);
-  font-size: var(--fs-body);
-  color: var(--text-muted);
-}
 
-.about__lead > p:first-child {
-  font-size: var(--fs-lede);
-  line-height: 1.5;
-  color: var(--fg-strong);
-}
 
-.about__lead strong {
-  font-weight: 700;
-  color: var(--fg-strong);
-}
+
+
+
 
 
 /* ==== One-screen home page (desktop) ==== */
@@ -2778,10 +2307,7 @@ code {
     mask-image: none;
   }
 
-  .is-home .box:has(.stretched-link) .box__body {
-    position: relative;
-    z-index: 1;
-  }
+
 
 }
 
@@ -2828,9 +2354,7 @@ code {
   }
 
   /* Four facts across a 360px screen is 90px a column. Two is readable. */
-  .datarow {
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  }
+
 
   /* 70vh of screenshot leaves nothing of the page around it. */
   .figure img { max-height: 50vh; }
@@ -2865,19 +2389,11 @@ code {
      mirrored variant too, which is why its :not() selectors are repeated here:
      they outrank the plain ones and would otherwise survive the switch. */
   .project-grid,
-  .project-card--feature,
-  .project-card--wide,
-  .project-card--wide:not(.project-card--feature),
-  .project-card:last-child:nth-child(even),
-  .project-card:last-child:nth-child(even):not(.project-card--feature) {
+.project-card:last-child:nth-child(even) {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .project-card--feature .project-card__shot,
-  .project-card--wide .project-card__shot,
-  .project-card--wide:not(.project-card--feature) .project-card__shot,
-  .project-card:last-child:nth-child(even) .project-card__shot,
-  .project-card:last-child:nth-child(even):not(.project-card--feature) .project-card__shot {
+  .project-card:last-child:nth-child(even) .project-card__shot {
     grid-area: auto;
     aspect-ratio: 16 / 9;
     height: auto;
@@ -2887,28 +2403,14 @@ code {
     border-bottom: var(--border-width) solid var(--border);
   }
 
-  .project-card--wide:not(.project-card--feature) .project-card__body,
-  .project-card:last-child:nth-child(even):not(.project-card--feature) .project-card__body {
-    grid-area: auto;
-  }
 
-  .project-card--feature:hover .project-card__shot,
-  .project-card--feature:has(.stretched-link:focus-visible) .project-card__shot,
-  .project-card--wide:hover .project-card__shot,
-  .project-card--wide:has(.stretched-link:focus-visible) .project-card__shot {
-    border-bottom-color: var(--edge-2);
-  }
 
-  .project-card--feature .project-card__body,
-  .project-card--wide .project-card__body,
-  .project-card:last-child:nth-child(even) .project-card__body {
-    grid-area: auto;
-    padding: calc(var(--space) * 2);
-    gap: var(--stack-sm);
-  }
+
+
+
 
   /* A hero name at page-title size takes three lines of a phone. */
-  .project-card--feature .project-card__name { font-size: var(--fs-subtitle); }
+
 
   .reveal__summary {
     min-height: 44px;
@@ -2916,12 +2418,9 @@ code {
   }
 
   /* The step number sits above its text rather than stealing a column. */
-  .steps > li {
-    grid-template-columns: minmax(0, 1fr);
-    gap: calc(var(--space) * 0.5);
-  }
 
-  .steps > li::before { padding-top: 0; }
+
+
 
   /* Label and arrow stay on one row; the note wraps under both. */
   .linklist a { padding: calc(var(--space) * 1.75) 0; }
