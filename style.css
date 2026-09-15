@@ -61,7 +61,7 @@
      flash. Serif for everything that is read, mono for everything that is
      labelled: eyebrows, chips, nav, footer, status. Nobody lands on Times.
      Mac -> Iowan Old Style, Windows -> Georgia, Android -> Noto Serif. */
-  --font: "Iowan Old Style", Charter, "Source Serif 4", Georgia, "Noto Serif", serif;
+  --font: var(--font-mono);   /* every page is the single page's mono now */
   --font-mono: ui-monospace, "Cascadia Mono", "Segoe UI Mono", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 }
 

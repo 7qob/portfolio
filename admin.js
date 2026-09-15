@@ -690,8 +690,8 @@ function buildHomeEditor(host, rows) {
   host.appendChild(bar);
 
   host.appendChild(el("p", "pe-annot",
-    "The bento has four project cells. Only published, listed pages appear in them. Everything else on the " +
-    "home page (the hero, the about card, the GitHub graph, the link stack) is hand-written and untouched by this."));
+    "The home page lists up to four project cards. Only published, listed pages appear there. The hero and " +
+    "about are edited with the pen on the page itself."));
 
   var cells = el("section", "pe-card");
   cells.appendChild(el("span", "pe-card__label", "The four cells"));
@@ -833,7 +833,7 @@ function buildHomeEditor(host, rows) {
 
   if (!live.length) {
     host.appendChild(el("p", "pe-annot",
-      "Nothing is published yet, so the home page has no project cards and the bento is drawn without them."));
+      "Nothing is published yet, so the home page has no project cards."));
   }
 }
 
@@ -1354,9 +1354,9 @@ function buildProjectEditor(host, record, mediaRows, allProjects) {
   var blurbWrap = el("div", "pe-field pe-field--wide");
   var blurbToggle = peCheck("Use a shorter text on the cards", !!record.cardBlurb);
   var blurbArea = peArea(record.cardBlurb, 2, 300);
-  blurbArea.placeholder = "A sentence for the home bento and the projects index.";
+  blurbArea.placeholder = "A sentence for the home page card.";
   var blurbField = peField("Card text", blurbArea,
-    "Used on both index cards instead of the description. The page itself keeps the long one.", false);
+    "Used on the home page card instead of the description. The page itself keeps the long one.", false);
   blurbField.style.marginTop = "var(--stack-sm)";
   if (!record.cardBlurb) blurbField.classList.add("pe-hidden");
 
@@ -1377,10 +1377,8 @@ function buildProjectEditor(host, record, mediaRows, allProjects) {
   var cover = mediaPicker(mediaRows, record.coverMediaId,
     "image/png,image/jpeg,image/webp,image/gif");
   coverWrap.appendChild(cover.root);
-  coverWrap.appendChild(el("span", "pe-field__hint",
-    "The picture beside this project on the projects index, cropped to 16:9. " +
-    "Leave it empty and the row is words only."));
-  grid.appendChild(coverWrap);
+  // Built but not shown: its only reader was the removed projects index. Kept
+  // so saving still sends the stored cover rather than clearing it.
 
   var statusSelect = peSelect([["", "·"], ["WIP", "WIP"], ["Featured", "Featured"]], record.status);
   grid.appendChild(peField("Status", statusSelect, null, false));
