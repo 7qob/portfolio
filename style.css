@@ -47,7 +47,7 @@
   --shell:        68rem;
 
   --border-width: var(--bw);
-  --radius:       0;
+  --radius:       4px;
   --space:        8px;
   --gap:          calc(var(--space) * 2);   /* single knob for all inter-box spacing */
 
@@ -1041,7 +1041,7 @@ textarea:focus-visible,
 
 .admin-tab[aria-selected="true"] {
   color: var(--fg-strong);
-  border-bottom: var(--bw) solid var(--accent);
+  border-bottom: var(--bw) solid var(--fg-strong);
   margin-bottom: calc(var(--bw) * -1);
 }
 
@@ -1135,8 +1135,8 @@ textarea:focus-visible,
 }
 
 .admin-btn:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+  border-color: var(--border-hover);
+  color: var(--fg-strong);
 }
 
 .admin-btn--accent { color: var(--fg-strong); }
@@ -1155,7 +1155,7 @@ textarea:focus-visible,
 
 .admin-input:focus {
   outline: none;
-  border-color: var(--accent);
+  border-color: var(--fg-mute);
 }
 
 .admin-input--narrow { min-width: 64px; width: 72px; }
@@ -1178,7 +1178,8 @@ textarea:focus-visible,
 .admin-secret {
   margin: calc(var(--space) * 2) 0;
   padding: calc(var(--space) * 2);
-  border: var(--border-width) solid var(--accent);
+  border: var(--border-width) solid var(--fg-mute);
+  border-radius: var(--radius);
 }
 
 .admin-secret__title {
@@ -1223,7 +1224,7 @@ textarea:focus-visible,
 
 .pe-bar__spacer { flex: 1; }
 .pe-bar__state { color: var(--fg-mute); font-size: var(--fs-meta); }
-.pe-bar__state[data-dirty="1"] { color: var(--accent); }
+.pe-bar__state[data-dirty="1"] { color: var(--fg-strong); }
 
 /* ---- a card. One per region of the page, in page order. ---- */
 /* The home page's section, not a box: air above, a .split-style header with
@@ -1256,7 +1257,7 @@ textarea:focus-visible,
 .col.admin { max-width: 60rem; }
 .is-admin .admin-tab small { display: none; }
 .admin-input { background: var(--bg); }
-.admin-stat { border-radius: var(--radius); }
+.is-admin :is(input, select, textarea, button, .admin-stat, .pe-thumb, .pe-drop, .pe-row, .pe-color__sv, .pe-color__hue) { border-radius: var(--radius); }
 
 .pe-grid {
   display: grid;
@@ -1299,7 +1300,7 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
   cursor: pointer;
 }
 
-.pe-check input { accent-color: var(--accent); }
+.pe-check input { accent-color: var(--fg-strong); }
 
 /* ---- the home-page slot picker: the bento, in miniature ---- */
 .pe-slots {
@@ -1338,10 +1339,10 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
 .pe-slot[data-taken] { color: var(--fg); border-style: dashed; }
 
 .pe-slot[aria-pressed="true"] {
-  border-color: var(--accent);
+  border-color: var(--fg-strong);
   border-style: solid;
   color: var(--fg-strong);
-  background: color-mix(in srgb, var(--accent) 12%, var(--panel-alt));
+  background: var(--line);
 }
 
 .pe-slot__name { color: var(--fg-mute); font-size: var(--fs-meta); }
@@ -1362,7 +1363,7 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
 
 /* ---- band cards ---- */
 .pe-band { border-left: 2px solid var(--line); }
-.pe-band--folded { border-left-color: var(--accent); }
+.pe-band--folded { border-left-color: var(--fg-mute); }
 
 .pe-band__head {
   display: flex;
@@ -1434,13 +1435,13 @@ textarea.admin-input { min-height: 5em; line-height: 1.5; resize: vertical; }
 .pe-annot {
   margin: 0 0 var(--gap);
   padding: var(--space) calc(var(--space) * 1.5);
-  border-left: 2px solid var(--accent);
+  border-left: var(--bw) solid var(--line);
   color: var(--fg-mute);
   font-size: var(--fs-meta);
 }
 
 /* Inline link styling lives on .reading, which this column is not. */
-.pe-annot a { color: var(--accent); }
+.pe-annot a { color: var(--fg-strong); }
 
 .pe-hidden { display: none; }
 
