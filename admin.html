@@ -7,7 +7,7 @@
   <title>Admin · 7qob</title>
 
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%23000'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=5">
+  <link rel="stylesheet" href="style.css?v=6">
 
   <!-- Saved theme, applied before first paint so a light visitor sees no flash. -->
   <script>
@@ -55,9 +55,6 @@
       <section class="admin-panel" id="panel-projects" role="tabpanel" aria-labelledby="tab-projects" data-panel="projects">
 
         <div class="pe" id="projects-list">
-          <p class="pe-annot">A page is a title, a description, and some bands. Publish writes
-            <code>project-&lt;slug&gt;.html</code> and the home page's cards, both
-            as plain static files that call no API.</p>
 
           <section class="pe-card">
             <span class="pe-card__label">New page</span>
@@ -65,7 +62,6 @@
               <label class="pe-field pe-field--wide">
                 <span class="pe-field__label">Title</span>
                 <input class="admin-input pe-input--title" id="new-project-title" name="title" type="text" required maxlength="120">
-                <span class="pe-field__hint">The slug is derived from this and stays editable until the page is published.</span>
               </label>
               <div class="pe-field">
                 <button class="admin-btn admin-btn--accent" type="submit">Create and open</button>
@@ -96,11 +92,8 @@
               <label class="pe-check">
                 <input type="file" id="media-upload" multiple accept="image/png,image/jpeg,image/webp,image/gif,video/mp4">
               </label>
-              <span class="pe-field__hint">Stored under their own content hash, so re-uploading the same file never
-                duplicates it. The name you dropped is kept only as a label.</span>
             </div>
             <div class="admin-scroll"><table class="admin-table" id="media-table"></table></div>
-            <p class="pe-field__hint">A file still used by a page cannot be deleted; the page would render a hole.</p>
           </section>
 
           <section class="pe-card">
@@ -108,24 +101,15 @@
 
             <form class="admin-form" id="create-document-form">
               <label class="pe-field">
-                <span class="pe-field__label">Slug</span>
-                <input class="admin-input" id="new-document-slug" name="slug" type="text" required
-                       autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="48"
-                       pattern="[a-z0-9][a-z0-9\-]*[a-z0-9]|[a-z0-9]">
-                <span class="pe-field__hint">Stored as <code>&lt;slug&gt;.pdf</code>.</span>
-              </label>
-              <label class="pe-field">
                 <span class="pe-field__label">Title</span>
                 <input class="admin-input" id="new-document-title" name="title" type="text" required maxlength="120">
-                <span class="pe-field__hint">What the vault list shows.</span>
               </label>
               <div class="pe-field">
                 <button class="admin-btn admin-btn--accent" type="submit">Create document</button>
               </div>
             </form>
 
-            <p class="pe-field__hint">Upload the PDF straight from its row. Choosing a file replaces what is there.
-              Only real PDFs are accepted, and the stored name comes from the slug, never from the upload.</p>
+            <p class="pe-field__hint">Upload each PDF from its row.</p>
             <div class="admin-scroll"><table class="admin-table" id="documents-table"></table></div>
           </section>
 
@@ -151,9 +135,8 @@
                        autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="32">
               </label>
               <label class="pe-field">
-                <span class="pe-field__label">Issued to</span>
+                <span class="pe-field__label">Issued to (optional)</span>
                 <input class="admin-input" id="new-note" name="note" type="text" maxlength="200">
-                <span class="pe-field__hint">Optional: which company this login went to.</span>
               </label>
               <label class="pe-field">
                 <span class="pe-field__label">Role</span>
@@ -211,7 +194,7 @@
     </div>
   </footer>
 
-  <script src="script.js?v=5"></script>
-  <script src="admin.js?v=5"></script>
+  <script src="script.js?v=6"></script>
+  <script src="admin.js?v=6"></script>
 </body>
 </html>

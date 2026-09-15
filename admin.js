@@ -467,7 +467,8 @@ function loadDocuments() {
     form.dataset.bound = "1";
     form.addEventListener("submit", function (e) {
       e.preventDefault();
-      var body = { slug: form.slug.value.trim(), title: form.title.value.trim() };
+      var title = form.title.value.trim();
+      var body = { slug: slugify(title), title: title };
       if (!body.slug || !body.title) return;
 
       api("/admin/vault-items", { method: "POST", body: body })
