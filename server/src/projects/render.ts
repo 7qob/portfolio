@@ -449,8 +449,16 @@ function projectCard(proj: PageProject, opts: { p: string }): string {
             </div>`
       : '';
 
+  // The cover, when the panel has one. `.shot img` is already styled, so this
+  // adds no CSS; without a cover the hatched placeholder keeps the row's left
+  // edge. alt is empty on purpose: the card name beside it is the label, and
+  // a second copy of it is noise in a screen reader.
+  const shot = proj.cover
+    ? `<span class="shot"><img src="${mediaSrc(proj.cover, opts.p)}"${dims(proj.cover)} loading="lazy" decoding="async" alt=""></span>`
+    : `<span class="shot shot--empty" data-label="${esc(proj.slug)}"></span>`;
+
   return `        <article class="card">
-          <span class="shot shot--empty" data-label="${esc(proj.slug)}"></span>
+          ${shot}
           <div>
             <a class="card__head" href="${opts.p}project-${esc(proj.slug)}.html">
               <span class="card__name">${esc(proj.title)}</span>${tag}

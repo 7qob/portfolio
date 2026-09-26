@@ -311,10 +311,12 @@ and touches nothing else. Everything outside a marker pair in `index.html` is
 hand-written and never parsed. Its base is `PAGES_DIR/index.html` if one
 exists, else `HOME_TEMPLATE`.
 
-A project's index picture is **one upload id in `cover_media_id`**, chosen in
-the panel and shown on the index row and nowhere else — not on the home card,
-not on the project page. Publish refuses if it has been deleted, and
-`MediaService.remove` refuses to delete an upload a project still covers with.
+A project's picture is **one upload id in `cover_media_id`**, chosen in the
+panel and drawn in the home card's `.shot` rail, nowhere else: not on the
+project page. Without one the card keeps the hatched `.shot--empty`
+placeholder, which is what holds the row's left edge. Publish refuses if it
+has been deleted, and `MediaService.remove` refuses to delete an upload a
+project still covers with.
 
 A project's colour is **one `#rrggbb` in the `accent` column**, emitted as
 `class="… is-custom" style="--edge-brand:…"`. The four `.is-comfy` /
