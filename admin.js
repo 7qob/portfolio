@@ -1324,8 +1324,12 @@ function buildProjectEditor(host, record, mediaRows, allProjects) {
   var cover = mediaPicker(mediaRows, record.coverMediaId,
     "image/png,image/jpeg,image/webp,image/gif");
   coverWrap.appendChild(cover.root);
-  // Built but not shown: its only reader was the removed projects index. Kept
-  // so saving still sends the stored cover rather than clearing it.
+  coverWrap.appendChild(el("span", "pe-field__hint",
+    "Drawn in this project's row on the home page, cropped to 16:10. " +
+    "Without one the row keeps its hatched placeholder."));
+  // No MP4 in the accept list above: the card's rail is an <img>, so a video
+  // would upload happily and then render as a broken picture.
+  grid.appendChild(coverWrap);
 
   var statusSelect = peSelect([["", "·"], ["WIP", "WIP"], ["Featured", "Featured"]], record.status);
   grid.appendChild(peField("Status", statusSelect, null, false));
