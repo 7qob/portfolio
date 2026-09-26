@@ -36,6 +36,7 @@ export interface ProjectRow {
   home_slot: string | null;
   accent: string | null;
   cover_media_id: number | null;
+  abstract_media_id: number | null;
   repo_url: string | null;
   lede: string | null;
   card_blurb: string | null;
@@ -119,6 +120,7 @@ export class ProjectsService {
       homeSlot: row.home_slot,
       accent: row.accent,
       coverMediaId: row.cover_media_id,
+      abstractMediaId: row.abstract_media_id,
       repoUrl: row.repo_url,
       lede: row.lede,
       cardBlurb: row.card_blurb,
@@ -187,6 +189,7 @@ export class ProjectsService {
       homeSlot?: string | null;
       accent?: string | null;
       coverMediaId?: number | null;
+      abstractMediaId?: number | null;
       repoUrl?: string | null;
       lede?: string | null;
       cardBlurb?: string | null;
@@ -221,6 +224,10 @@ export class ProjectsService {
     // 0 is what an empty <select> reads as, and it is no more an id than null.
     const cover =
       input.coverMediaId === undefined ? row.cover_media_id : input.coverMediaId || null;
+    const abstractId =
+      input.abstractMediaId === undefined
+        ? row.abstract_media_id
+        : input.abstractMediaId || null;
 
     // One statement, one transaction: the slot swap below has to be part of
     // the same write, or a failure halfway leaves a cell holding nobody.
@@ -231,7 +238,8 @@ export class ProjectsService {
         .prepare(
           `UPDATE projects SET
              slug = ?, title = ?, status = ?, home_slot = ?, accent = ?,
-             cover_media_id = ?, repo_url = ?, lede = ?, card_blurb = ?,
+             cover_media_id = ?, abstract_media_id = ?, repo_url = ?,
+             lede = ?, card_blurb = ?,
              chips = ?, blocks = ?, sort_order = ?, visible = ?,
              updated_at = datetime('now')
            WHERE id = ?`,
@@ -243,6 +251,7 @@ export class ProjectsService {
           homeSlot,
           accent === null ? null : accent.toLowerCase(),
           cover,
+          abstractId,
           repoUrl,
           input.lede === undefined ? row.lede : input.lede,
           input.cardBlurb === undefined ? row.card_blurb : input.cardBlurb,
@@ -309,6 +318,11 @@ export class ProjectsService {
     if (row.cover_media_id !== null && !this.mediaRef(row.cover_media_id)) {
       throw new BadRequestException(
         `The cover picture no longer exists (media id ${row.cover_media_id}).`,
+      );
+    }
+    if (row.abstract_media_id !== null && !this.mediaRef(row.abstract_media_id)) {
+      throw new BadRequestException(
+        `The abstract no longer exists (media id ${row.abstract_media_id}).`,
       );
     }
 
@@ -415,6 +429,8 @@ export class ProjectsService {
       // A cover deleted between publishes drops the rail rather than the page:
       // publish() already refused the case an author can still fix.
       cover: row.cover_media_id === null ? null : this.mediaRef(row.cover_media_id),
+      abstract:
+        row.abstract_media_id === null ? null : this.mediaRef(row.abstract_media_id),
       accent: row.accent,
       homeSlot: row.home_slot,
       repoUrl: row.repo_url,

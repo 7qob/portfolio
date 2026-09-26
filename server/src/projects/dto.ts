@@ -89,6 +89,17 @@ export class UpdateProjectDto {
   coverMediaId?: number | null;
 
   /**
+   * The PDF linked from the card, as an upload id, or null for none. Checked
+   * for existence at publish for the same reason the cover is: the upload can
+   * be deleted between saving and publishing.
+   */
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  abstractMediaId?: number | null;
+
+  /**
    * Rendered as the one link under the article. Narrowed to GitHub rather
    * than to "a URL": this field has exactly one job, and an allowlist of one
    * host is the cheapest way to keep it that way.

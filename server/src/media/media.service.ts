@@ -172,13 +172,17 @@ export class MediaService {
     if (!row) throw new NotFoundException('No such upload.');
 
     const users = (
-      this.database.db.prepare('SELECT slug, blocks, cover_media_id FROM projects').all() as {
+      this.database.db
+        .prepare('SELECT slug, blocks, cover_media_id, abstract_media_id FROM projects')
+        .all() as {
         slug: string;
         blocks: string;
         cover_media_id: number | null;
+        abstract_media_id: number | null;
       }[]
     ).filter((p) => {
       if (p.cover_media_id === id) return true;
+      if (p.abstract_media_id === id) return true;
       try {
         return collectMediaIds(JSON.parse(p.blocks) as Block[]).includes(id);
       } catch {

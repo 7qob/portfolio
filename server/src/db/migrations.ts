@@ -266,4 +266,13 @@ export const MIGRATIONS: readonly string[] = [
     published_at TEXT
   );
   `,
+
+  // 007 — a project carries its abstract.
+  //
+  // One PDF upload, linked from the project's card beside the repository.
+  // Same shape and same reasoning as cover_media_id above: no REFERENCES, so
+  // MediaService.remove can refuse by name instead of raising a constraint.
+  `
+  ALTER TABLE projects ADD COLUMN abstract_media_id INTEGER;
+  `,
 ];

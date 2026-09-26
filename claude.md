@@ -318,6 +318,14 @@ placeholder, which is what holds the row's left edge. Publish refuses if it
 has been deleted, and `MediaService.remove` refuses to delete an upload a
 project still covers with.
 
+A project's abstract is **one PDF upload id in `abstract_media_id`**, chosen
+in the panel the same way and linked from the card beside the repository, with
+its size in `.card__sz`. The href is the content hash, so the anchor carries
+`download="abstract-<slug>.pdf"`: without it the visitor saves a file named
+after a checksum. The picker's dropdown is filtered to `application/pdf`
+rather than trusting the file input's `accept`, which only guards new uploads
+and would happily let a PNG be chosen from the existing list.
+
 A project's colour is **one `#rrggbb` in the `accent` column**, emitted as
 `class="… is-custom" style="--edge-brand:…"`. The four `.is-comfy` /
 `.is-ignite` / `.is-kobui` / `.is-stalkr` palettes are gone; `.is-custom`

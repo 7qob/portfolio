@@ -34,6 +34,8 @@ export interface PageProject {
   status: string | null;
   /** The picture on the index row, already resolved. Null renders no rail. */
   cover: MediaRef | null;
+  /** The card's PDF, already resolved. Null renders no abstract link. */
+  abstract: MediaRef | null;
   accent: string | null;
   homeSlot: string | null;
   repoUrl: string | null;
@@ -136,6 +138,11 @@ const ICON_CHEVRON =
 
 const ICON_GITHUB = svg(
   '<path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>',
+  20,
+);
+
+const ICON_DOWNLOAD = svg(
+  '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
   20,
 );
 
@@ -439,15 +446,35 @@ function projectCard(proj: PageProject, opts: { p: string }): string {
 
   const desc = blurb ? `\n            <p class="card__desc">${inline(blurb)}</p>` : '';
 
-  // Only a repo link, and only when there is one. The abstract PDFs on the
-  // hand-written cards are not something the panel can produce.
-  const repo =
-    proj.repoUrl && SAFE_HREF.test(proj.repoUrl)
-      ? `
+  // Whichever of the two the project has. The row itself is omitted when it
+  // would be empty, so a project with neither keeps the card's spacing rather
+  // than an invisible div.
+  const links: string[] = [];
+
+  if (proj.repoUrl && SAFE_HREF.test(proj.repoUrl)) {
+    links.push(
+      `<a href="${esc(proj.repoUrl)}" target="_blank" rel="noopener">${ICON_GITHUB}source</a>`,
+    );
+  }
+
+  if (proj.abstract) {
+    // download= names the saved file, because the href is the content hash:
+    // without it the visitor gets 9f3c1a....pdf in their downloads folder.
+    // .card__sz:empty is hidden by the stylesheet, so a zero size costs
+    // nothing here.
+    links.push(
+      `<a href="${mediaSrc(proj.abstract, opts.p)}" download="abstract-${esc(proj.slug)}.pdf">` +
+        `${ICON_DOWNLOAD}abstract.pdf` +
+        `<span class="card__sz">${esc(formatBytes(proj.abstract.sizeBytes))}</span></a>`,
+    );
+  }
+
+  const repo = links.length
+    ? `
             <div class="card__links">
-              <a href="${esc(proj.repoUrl)}" target="_blank" rel="noopener">${ICON_GITHUB}source</a>
+              ${links.join('\n              ')}
             </div>`
-      : '';
+    : '';
 
   // The cover, when the panel has one. `.shot img` is already styled, so this
   // adds no CSS; without a cover the hatched placeholder keeps the row's left

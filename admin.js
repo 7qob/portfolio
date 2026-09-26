@@ -1331,6 +1331,20 @@ function buildProjectEditor(host, record, mediaRows, allProjects) {
   // would upload happily and then render as a broken picture.
   grid.appendChild(coverWrap);
 
+  var abstractWrap = el("div", "pe-field pe-field--wide");
+  abstractWrap.appendChild(el("span", "pe-field__label", "Abstract (PDF)"));
+  // The dropdown lists whatever array it is handed, so filter rather than
+  // rely on the accept string: that only guards the file input, and an
+  // "abstract" picked from the full list could be a PNG that then downloads
+  // as a .pdf and opens in nothing.
+  var pdfRows = mediaRows.filter(function (m) { return m.mime === "application/pdf"; });
+  var abstract = mediaPicker(pdfRows, record.abstractMediaId, "application/pdf");
+  abstractWrap.appendChild(abstract.root);
+  abstractWrap.appendChild(el("span", "pe-field__hint",
+    "Linked from this project's row on the home page, with its size beside it. " +
+    "Saves to the visitor as abstract-<slug>.pdf."));
+  grid.appendChild(abstractWrap);
+
   var statusSelect = peSelect([["", "·"], ["WIP", "WIP"], ["Featured", "Featured"]], record.status);
   grid.appendChild(peField("Status", statusSelect, null, false));
 
@@ -1470,6 +1484,7 @@ function buildProjectEditor(host, record, mediaRows, allProjects) {
       status: statusSelect.value || null,
       accent: accent.read(),
       coverMediaId: cover.read() || null,
+      abstractMediaId: abstract.read() || null,
       repoUrl: repoInput.value.trim() || null,
       lede: ledeArea.value.trim() || null,
       cardBlurb: blurbToggle.input.checked ? (blurbArea.value.trim() || null) : null,
