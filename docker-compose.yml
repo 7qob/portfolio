@@ -30,13 +30,13 @@ services:
     volumes:
       # The database. Lives on the host so pulling a new image never touches
       # accounts or logs.
-      - /var/lib/kira1q/data:/data
+      - /var/lib/7qob/data:/data
 
       # The documents. Writable since the panel's Documents tab took over
       # uploads: the service stores <slug>.pdf here itself (magic bytes
       # checked, name derived server-side). Still outside the web root, still
       # only ever streamed through a session check.
-      - /var/lib/kira1q/vault-files:/vault-files
+      - /var/lib/7qob/vault-files:/vault-files
 
       # The two writable holes in an otherwise read-only container: where
       # Publish renders project pages, and where the panel's uploads land.
@@ -50,17 +50,17 @@ services:
       # if you brought this up by hand, so must you:
       #
       #   sudo install -d -o 1000 -g 1000 -m 755 \
-      #     /var/www/kira1q.dev/pages /var/www/kira1q.dev/assets/up
+      #     /var/www/7qob.dev/pages /var/www/7qob.dev/assets/up
       #
       # 755 is what lets www-data read what uid 1000 wrote.
-      - /var/www/kira1q.dev/pages:/site/pages
-      - /var/www/kira1q.dev/assets/up:/site/assets/up
+      - /var/www/7qob.dev/pages:/site/pages
+      - /var/www/7qob.dev/assets/up:/site/assets/up
 
       # The home page the deploy rsyncs, read-only. It is the template the
       # renderer splices project cards into, not the file visitors get —
       # nginx prefers /pages/index.html the moment one exists (see the
-      # `location = /` block in deploy/nginx-kira1q.dev.conf).
-      - /var/www/kira1q.dev/index.html:/site/index.html:ro
+      # `location = /` block in deploy/nginx-7qob.dev.conf).
+      - /var/www/7qob.dev/index.html:/site/index.html:ro
 
     # Nothing in here writes outside the mounts above.
     read_only: true

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ---------------------------------------------------------------------------
-# kira1q.dev — copy the checkout into the web root.
+# 7qob.dev — copy the checkout into the web root.
 #
 #     ./sync-site.sh [SOURCE] [WEBROOT]
 #
@@ -16,7 +16,7 @@
 set -euo pipefail
 
 SRC="${1:-$HOME/Portfolio}"
-WEBROOT="${2:-/var/www/kira1q.dev}"
+WEBROOT="${2:-/var/www/7qob.dev}"
 
 if [ ! -f "$SRC/index.html" ]; then
   echo "!! No index.html in $SRC" >&2

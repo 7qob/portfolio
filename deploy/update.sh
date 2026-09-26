@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ---------------------------------------------------------------------------
-# kira1q.dev — update a running Pi.
+# 7qob.dev — update a running Pi.
 #
 #     ~/Portfolio/deploy/update.sh              both halves
 #     ~/Portfolio/deploy/update.sh --static     the site only
@@ -27,7 +27,7 @@
 set -euo pipefail
 
 REPO="${REPO:-$HOME/Portfolio}"
-WEBROOT="${WEBROOT:-/var/www/kira1q.dev}"
+WEBROOT="${WEBROOT:-/var/www/7qob.dev}"
 BRANCH="${BRANCH:-main}"
 
 DO_STATIC=1
@@ -97,9 +97,9 @@ if [ "$DO_STATIC" = 1 ]; then
   # The server block is part of the repo, so it can change with a pull. Only
   # reload when it actually did: nginx -t on every deploy is noise, and a
   # reload nobody asked for is a reload nobody checked.
-  if echo "$CHANGED" | grep -q 'deploy/nginx-kira1q.dev.conf'; then
+  if echo "$CHANGED" | grep -q 'deploy/nginx-7qob.dev.conf'; then
     step "The nginx server block changed, installing it"
-    sudo cp "$REPO/deploy/nginx-kira1q.dev.conf" /etc/nginx/sites-available/kira1q.dev
+    sudo cp "$REPO/deploy/nginx-7qob.dev.conf" /etc/nginx/sites-available/7qob.dev
     sudo nginx -t
     sudo systemctl reload nginx
   fi
@@ -112,7 +112,7 @@ if [ "$DO_API" = 1 ]; then
   # A no-op when the digest already matches, so this is cheap to run every
   # time rather than something to remember to do after a server/ change.
   # The panel writes PDFs here; a folder left root-owned turns every upload into a 500.
-  sudo install -d -o 1000 -g 1000 -m 750 /var/lib/kira1q/vault-files
+  sudo install -d -o 1000 -g 1000 -m 750 /var/lib/7qob/vault-files
   ( cd "$REPO" && sudo docker compose pull --quiet && sudo docker compose up -d )
 
   step "Waiting for the API to come back"

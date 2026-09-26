@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ---------------------------------------------------------------------------
-# kira1q.dev — Raspberry Pi setup (nginx + webroot)
+# 7qob.dev — Raspberry Pi setup (nginx + webroot)
 #
 # Run ON THE PI, once:
 #     chmod +x setup-pi.sh
@@ -15,9 +15,9 @@
 # ---------------------------------------------------------------------------
 set -euo pipefail
 
-WEBROOT=/var/www/kira1q.dev
+WEBROOT=/var/www/7qob.dev
 UPLOAD="${1:-$HOME/Portfolio}"          # where WinSCP put the files
-CONF_SRC="$(dirname "$0")/nginx-kira1q.dev.conf"
+CONF_SRC="$(dirname "$0")/nginx-7qob.dev.conf"
 
 echo "==> Source : $UPLOAD"
 echo "==> Webroot: $WEBROOT"
@@ -47,7 +47,7 @@ echo "==> Creating the API's writable directories"
 sudo mkdir -p "$WEBROOT/assets"          # rsync owns this one; just the parent
 sudo install -d -o 1000 -g 1000 -m 755 "$WEBROOT/pages"
 sudo install -d -o 1000 -g 1000 -m 755 "$WEBROOT/assets/up"
-sudo install -d -o 1000 -g 1000 -m 750 /var/lib/kira1q/vault-files   # PDF uploads from the panel
+sudo install -d -o 1000 -g 1000 -m 750 /var/lib/7qob/vault-files   # PDF uploads from the panel
 
 echo "==> Copying site (dev-only files excluded)"
 # The exclude list lives in sync-site.sh, which update.sh runs too. Keeping
@@ -56,7 +56,7 @@ echo "==> Copying site (dev-only files excluded)"
 "$(dirname "$0")/sync-site.sh" "$UPLOAD" "$WEBROOT"
 
 # Documents used to live under the web root. They are now served by the API
-# from /var/lib/kira1q/vault-files/, which nginx cannot reach at all.
+# from /var/lib/7qob/vault-files/, which nginx cannot reach at all.
 #
 # This only warns. It does NOT delete anything and the rsync exclusion above
 # is kept, because if the migration has not happened yet those files are the
@@ -68,15 +68,15 @@ if [ -d "$WEBROOT/vault/files" ] && [ -n "$(sudo ls -A "$WEBROOT/vault/files" 2>
   echo "    These are no longer used and nginx now returns 404 for them, but"
   echo "    they should not be sitting there. Copy them to the new location,"
   echo "    verify a download works, and only then remove the old directory:"
-  echo "        sudo cp $WEBROOT/vault/files/* /var/lib/kira1q/vault-files/"
-  echo "        sudo chown 1000:1000 /var/lib/kira1q/vault-files/*"
+  echo "        sudo cp $WEBROOT/vault/files/* /var/lib/7qob/vault-files/"
+  echo "        sudo chown 1000:1000 /var/lib/7qob/vault-files/*"
   echo "        sudo rm -rf $WEBROOT/vault/files"
   echo
 fi
 
 echo "==> Installing nginx server block"
-sudo cp "$CONF_SRC" /etc/nginx/sites-available/kira1q.dev
-sudo ln -sf /etc/nginx/sites-available/kira1q.dev /etc/nginx/sites-enabled/kira1q.dev
+sudo cp "$CONF_SRC" /etc/nginx/sites-available/7qob.dev
+sudo ln -sf /etc/nginx/sites-available/7qob.dev /etc/nginx/sites-enabled/7qob.dev
 sudo rm -f /etc/nginx/sites-enabled/default
 
 echo "==> Testing config"

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ---------------------------------------------------------------------------
-# kira1q.dev — keep the Pi up to date on its own.
+# 7qob.dev — keep the Pi up to date on its own.
 #
 #     ~/Portfolio/deploy/auto-update.sh --install    once: run every 10 minutes
 #     ~/Portfolio/deploy/auto-update.sh --uninstall  stop it
@@ -45,7 +45,7 @@ case "${1:-}" in
 esac
 
 # One run at a time: a slow image pull must not overlap the next tick.
-exec 9>/tmp/kira1q-auto-update.lock
+exec 9>/tmp/7qob-auto-update.lock
 flock -n 9 || exit 0
 
 stamp() { printf '[%s] %s\n' "$(date '+%F %T')" "$1"; }
