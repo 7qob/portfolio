@@ -1,8 +1,8 @@
-# Deploying kira1q.dev to the Raspberry Pi
+# Deploying 7qob.dev to the Raspberry Pi
 
-Two halves. **Part 1 is reversible** — it only sets up the Pi, and your live
-site keeps running on GitHub Pages the whole time. **Part 2 moves the domain**
-and takes it away from Pages.
+Two halves. **Part 1 is reversible** — it only sets up the Pi and touches no
+DNS at all. **Part 2 points the domain at it**, and that is the half a visitor
+can see.
 
 Do Part 1, check the site on your LAN, and only then do Part 2.
 
@@ -17,11 +17,11 @@ Files are already at `/home/ubuntu/Portfolio/` from WinSCP. Upload this
 cd ~/Portfolio/deploy && chmod +x setup-pi.sh && ./setup-pi.sh ~/Portfolio
 ```
 
-That installs nginx, copies the site to `/var/www/kira1q.dev` (skipping the
+That installs nginx, copies the site to `/var/www/7qob.dev` (skipping the
 dev-only files), installs the server block and prints a check. When it
 finishes, open `http://192.168.0.56/` from your desktop.
 
-**Nothing about kira1q.dev has changed yet.** Take your time here.
+**Nothing about 7qob.dev has changed yet.** Take your time here.
 
 ### Updating the site later
 
@@ -70,7 +70,7 @@ Don't retype it. `deploy/sync-site.sh` is the exclude list, and it is the only
 copy of it in the repo on purpose:
 
 ```bash
-~/Portfolio/deploy/sync-site.sh ~/Portfolio /var/www/kira1q.dev
+~/Portfolio/deploy/sync-site.sh ~/Portfolio /var/www/7qob.dev
 ```
 
 `/pages/` and `/assets/up/` are what the admin panel writes into and they are
@@ -116,17 +116,27 @@ sudo apt-get update && sudo apt-get install -y cloudflared
 cloudflared tunnel login
 ```
 
-Prints a URL. Open it **on your desktop**, pick `kira1q.dev`, authorise. This
+Prints a URL. Open it **on your desktop**, pick `7qob.dev`, authorise. This
 is yours to do — it's an account login and I can't and shouldn't do it for you.
+
+Run this again even if you have logged in before for a different domain. The
+`cert.pem` it writes is scoped to the zone you pick, and 2.5 fails with a
+"zone not found" style error against a zone the certificate does not cover.
+The zone also has to be **active** first: Cloudflare only serves a domain once
+the registrar's nameservers point at it.
 
 ### 2.3 Create the tunnel
 
 ```bash
-cloudflared tunnel create kira1q
+cloudflared tunnel create 7qob
 ```
 
 Note the tunnel UUID it prints; credentials land in
 `/home/ubuntu/.cloudflared/<UUID>.json`.
+
+If a tunnel already exists on this Pi, keep it. A tunnel belongs to the
+account, not to a zone, so the same one serves a new hostname the moment 2.4
+and 2.5 name it. `cloudflared tunnel list` prints what is there.
 
 ### 2.4 Configure it
 
@@ -137,30 +147,27 @@ tunnel: <UUID>
 credentials-file: /home/ubuntu/.cloudflared/<UUID>.json
 
 ingress:
-  - hostname: kira1q.dev
+  - hostname: 7qob.dev
     service: http://localhost:80
-  - hostname: www.kira1q.dev
+  - hostname: www.7qob.dev
     service: http://localhost:80
   - service: http_status:404
 ```
 
-### 2.5 Point DNS at the tunnel — ⚠️ the irreversible step
+### 2.5 Point DNS at the tunnel
 
 ```bash
-cloudflared tunnel route dns kira1q kira1q.dev
-cloudflared tunnel route dns kira1q www.kira1q.dev
+cloudflared tunnel route dns 7qob 7qob.dev
+cloudflared tunnel route dns 7qob www.7qob.dev
 ```
 
-**This overwrites the DNS records that currently send kira1q.dev to GitHub
-Pages.** Your Devportal stops being served at that domain the moment it
-propagates.
+Each of these writes one proxied CNAME to `<UUID>.cfargotunnel.com`. On a zone
+that has never served anything there is nothing underneath to lose, and the
+step is undone by deleting the record in the dashboard.
 
-Before running it, in the Cloudflare dashboard (DNS → Records) **screenshot or
-copy the existing records for `kira1q.dev` and `www`.** That is your only way
-back. Reverting means re-entering those records by hand.
-
-The Devportal repo itself is untouched — it stays at
-`7qob.github.io/Devportal` and you can always re-point DNS to it.
+It refuses rather than overwrites when a record for that name already exists,
+which is the safe direction: check the dashboard, delete the old record, run it
+again.
 
 ### 2.6 Run it as a service
 
@@ -173,11 +180,13 @@ systemctl status cloudflared --no-pager
 ### 2.7 Verify
 
 ```bash
-curl -I https://kira1q.dev
+curl -I https://7qob.dev
 ```
 
-You want `HTTP/2 200` **without** the `x-github-request-id` header — that
-header's absence is how you know you're hitting the Pi and not Pages.
+You want `HTTP/2 200` with `server: cloudflare`. To be sure the bytes came
+from the Pi rather than from an edge cache or a leftover record, `curl -I
+https://7qob.dev/style.css` and compare `last-modified` with the file's own
+timestamp in the webroot.
 
 ---
 
@@ -206,9 +215,9 @@ These live outside the web root deliberately. nginx serves `/var/www`; it has
 no access to these, so a location-block mistake cannot expose a document.
 
 ```bash
-sudo mkdir -p /var/lib/kira1q/data /var/lib/kira1q/vault-files
-sudo chown -R 1000:1000 /var/lib/kira1q
-sudo chmod 700 /var/lib/kira1q/data /var/lib/kira1q/vault-files
+sudo mkdir -p /var/lib/7qob/data /var/lib/7qob/vault-files
+sudo chown -R 1000:1000 /var/lib/7qob
+sudo chmod 700 /var/lib/7qob/data /var/lib/7qob/vault-files
 ```
 
 `1000:1000` is the `node` user inside the image. The container runs as that
@@ -219,8 +228,8 @@ root" — they hold public pages and public images, so they belong under
 `/var/www` where nginx can serve them:
 
 ```bash
-sudo install -d -o 1000 -g 1000 -m 755 /var/www/kira1q.dev/pages
-sudo install -d -o 1000 -g 1000 -m 755 /var/www/kira1q.dev/assets/up
+sudo install -d -o 1000 -g 1000 -m 755 /var/www/7qob.dev/pages
+sudo install -d -o 1000 -g 1000 -m 755 /var/www/7qob.dev/assets/up
 ```
 
 `755`, not `700`: uid 1000 writes them and `www-data` has to read them.
@@ -250,8 +259,8 @@ curl -s localhost:8080/api/health
 ### 3.4 Install the nginx changes
 
 ```bash
-sudo cp deploy/nginx-kira1q.dev.conf /etc/nginx/sites-available/kira1q.dev
-sudo cp deploy/nginx-conf.d-kira1q.conf /etc/nginx/conf.d/kira1q-ratelimit.conf
+sudo cp deploy/nginx-7qob.dev.conf /etc/nginx/sites-available/7qob.dev
+sudo cp deploy/nginx-conf.d-7qob.conf /etc/nginx/conf.d/7qob-ratelimit.conf
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
@@ -293,7 +302,7 @@ Wanted: **401, 401, 401, 404**.
 
 Through the admin panel: **Documents** tab → pick the PDF on the item's row.
 The service checks the bytes are a real PDF, stores it as `<slug>.pdf` under
-`/var/lib/kira1q/vault-files/`, and the row flips from "missing" to its size.
+`/var/lib/7qob/vault-files/`, and the row flips from "missing" to its size.
 New document (a fresh semester's report): create it with the form above the
 table, then upload onto the new row. Re-uploading replaces the file in place.
 
@@ -302,12 +311,12 @@ For this to work the compose file mounts vault-files **read-write** (it was
 uid 1000 — `setup-pi.sh` already does that (`chown 1000:1000`, mode 700).
 
 The by-hand fallback still works if the panel is ever unreachable — WinSCP
-into `/var/lib/kira1q/vault-files/`, **not** into `/var/www`, **not** into
+into `/var/lib/7qob/vault-files/`, **not** into `/var/www`, **not** into
 `~/Portfolio`, and never into the git repo:
 
 ```bash
-sudo chown 1000:1000 /var/lib/kira1q/vault-files/*
-sudo chmod 640 /var/lib/kira1q/vault-files/*
+sudo chown 1000:1000 /var/lib/7qob/vault-files/*
+sudo chmod 640 /var/lib/7qob/vault-files/*
 ```
 
 A document whose file is absent shows as "Not uploaded" in the vault rather
@@ -318,7 +327,7 @@ If you are migrating from the old setup, delete the copies under the web root
 once the new ones work:
 
 ```bash
-sudo rm -rf /var/www/kira1q.dev/vault/files
+sudo rm -rf /var/www/7qob.dev/vault/files
 ```
 
 ### 3.8 Updating later
@@ -368,7 +377,7 @@ not.
 | Someone you gave access to keeping it | Disable their account in the admin panel. Their sessions end immediately. This is the thing one shared password could not do. |
 | Knowing who opened your grades | Every download is logged with the account, time and address, and shown in the panel. |
 | Brute force | Rate limited per address and per username, with a lockout, plus a second limit at nginx. The lockout is derived from the database, so restarting the container does not clear it. |
-| Reading a password off the wire | Fine over the tunnel (HTTPS to Cloudflare's edge). The session cookie is `Secure`, which means **login does not work over plain `http://192.168.0.56/`** — the browser will not send the cookie. Test through `https://kira1q.dev`. |
+| Reading a password off the wire | Fine over the tunnel (HTTPS to Cloudflare's edge). The session cookie is `Secure`, which means **login does not work over plain `http://192.168.0.56/`** — the browser will not send the cookie. Test through `https://7qob.dev`. |
 | Someone with a shell on the Pi | No. They can read the database and reset accounts. That is inherent to self-hosting. |
 | The Pi being off | The vault and admin panel are down. The static site is too, but that was already true. |
 
@@ -395,5 +404,6 @@ not.
 | Maintenance | `apt upgrade` on the Pi is now your job. |
 | Upside | You run the infrastructure your own project (Ignite) automates. |
 
-If it ever becomes a hassle, pointing DNS back at GitHub Pages is a five-minute
+If it ever becomes a hassle, the site is static apart from the vault: the repo
+deploys to GitHub Pages as it stands, and repointing DNS there is a five-minute
 change in the Cloudflare dashboard.

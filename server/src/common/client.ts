@@ -11,7 +11,7 @@ import type { Request } from 'express';
  *
  * The chain is Cloudflare -> nginx -> here. nginx is configured to set
  * X-Forwarded-For from CF-Connecting-IP, so the one hop we trust is the one
- * we run. See deploy/nginx-kira1q.dev.conf.
+ * we run. See deploy/nginx-7qob.dev.conf.
  */
 export function clientIp(req: Request): string {
   return req.ip ?? req.socket.remoteAddress ?? 'unknown';

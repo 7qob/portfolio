@@ -69,14 +69,14 @@ Three honest trade-offs, so none of them is a surprise later:
 Internet
   └─ Cloudflare Tunnel (HTTPS terminates at Cloudflare's edge)
        └─ nginx on the Pi, :80
-            ├─ /               → /var/www/kira1q.dev        static, unchanged
+            ├─ /               → /var/www/7qob.dev        static, unchanged
             ├─ /api/           → 127.0.0.1:8080             the container
             └─ /vault/files/   → deny                       files no longer here
 
 Docker (Pi)
   └─ ghcr.io/7qob/portfolio-api:latest   (linux/arm64, non-root)
-       ├─ /data/app.db          ← bind mount /var/lib/kira1q/data
-       └─ /vault-files/         ← bind mount /var/lib/kira1q/vault-files (ro)
+       ├─ /data/app.db          ← bind mount /var/lib/7qob/data
+       └─ /vault-files/         ← bind mount /var/lib/7qob/vault-files (ro)
 ```
 
 nginx stays on the host rather than moving into compose. The static site is
@@ -132,7 +132,7 @@ burying them in code.
   is read-only.
 - **`Secure` cookie caveat:** the login will not work over plain
   `http://192.168.0.56/` on your LAN, because the browser refuses to send a
-  Secure cookie over HTTP. Test the login through `https://kira1q.dev` once the
+  Secure cookie over HTTP. Test the login through `https://7qob.dev` once the
   tunnel is up. This is the right trade — the alternative is sending session
   tokens in clear text over your LAN.
 
@@ -218,7 +218,7 @@ squares, and on failure leaves an empty box with only a console error.
 - `docker-compose.yml` — image, bind mounts, env file, `restart: unless-stopped`
 - `.github/workflows/api-image.yml` — buildx, `linux/arm64`, push to GHCR on
   every push to `main`
-- `deploy/nginx-kira1q.dev.conf` — add the `/api/` proxy, delete the Basic Auth
+- `deploy/nginx-7qob.dev.conf` — add the `/api/` proxy, delete the Basic Auth
   block, deny `/vault/files/`
 - `deploy/README.md` — new section: first deploy, creating the first admin,
   moving the PDFs out of the web root, updating

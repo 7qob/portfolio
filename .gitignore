@@ -1,6 +1,6 @@
 # Private vault documents — CV, Zeugnisse, anything else personal.
 #
-# These are uploaded straight to the Pi at /var/lib/kira1q/vault-files/, which
+# These are uploaded straight to the Pi at /var/lib/7qob/vault-files/, which
 # is deliberately outside the web root: nginx serves /var/www and has no access
 # to it, so a location-block mistake cannot expose a document.
 #
@@ -33,7 +33,7 @@ server/dist/
 server/dist-test/
 server/tsconfig.tsbuildinfo
 
-# Local runtime state. On the Pi these live in /var/lib/kira1q/ and are bind
+# Local runtime state. On the Pi these live in /var/lib/7qob/ and are bind
 # mounted; if they ever appear here it is from running the API locally, and
 # they hold password hashes and real people's IP addresses. Never commit them.
 server/data/

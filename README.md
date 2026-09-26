@@ -1,4 +1,4 @@
-# kira1q.dev
+# 7qob.dev
 
 My personal portfolio site, plus a small private area for job applications.
 
@@ -114,7 +114,7 @@ The full runbook, including the irreversible DNS step, is in
 
 This repository is public, so by design it contains no secrets, no database
 and no vault documents. The private documents live outside the web root at
-`/var/lib/kira1q/vault-files/` on the Pi and are streamed only after a session
+`/var/lib/7qob/vault-files/` on the Pi and are streamed only after a session
 check — nginx cannot serve them even if a location block is misconfigured.
 
 The vault page does not name its documents either. The list is fetched from

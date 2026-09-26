@@ -2,7 +2,7 @@
   "name": "portfolio-api",
   "version": "1.0.0",
   "private": true,
-  "description": "Login, vault and admin API for kira1q.dev",
+  "description": "Login, vault and admin API for 7qob.dev",
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build -p tsconfig.build.json",

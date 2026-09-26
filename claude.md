@@ -1,4 +1,4 @@
-# CLAUDE.md — kira1q.dev
+# CLAUDE.md — 7qob.dev
 
 ## What this is
 
@@ -276,7 +276,7 @@ as SHA-256, in an `HttpOnly; Secure; SameSite=Lax` cookie. There is **no
 secret anywhere in the service** — nothing is signed, so the image can be
 public and the compose file has no credentials in it. Accounts are issued by
 an admin and the password is generated server-side and shown exactly once.
-Vault documents live in `/var/lib/kira1q/vault-files/` on the Pi, outside the
+Vault documents live in `/var/lib/7qob/vault-files/` on the Pi, outside the
 web root, and are streamed only after a session check. `GET /vault/archive`
 sends all of them as one ZIP, built by `server/src/vault/zip.ts` — a store-only
 writer in one file with **no dependency**, because a PDF is already compressed
@@ -373,7 +373,7 @@ the location is `internal` so `/404.html` is never itself a 200 for a crawler
 to index as a soft 404).
 
 `index.html` is rsynced as before, but nginx serves the generated copy first
-(`location = /` in `deploy/nginx-kira1q.dev.conf`); the rsynced one is the
+(`location = /` in `deploy/nginx-7qob.dev.conf`); the rsynced one is the
 template and the never-published fallback. `/projects.html` is on nginx's
 blocked list, because a Pi that published before the index was removed still
 has a stale copy under `/pages/`.
@@ -505,7 +505,7 @@ adjusting this line get it wrong without you.
   user-agent strings and usernames from failed logins — attacker-chosen text
   the server stored verbatim, as it should.
 - **`Secure` cookies mean login does not work over plain HTTP**, including
-  `http://192.168.0.56/` on the LAN. Test through `https://kira1q.dev`.
+  `http://192.168.0.56/` on the LAN. Test through `https://7qob.dev`.
 - **Native modules.** `better-sqlite3` and `argon2` need a compiler. They are
   built in CI inside the Docker image and never on the Pi — and they will not
   install on a Node version without prebuilds unless Python is present.
