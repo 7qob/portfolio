@@ -140,7 +140,10 @@ and 2.5 name it. `cloudflared tunnel list` prints what is there.
 
 ### 2.4 Configure it
 
-Create `/home/ubuntu/.cloudflared/config.yml` — replace `<UUID>`:
+Create `/home/ubuntu/.cloudflared/config.yml` — replace `<UUID>`. If the
+tunnel already carries other services, add to its `ingress` list rather than
+replacing it, and keep `http_status:404` last: cloudflared matches in order,
+and anything below a catch-all is dead.
 
 ```yaml
 tunnel: <UUID>
@@ -176,6 +179,22 @@ sudo cloudflared service install
 sudo systemctl enable --now cloudflared
 systemctl status cloudflared --no-pager
 ```
+
+**`service install` copies the config to `/etc/cloudflared/config.yml`, and
+the unit reads that copy from then on** — not the one in your home directory.
+`systemctl cat cloudflared | grep ExecStart` shows which path it was given.
+So every later ingress change goes there:
+
+```bash
+sudoedit /etc/cloudflared/config.yml
+cloudflared --config /etc/cloudflared/config.yml tunnel ingress validate
+sudo systemctl restart cloudflared
+```
+
+Editing `~/.cloudflared/config.yml` after the install changes nothing, and
+nothing tells you so: `cloudflared tunnel ingress validate` reads the home
+copy by default and reports OK, the service restarts cleanly, and the old
+ingress carries on serving.
 
 ### 2.7 Verify
 

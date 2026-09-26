@@ -506,6 +506,19 @@ adjusting this line get it wrong without you.
   the server stored verbatim, as it should.
 - **`Secure` cookies mean login does not work over plain HTTP**, including
   `http://192.168.0.56/` on the LAN. Test through `https://7qob.dev`.
+- **cloudflared reads `/etc/cloudflared/config.yml`, not the copy in `~`.**
+  `cloudflared service install` put it there once and the unit has read it
+  ever since. An edit to `~/.cloudflared/config.yml` changes nothing,
+  validates as OK and restarts cleanly, which is a slow way to find out.
+  `systemctl cat cloudflared | grep ExecStart` settles it. The tunnel also
+  carries hostnames that are not this site, so add to its `ingress` list
+  rather than replacing it.
+- **A `limit_req_zone` cannot be re-keyed by a reload.** Change the key or the
+  size of `api_login` and the reload fails with `[emerg] ... while previously
+  it used the ... key`, while `nginx -t` still passes, because the test has no
+  running zone to compare against. nginx then keeps serving the previous
+  config, so every symptom points at a config that was never loaded. Restart,
+  do not reload.
 - **Native modules.** `better-sqlite3` and `argon2` need a compiler. They are
   built in CI inside the Docker image and never on the Pi — and they will not
   install on a Node version without prebuilds unless Python is present.
