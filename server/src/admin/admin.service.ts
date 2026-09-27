@@ -155,6 +155,10 @@ export class AdminService {
       sets.push('visible = ?');
       params.push(patch.visible ? 1 : 0);
     }
+    if (patch.inArchive !== undefined) {
+      sets.push('in_archive = ?');
+      params.push(patch.inArchive ? 1 : 0);
+    }
     if (patch.sortOrder !== undefined) {
       sets.push('sort_order = ?');
       params.push(patch.sortOrder);

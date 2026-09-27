@@ -99,6 +99,11 @@ export class UpdateVaultItemDto {
   @IsBoolean()
   visible?: boolean;
 
+  /** Whether "Download all" bundles it. Ignored while `visible` is false. */
+  @IsOptional()
+  @IsBoolean()
+  inArchive?: boolean;
+
   @IsOptional()
   @Type(() => Number)
   @IsInt()

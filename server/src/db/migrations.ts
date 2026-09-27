@@ -275,4 +275,19 @@ export const MIGRATIONS: readonly string[] = [
   `
   ALTER TABLE projects ADD COLUMN abstract_media_id INTEGER;
   `,
+
+  // 008 — a document can be listed without being in the archive.
+  //
+  // `visible` answers "does this appear in the vault at all"; this answers
+  // "is it in Download all". Default 1, so every document that exists keeps
+  // the behaviour it already had.
+  //
+  // The archive reads `visible = 1 AND in_archive = 1`, never in_archive
+  // alone. A document taken off the list must not arrive inside the ZIP: the
+  // list is what the reader was shown, and the archive claiming to be "all of
+  // them" while carrying one more is the kind of surprise that turns into a
+  // disclosure.
+  `
+  ALTER TABLE vault_items ADD COLUMN in_archive INTEGER NOT NULL DEFAULT 1;
+  `,
 ];

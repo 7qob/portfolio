@@ -278,7 +278,10 @@ public and the compose file has no credentials in it. Accounts are issued by
 an admin and the password is generated server-side and shown exactly once.
 Vault documents live in `/var/lib/7qob/vault-files/` on the Pi, outside the
 web root, and are streamed only after a session check. `GET /vault/archive`
-sends all of them as one ZIP, built by `server/src/vault/zip.ts` — a store-only
+sends the ones ticked for it as one ZIP: two flags per document, `visible`
+for "appears in the list at all" and `in_archive` for "is in Download all",
+and the query is `visible = 1 AND in_archive = 1` so a document taken off the
+list is never inside the archive. It is built by `server/src/vault/zip.ts` — a store-only
 writer in one file with **no dependency**, because a PDF is already compressed
 and deflating it again would buy a percent and cost a lockfile entry. It holds
 the archive in memory and refuses over 64 MB rather than emit something only

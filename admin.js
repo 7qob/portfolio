@@ -484,7 +484,7 @@ function loadDocuments() {
   api("/admin/vault-items")
     .then(function (r) { return r.json(); })
     .then(function (d) {
-      renderTable(table, ["Title", "File", "On disk", "Shown", "Order", ""], d.rows, function (item) {
+      renderTable(table, ["Title", "File", "On disk", "Shown", "In ZIP", "Order", ""], d.rows, function (item) {
         var titleInput = el("input", "admin-input");
         titleInput.type = "text";
         titleInput.value = item.title;
@@ -499,6 +499,18 @@ function loadDocuments() {
         shown.type = "checkbox";
         shown.checked = item.visible;
 
+        // Two answers, not one: Shown puts the document in the list, In ZIP
+        // puts it in Download all. Unticking Shown takes it out of both,
+        // because the archive never carries a document the reader was not
+        // shown, so the box is disabled rather than left looking live.
+        var zipped = el("input");
+        zipped.type = "checkbox";
+        zipped.checked = item.inArchive;
+        zipped.disabled = !shown.checked;
+        shown.addEventListener("change", function () {
+          zipped.disabled = !shown.checked;
+        });
+
         var actions = el("span", "admin-actions");
 
         actions.appendChild(button("Save", "admin-btn--accent", function () {
@@ -507,6 +519,7 @@ function loadDocuments() {
             body: {
               title: titleInput.value.trim(),
               visible: shown.checked,
+              inArchive: zipped.checked,
               sortOrder: Number(orderInput.value)
             }
           })
@@ -549,6 +562,7 @@ function loadDocuments() {
           item.filename,
           item.available ? "yes · " + formatBytes(item.sizeBytes) : "missing",
           shown,
+          zipped,
           orderInput,
           actions
         ];

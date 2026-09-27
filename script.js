@@ -1007,10 +1007,13 @@ function vaultDocs(items) {
     return;
   }
 
+  /* Counted over what the archive would actually contain, not over the list:
+     a document can be listed and left out of Download all, and a button that
+     promises four files and delivers three is worse than no button. */
   var ready = 0;
   var bytes = 0;
   items.forEach(function (item) {
-    if (!item.available) return;
+    if (!item.available || !item.inArchive) return;
     ready++;
     bytes += item.sizeBytes || 0;
   });
